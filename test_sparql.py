@@ -26,7 +26,7 @@ QUERY_FILES = sorted((HERE / "sparql" / "queries").glob("*.rq"))
 EXAMPLES = HERE / "sparql" / "examples"
 SH = Namespace("http://www.w3.org/ns/shacl#")
 ENDPOINT = "https://another-endpoint.example/sparql"
-PREFIXES = """PREFIX ciaaw: <https://example.org/ciaaw-draft#>
+PREFIXES = """PREFIX ciaaw: <https://hendrikborgelt.github.io/Draft_for_IUPAC_CIAAW-Isotopic-Abundances-and-Atomic-Weights/ciaaw-draft#>
 PREFIX ciaaw_draft: <https://hendrikborgelt.github.io/Draft_for_IUPAC_CIAAW-Isotopic-Abundances-and-Atomic-Weights/id/>
 PREFIX element: <https://hendrikborgelt.github.io/Draft_for_IUPAC_CIAAW-Isotopic-Abundances-and-Atomic-Weights/elements/>
 PREFIX qudt: <http://qudt.org/schema/qudt/>

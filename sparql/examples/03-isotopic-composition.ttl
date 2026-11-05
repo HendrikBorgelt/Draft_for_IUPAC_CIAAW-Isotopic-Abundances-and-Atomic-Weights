@@ -11,7 +11,7 @@ ex:3_03-isotopic-composition a sh:SPARQLExecutable, sh:SPARQLSelectExecutable;
  The current abundance of each isotope, with the number of significant figures printed in the table.""";
   rdfs:label "Isotopic composition of calcium";
   sh:prefixes _:sparql_examples_prefixes;
-  sh:select """PREFIX ciaaw: <https://example.org/ciaaw-draft#>
+  sh:select """PREFIX ciaaw: <https://hendrikborgelt.github.io/Draft_for_IUPAC_CIAAW-Isotopic-Abundances-and-Atomic-Weights/ciaaw-draft#>
 PREFIX qudt: <http://qudt.org/schema/qudt/>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 SELECT ?massNumber ?abundance ?uncertainty ?significantFigures WHERE {

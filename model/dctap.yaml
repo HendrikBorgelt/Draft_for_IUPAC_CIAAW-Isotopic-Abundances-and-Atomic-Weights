@@ -1,18 +1,18 @@
 # Configuration for model_dctap.csv, read by dctap-python and by tap2model.py.
 # See https://dctap-python.readthedocs.io/en/latest/config/
 #
-# The namespaces ending in example.org are placeholders until CIAAW chooses persistent IRIs.
+# The vocabulary and shape namespaces are placeholders until CIAAW chooses persistent IRIs.
 
 prefixes:
   "adms:": "http://www.w3.org/ns/adms#"
   "chemrof:": "https://w3id.org/chemrof/"
-  "ciaaw:": "https://example.org/ciaaw-draft#"
+  "ciaaw:": "https://hendrikborgelt.github.io/Draft_for_IUPAC_CIAAW-Isotopic-Abundances-and-Atomic-Weights/ciaaw-draft#"
   "dcterms:": "http://purl.org/dc/terms/"
   "owl:": "http://www.w3.org/2002/07/owl#"
   "qudt:": "http://qudt.org/schema/qudt/"
   "rdf:": "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
   "rdfs:": "http://www.w3.org/2000/01/rdf-schema#"
-  "shape:": "https://example.org/ciaaw-draft/shapes#"
+  "shape:": "https://hendrikborgelt.github.io/Draft_for_IUPAC_CIAAW-Isotopic-Abundances-and-Atomic-Weights/ciaaw-draft/shapes#"
   "skos:": "http://www.w3.org/2004/02/skos/core#"
   "unit:": "http://qudt.org/vocab/unit/"
   "xsd:": "http://www.w3.org/2001/XMLSchema#"

@@ -12,7 +12,7 @@ ex:2_02-standard-atomic-weights a sh:SPARQLExecutable, sh:SPARQLSelectExecutable
   rdfs:label "Standard atomic weights";
   sh:prefixes _:sparql_examples_prefixes;
   sh:select """PREFIX chemrof: <https://w3id.org/chemrof/>
-PREFIX ciaaw: <https://example.org/ciaaw-draft#>
+PREFIX ciaaw: <https://hendrikborgelt.github.io/Draft_for_IUPAC_CIAAW-Isotopic-Abundances-and-Atomic-Weights/ciaaw-draft#>
 PREFIX qudt: <http://qudt.org/schema/qudt/>
 SELECT ?symbol ?lower ?upper ?value ?uncertainty WHERE {
   ?element chemrof:symbol ?symbol ;

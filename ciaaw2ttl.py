@@ -52,7 +52,7 @@ SITE_URL = "https://hendrikborgelt.github.io/Draft_for_IUPAC_CIAAW-Isotopic-Abun
 # id/H-1.html at id/H-1. Isotopes and declarations share one namespace, elements have their own.
 DEFAULT_DATA_NS = f"{SITE_URL}id/"
 DEFAULT_ELEMENT_NS = f"{SITE_URL}elements/"
-DEFAULT_VOCAB_NS = "https://example.org/ciaaw-draft#"
+DEFAULT_VOCAB_NS = f"{SITE_URL}ciaaw-draft#"
 QUDT = Namespace("http://qudt.org/schema/qudt/")
 UNIT = Namespace("http://qudt.org/vocab/unit/")
 CHEMROF = Namespace("https://w3id.org/chemrof/")

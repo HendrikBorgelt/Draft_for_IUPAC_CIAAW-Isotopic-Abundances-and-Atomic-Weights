@@ -350,7 +350,7 @@ The table adds four columns to the 12 DCTAP elements, all declared in `dctap.yam
 - **`ciaaw.ttl` is a snapshot.** It was made from the CIAAW pages on 5 November 2026 and does not follow their updates. To refresh it, run `make download` and `make ttl`, then `make wikidata-comparison` and `make bodr-comparison`, because the tests check that those match the data.
 - **Years and DOIs are only known for hydrogen.** All other declarations have no citation yet. Adding a year later also changes the declaration's IRI, so `supplement.csv` should be completed before anyone cites them.
 - **`example-output-next.ttl` contains an invented value.** It demonstrates a revision of hydrogen and is not a CIAAW value.
-- **All IRIs are placeholders** until a persistent home is agreed. The data IRIs resolve on GitHub Pages, but the vocabulary (`ciaaw:`) is still on `example.org` and does not resolve.
+- **All IRIs are placeholders** until a persistent home is agreed. The data IRIs resolve on GitHub Pages. The vocabulary (`ciaaw:`) and shape namespaces are under the same address, but the site has no page behind `ciaaw-draft` yet, so those IRIs do not resolve.
 - **Atomic masses and abridged values are modelled but not generated**, because the two source tables do not contain them.
 - **The ADMS status IRI has not been confirmed yet.** See the note in `ciaaw2ttl.py`.
 - **No licence has been chosen yet** for the code or the data.
