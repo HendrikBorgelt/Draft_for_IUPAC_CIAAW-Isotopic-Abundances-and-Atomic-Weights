@@ -6,6 +6,7 @@ from pathlib import Path
 
 import pytest
 
+import ciaaw2ttl as c
 import ttl2sssom as s
 
 HERE = Path(__file__).parent
@@ -70,5 +71,5 @@ def test_the_creators_come_from_the_authors_file(sssom):
 
 
 def test_curie_uses_the_longest_prefix():
-    assert s.curie("https://hendrikborgelt.github.io/Draft_for_IUPAC_CIAAW-Isotopic-Abundances-and-Atomic-Weights/ciaaw-draft#value") == "ciaaw:value"
+    assert s.curie(f"{c.DEFAULT_VOCAB_NS}value") == "ciaaw:value"
     assert s.curie("http://purl.obolibrary.org/obo/CHEBI_49637") == "CHEBI:49637"

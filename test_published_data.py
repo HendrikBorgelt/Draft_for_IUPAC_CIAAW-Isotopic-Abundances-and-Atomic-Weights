@@ -147,10 +147,21 @@ def resource_iris(graph):
 def test_every_iri_in_the_data_has_a_page_and_a_turtle_file(site, graph):
     """GitHub Pages serves id/H-1.html at id/H-1, so a page in the right place is what makes an IRI resolve."""
     resources = resource_iris(graph)
-    assert len(resources) == ELEMENTS + ISOTOPES + WEIGHTS + ISOTOPES   # elements, isotopes and their declarations
+    declarations = {s for p in (CIAAW.ofElement, CIAAW.ofIsotope) for s in graph.subjects(p, None)}
+    assert len(resources) == ELEMENTS + ISOTOPES + len(declarations)
     for iri, path in resources.items():
         assert (site / f"{path}.html").exists(), iri
         assert (site / f"{path}.ttl").exists(), iri
+
+
+def test_every_current_standard_atomic_weight_has_a_year_and_a_source(graph):
+    """CIAAW's historical table gives both. It has no DOI yet for the three values revised in 2024."""
+    without_source = set()
+    for element, declaration in graph.subject_objects(CIAAW.currentStandardAtomicWeight):
+        assert graph.value(declaration, b.DCTERMS.issued) is not None, element
+        if graph.value(declaration, b.DCTERMS.source) is None:
+            without_source.add(str(graph.value(element, CHEMROF.symbol)))
+    assert without_source == {"Zr", "Gd", "Lu"}
 
 
 def test_the_data_does_not_use_the_placeholder_namespace_or_prefix():

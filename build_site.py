@@ -63,7 +63,8 @@ FORMATS = [
 NAV = [("index", "Home"), ("atomic-weights", "Atomic Weights"), ("isotopic-abundances", "Isotopic Abundances"),
        ("comparison", "Comparison"),
        ("model", "Data Model"), ("downloads", "Downloads"), ("sparql", "SPARQL"), ("about", "About")]
-SUBNAV = {"model": [("model", "Data Model"), ("revision-example", "Revision Example")]}
+SUBNAV = {"atomic-weights": [("atomic-weights", "Values"), ("visualization", "Visualization")],
+          "model": [("model", "Data Model"), ("revision-example", "Revision Example")]}
 ONTOLOGY_QUERY = HERE / "model" / "ontology.rq"
 ONTOLOGY_OUT = HERE / "model" / "ciaaw.owl"
 
@@ -755,15 +756,17 @@ class Site:
                         for key, label in items)
         return f'<nav id="breadcrumb" aria-label="Section"><ul>{links}</ul></nav>'
 
-    def add(self, path: str, title: str, text: str, section: str, editor: str = "", turtle: bool = False) -> None:
-        """Write path.md and path.html from the same Markdown. turtle: the page has a Turtle file next to it."""
+    def add(self, path: str, title: str, text: str, section: str, editor: str = "", turtle: bool = False,
+            html: str = "") -> None:
+        """Write path.md and path.html from the same Markdown. turtle: the page has a Turtle file next to it.
+        html: the HTML body to publish instead of rendering the Markdown, which is then only the Markdown twin."""
         depth = path.count("/")
         root = "../" * depth
         page = path.rsplit("/", 1)[-1]
         target = self.out / f"{path}.md"
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_text(MD_NOTICE + text.replace(SPARQL_EDITOR_MARK + "\n", ""), encoding="utf-8", newline="\n")
-        body = render_body(text)
+        body = html or render_body(text)
         scripts = MERMAID_SCRIPT if "```mermaid" in text else ""
         if editor:
             scripts += (f'<script type="module" src="{EDITOR_URL}"></script>\n'
@@ -856,6 +859,7 @@ def hand_written(name: str, elements: list[Element]) -> str:
 def build(data_path: Path, revision_path: Path, out: Path, sparql_endpoint: str = "",
           wikidata_path: Path = WIKIDATA_CSV, references_path: Path = REFERENCES_JSON,
           resources: list[Resource] | None = None) -> dict[str, bool]:
+    import visualization
     if out.exists():
         shutil.rmtree(out)
     out.mkdir(parents=True)
@@ -888,6 +892,8 @@ def build(data_path: Path, revision_path: Path, out: Path, sparql_endpoint: str 
     site.add("about", "About", hand_written("about", elements), "about")
     site.add("atomic-weights", "Standard Atomic Weights", page_atomic_weights(elements, notes), "atomic-weights")
     site.add("isotopic-abundances", "Isotopic Abundances", page_isotopic_abundances(elements, notes), "isotopic-abundances")
+    body, twin = visualization.page(elements, data, notes, coverage_note(elements))
+    site.add("visualization", "Visualization", twin, "atomic-weights", html=body)
     for element in elements:
         path = f"elements/{element.page}"
         turtle = write_turtle(out, data, element.iri, path)
