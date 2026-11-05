@@ -1,0 +1,23 @@
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix ex: <https://hendrikborgelt.github.io/Draft_for_IUPAC_CIAAW-Isotopic-Abundances-and-Atomic-Weights/sparql/queries/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix schema: <https://schema.org/> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix spex: <https://purl.expasy.org/sparql-examples/ontology#> .
+
+ex:1_01-elements a sh:SPARQLExecutable, sh:SPARQLSelectExecutable;
+  rdfs:comment """ Elements
+ Every element with its atomic number and symbol.""";
+  rdfs:label "Elements";
+  sh:prefixes _:sparql_examples_prefixes;
+  sh:select """PREFIX chemrof: <https://w3id.org/chemrof/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+SELECT ?z ?symbol ?name WHERE {
+  ?element a chemrof:ChemicalElement ;
+    rdfs:label ?name ;
+    chemrof:symbol ?symbol ;
+    chemrof:atomic_number ?z .
+}
+ORDER BY ?z""";
+  schema:keywords "atomic number", "elements" .

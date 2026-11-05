@@ -19,6 +19,7 @@ from rdflib import Graph, RDF
 from rdflib.compare import isomorphic
 
 import build_site as b
+import combine_sparql_examples as combine
 import tap2model as t
 
 HERE = Path(__file__).parent
@@ -151,6 +152,16 @@ def test_comparisons_are_up_to_date_with_the_data(resource):
     result = json.loads(text_of(resource.json))
     assert result["source"] == DATA.name
     assert result["local_isotopes"] == ISOTOPES
+
+
+def test_combined_file_holds_the_full_data_and_the_examples(tmp_path, graph):
+    combined = tmp_path / "combined.ttl"
+    assert combine.main(["-o", str(combined)]) == 0               # the defaults, as in make site
+    store = ox.Store()
+    store.load(combined.read_bytes(), format=ox.RdfFormat.TURTLE)
+    assert len(store) > len(graph)
+    count = "SELECT (COUNT(DISTINCT ?e) AS ?n) WHERE { ?e a <https://w3id.org/chemrof/ChemicalElement> }"
+    assert next(iter(store.query(count)))["n"].value == str(ELEMENTS)
 
 
 def test_every_cited_doi_has_a_formatted_reference(graph):

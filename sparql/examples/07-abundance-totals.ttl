@@ -1,0 +1,26 @@
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix ex: <https://hendrikborgelt.github.io/Draft_for_IUPAC_CIAAW-Isotopic-Abundances-and-Atomic-Weights/sparql/queries/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix schema: <https://schema.org/> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix spex: <https://purl.expasy.org/sparql-examples/ontology#> .
+
+ex:7_07-abundance-totals a sh:SPARQLExecutable, sh:SPARQLSelectExecutable;
+  rdfs:comment """ Total abundance per element
+ Adds up the isotopes of each element. Elements given as intervals are left out, because intervals have no meaningful sum.""";
+  rdfs:label "Total abundance per element";
+  sh:prefixes _:sparql_examples_prefixes;
+  sh:select """PREFIX chemrof: <https://w3id.org/chemrof/>
+PREFIX ciaaw: <https://example.org/ciaaw-draft#>
+PREFIX qudt: <http://qudt.org/schema/qudt/>
+SELECT ?symbol (SUM(?amount) AS ?total) WHERE {
+  ?element chemrof:symbol ?symbol ;
+    ciaaw:hasIsotope/ciaaw:currentAbundance/ciaaw:value/qudt:numericValue ?amount .
+  MINUS {
+    ?element ciaaw:hasIsotope/ciaaw:currentAbundance/ciaaw:value/qudt:lowerBound ?bound .
+  }
+}
+GROUP BY ?symbol
+ORDER BY ?symbol""";
+  schema:keywords "abundance", "totals" .

@@ -36,7 +36,8 @@ We want to develop this together with the Commission. Decisions about the conten
 | `tap2model.py` | DCTAP → SHACL shapes and UML diagrams |
 | `model/` | The data model, see [below](#the-data-model) |
 | `build_site.py`, `site/` | Static site for GitHub Pages |
-| `sparql/queries/` | Example SPARQL queries, shown on the site |
+| `sparql/queries/` | Example SPARQL queries, shown on the SPARQL tab and published as `.rq` files |
+| `sparql/examples/` | The same queries as sparql-examples Turtle, made by `make sparql-examples` |
 | `update_references.js`, `site/references.json` | The formatted sources for the Bibliography |
 | `check_wikidata.py`, `site/wikidata-comparison.json` | The comparison with Wikidata, shown in the Comparison section of the site |
 | `check_bodr.py`, `site/bodr-comparison.json` | The comparison with BODR, shown in the Comparison section |
@@ -178,8 +179,9 @@ without publishing it.
 ## The SPARQL endpoint
 
 The endpoint is running at <https://ciaaw-draft.jerven-bolleman.workers.dev/sparql>, hosted by
-Jerven Bolleman. The SPARQL page on the site has a query form and example queries. From the
-command line:
+Jerven Bolleman. The SPARQL tab on the site has a query editor, where each example opens in its
+own tab, and shows the example queries with results computed with Oxigraph, the same engine.
+The queries are also published as `.rq` files. From the command line:
 
 ```
 curl -H 'Accept: text/turtle' --data-urlencode 'query=CONSTRUCT { ?s a ?o } WHERE { ?s a ?o }' https://ciaaw-draft.jerven-bolleman.workers.dev/sparql
@@ -187,8 +189,14 @@ curl -H 'Accept: text/turtle' --data-urlencode 'query=CONSTRUCT { ?s a ?o } WHER
 
 It uses
 [oxigraph-cloudflare-webworker](https://github.com/JervenBolleman/oxigraph-cloudflare-webworker),
-a Cloudflare Worker that loads `data/ciaaw.ttl` from the published site into an in-memory
-Oxigraph store. The site finds the endpoint through `SPARQL_ENDPOINT` in `build_site.py`.
+a Cloudflare Worker that loads `data/combined.ttl` from the published site into an in-memory
+Oxigraph store. That file holds the data and the example queries, and `make site` writes it. If
+it is missing, every query fails with error 502. The site finds the endpoint through
+`SPARQL_ENDPOINT` in `build_site.py`.
+
+The Turtle in `sparql/examples` comes from the `.rq` files with
+[sparql-examples-utils](https://github.com/sib-swiss/sparql-examples-utils). Run `make sparql-examples`
+after changing a query. It needs the jar of that project, see `SPARQL_EXAMPLES_JAR` in the Makefile.
 
 The worker's code is not copied here: `make` checks out the commit pinned in `WORKER_REF`. You
 need Node.js for the two targets below.
@@ -199,7 +207,7 @@ To run it on your own machine, without a Cloudflare account:
 make sparql-dev
 ```
 
-Then query <http://localhost:8787/sparql>. To try the query form as well, build the site with
+Then query <http://localhost:8787/sparql>. To try the query editor on the SPARQL tab as well, build the site with
 `make site SPARQL_ENDPOINT=http://localhost:8787/sparql`.
 
 The running endpoint is deployed separately from this repository. To deploy from here instead:
@@ -227,8 +235,8 @@ Things to know:
   request, but the running worker has answered queries that used about 460 ms. Loading the full
   data takes roughly 15 ms, only when a worker starts. The plan of the running worker is not
   known, so keep example queries cheap: `test_published_data.py` checks this.
-- **Only the current data is loaded.** The revision example is left out, so its invented value
-  cannot appear in results.
+- **Only the current data and the example queries are loaded.** The revision example is left
+  out, so its invented value cannot appear in results.
 
 ## Without make
 
@@ -241,7 +249,7 @@ Things to know:
 | `make test` | `python -m pytest -q` |
 | `make model` | `python tap2model.py` |
 | `make validate` | `python tap2model.py --validate ciaaw.ttl example-output-next.ttl` |
-| `make site` | `python build_site.py` |
+| `make site` | `python build_site.py` and `python combine_sparql_examples.py -o _site/data/combined.ttl` |
 
 For `make download`, save the two pages from your browser as described in step 2 above.
 

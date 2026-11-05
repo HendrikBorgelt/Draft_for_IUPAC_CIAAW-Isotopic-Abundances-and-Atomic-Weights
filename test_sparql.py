@@ -5,6 +5,7 @@ Run with:  python -m pytest test_sparql.py
 These tests use Oxigraph, the engine behind the endpoint, at the version in the worker's lockfile.
 They do not run the Cloudflare Worker itself.
 """
+import json
 import re
 from decimal import Decimal, InvalidOperation
 from pathlib import Path
@@ -12,7 +13,7 @@ from pathlib import Path
 import pyoxigraph as ox
 import pytest
 from bs4 import BeautifulSoup
-from rdflib import Graph
+from rdflib import Graph, Namespace
 from ruamel.yaml import YAML
 
 import build_site as b
@@ -21,6 +22,8 @@ HERE = Path(__file__).parent
 DATA = HERE / "example-output.ttl"
 SAMPLE = ["--data", str(DATA)]
 QUERY_FILES = sorted((HERE / "sparql" / "queries").glob("*.rq"))
+EXAMPLES = HERE / "sparql" / "examples"
+SH = Namespace("http://www.w3.org/ns/shacl#")
 ENDPOINT = "https://another-endpoint.example/sparql"
 PREFIXES = """PREFIX ciaaw: <https://example.org/ciaaw-draft#>
 PREFIX ex: <https://example.org/data/>
@@ -114,6 +117,37 @@ def test_query_starts_with_a_title_and_a_description(path):
 
 
 @pytest.mark.parametrize("path", QUERY_FILES, ids=lambda p: p.stem)
+def test_query_has_a_sparql_examples_turtle_file(path):
+    assert (EXAMPLES / f"{path.stem}.ttl").exists()
+    assert (EXAMPLES / "prefixes.ttl").exists()
+
+
+def sparql_examples_select(path):
+    """The sh:select of a file made by sparql-examples-utils, which must answer like the .rq file."""
+    graph = Graph().parse(EXAMPLES / f"{path.stem}.ttl", format="turtle")
+    return str(next(graph.objects(None, SH.select)))
+
+
+@pytest.mark.parametrize("path", QUERY_FILES, ids=lambda p: p.stem)
+def test_sparql_examples_turtle_runs_the_same_query(path, store):
+    def rows(query):
+        solutions = store.query(query)
+        names = [v.value for v in solutions.variables]
+        return names, [[None if row[n] is None else comparable(row[n].value) for n in names] for row in solutions]
+
+    assert rows(sparql_examples_select(path)) == rows(path.read_text(encoding="utf-8"))
+
+
+@pytest.mark.parametrize("path", QUERY_FILES, ids=lambda p: p.stem)
+def test_sparql_examples_turtle_has_the_text_of_the_query(path):
+    """Two queries can give the same rows, so results alone do not show that the Turtle is up to date."""
+    def lines(query):
+        return [line for line in query.splitlines() if line.strip() and not line.startswith("#")]
+
+    assert lines(sparql_examples_select(path)) == lines(path.read_text(encoding="utf-8"))
+
+
+@pytest.mark.parametrize("path", QUERY_FILES, ids=lambda p: p.stem)
 def test_query_returns_results_and_both_engines_agree(path, store, graph):
     query = path.read_text(encoding="utf-8")
     solutions = store.query(query)
@@ -148,9 +182,23 @@ def test_page_says_when_a_build_has_no_endpoint(plain_site):
     assert "has no live endpoint" in text_of(plain_site / "sparql.md")
 
 
-def test_no_form_or_script_without_an_endpoint(plain_site):
+def test_no_editor_without_an_endpoint(plain_site):
+    """The editor throws when it has no endpoint, so the page leaves it out."""
     html = text_of(plain_site / "sparql.html")
-    assert 'id="sparql-form"' not in html and "sparql.js" not in html and b.SPARQL_FORM_MARK not in html
+    soup = BeautifulSoup(html, "html.parser")
+    assert soup.find("sparql-editor") is None
+    assert soup.find("script", src=b.EDITOR_URL) is None
+    assert b.SPARQL_EDITOR_MARK not in html
+
+
+def test_query_files_are_published(plain_site):
+    for path in QUERY_FILES:
+        assert (plain_site / "sparql" / "queries" / path.name).read_bytes() == path.read_bytes()
+
+
+def test_sparql_examples_are_published(plain_site):
+    for path in EXAMPLES.glob("*.ttl"):
+        assert (plain_site / "sparql" / "examples" / path.name).read_bytes() == path.read_bytes()
 
 
 def test_every_query_and_its_results_are_on_the_page(plain_site, examples):
@@ -173,20 +221,21 @@ def test_invented_value_is_not_in_the_results(plain_site):
     assert "1.00785" not in text_of(plain_site / "sparql.md")
 
 
-def test_sparql_page_is_reachable(plain_site):
-    soup = BeautifulSoup(text_of(plain_site / "downloads.html"), "html.parser")
-    assert soup.select_one('#breadcrumb a[href="sparql.html"]') is not None
-    active = BeautifulSoup(text_of(plain_site / "sparql.html"), "html.parser")
-    assert active.select_one("#main-navigation .selected").get_text() == "Downloads"
-    assert active.select_one("#breadcrumb .selected").get_text() == "SPARQL"
+def test_sparql_is_a_tab_of_its_own(plain_site):
+    soup = BeautifulSoup(text_of(plain_site / "sparql.html"), "html.parser")
+    assert soup.select_one("#main-navigation .selected").get_text() == "SPARQL"
+    assert soup.select_one('#main-navigation a[href="sparql.html"]') is not None
+    assert soup.select_one("#breadcrumb") is None
 
 
 # --- the page with an endpoint ------------------------------------------------------------
-def test_form_and_script_appear_with_an_endpoint(live_site):
+def test_editor_runs_against_the_endpoint(live_site):
     soup = BeautifulSoup(text_of(live_site / "sparql.html"), "html.parser")
-    assert soup.find(id="sparql-form")["data-endpoint"] == ENDPOINT
-    assert soup.find("script", src="static/sparql.js") is not None
-    assert (live_site / "static" / "sparql.js").exists()
+    assert soup.find("sparql-editor")["endpoint"] == ENDPOINT
+    assert soup.find("sparql-editor")["default-method"] == "POST"
+    assert soup.find("script", src=b.EDITOR_URL) is not None
+    assert soup.find("script", src="static/sparql-editor.js") is not None
+    assert (live_site / "static" / "sparql-editor.js").exists()
     assert "has no live endpoint" not in soup.get_text()
 
 
@@ -204,8 +253,8 @@ def test_default_build_uses_the_running_endpoint(tmp_path, monkeypatch):
     monkeypatch.delenv("SPARQL_ENDPOINT", raising=False)
     out = tmp_path / "_site"
     assert b.main([*SAMPLE, "--out", str(out)]) == 0
-    form = BeautifulSoup(text_of(out / "sparql.html"), "html.parser").find(id="sparql-form")
-    assert form["data-endpoint"] == b.SPARQL_ENDPOINT
+    editor = BeautifulSoup(text_of(out / "sparql.html"), "html.parser").find("sparql-editor")
+    assert editor["endpoint"] == b.SPARQL_ENDPOINT
     assert b.SPARQL_ENDPOINT.endswith("/sparql")                  # the root of the worker answers with 404
 
 
@@ -217,17 +266,25 @@ def test_empty_environment_variable_keeps_the_running_endpoint(tmp_path, monkeyp
     assert b.SPARQL_ENDPOINT in text_of(out / "sparql.md")
 
 
-def test_markdown_page_has_no_form_markup(live_site):
+def test_each_example_is_a_tab_of_the_editor(live_site):
+    soup = BeautifulSoup(text_of(live_site / "sparql.html"), "html.parser")
+    tabs = json.loads(soup.find("sparql-editor")["data-examples"])
+    assert [t["id"] for t in tabs] == [f"example-{path.stem}" for path in QUERY_FILES]
+    assert [t["query"] for t in tabs] == [path.read_text(encoding="utf-8") for path in QUERY_FILES]
+    assert all(t["name"] for t in tabs)
+
+
+def test_markdown_page_has_no_editor_markup(live_site):
     text = text_of(live_site / "sparql.md")
-    assert ENDPOINT in text and "sparql-form" not in text
+    assert ENDPOINT in text and "sparql-editor" not in text
 
 
 def test_endpoint_url_is_escaped(tmp_path):
     out = tmp_path / "_site"
     assert b.main([*SAMPLE, "--out", str(out), "--sparql-endpoint", 'https://x.test/"><script>alert(1)</script>']) == 0
-    form = BeautifulSoup(text_of(out / "sparql.html"), "html.parser").find(id="sparql-form")
-    assert form["data-endpoint"] == 'https://x.test/"><script>alert(1)</script>'
-    assert form.find("script") is None
+    editor = BeautifulSoup(text_of(out / "sparql.html"), "html.parser").find("sparql-editor")
+    assert editor["endpoint"] == 'https://x.test/"><script>alert(1)</script>'
+    assert editor.find("script") is None
 
 
 def test_endpoint_can_come_from_the_environment(tmp_path, monkeypatch):
@@ -250,8 +307,14 @@ def test_worker_name_matches_the_running_endpoint():
     assert f"//{make_variable('WORKER_NAME')}." in b.SPARQL_ENDPOINT
 
 
-def test_endpoint_loads_the_published_current_data():
-    assert make_variable("SPARQL_DATA").endswith("/data/ciaaw.ttl")
+def test_endpoint_loads_the_published_combined_data():
+    assert make_variable("SPARQL_DATA").endswith("/data/combined.ttl")
+
+
+def test_make_site_publishes_what_the_endpoint_loads():
+    """The running worker depends on this file: without it, every query fails with error 502."""
+    site_recipe = re.search(r"^site:\n((?:\t.*\n)+)", text_of(HERE / "Makefile").replace("\r\n", "\n"), flags=re.M).group(1)
+    assert "combine_sparql_examples.py" in site_recipe and "$(SITE_DIR)/data/combined.ttl" in site_recipe
 
 
 def test_deploy_job_is_optional_and_runs_after_the_site():
@@ -261,6 +324,15 @@ def test_deploy_job_is_optional_and_runs_after_the_site():
     assert "vars.SPARQL_DEPLOY == 'true'" in job["if"] and "pull_request" in job["if"]
     assert job["steps"][-1]["run"] == "make sparql-deploy"
     assert "secrets.CLOUDFLARE_API_TOKEN" in job["steps"][-1]["env"]["CLOUDFLARE_API_TOKEN"]
+
+
+def test_sparql_examples_utils_is_pinned_and_cached():
+    assert re.fullmatch(r"\d+\.\d+\.\d+", make_variable("SPARQL_EXAMPLES_UTILS_VERSION"))
+    workflow = YAML(typ="safe").load(text_of(HERE / ".github" / "workflows" / "pages.yml"))
+    steps = workflow["jobs"]["build"]["steps"]
+    cache = next(s for s in steps if s.get("uses", "").startswith("actions/cache@"))
+    assert "sparql-examples-utils" in cache["with"]["key"]
+    assert any(s.get("run") == "make sparql-examples" for s in steps)
 
 
 def test_workflow_does_not_override_the_endpoint():
