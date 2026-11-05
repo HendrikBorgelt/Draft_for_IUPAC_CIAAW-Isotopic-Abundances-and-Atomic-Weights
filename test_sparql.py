@@ -18,6 +18,7 @@ from rdflib import Graph, Namespace
 from ruamel.yaml import YAML
 
 import build_site as b
+import ciaaw2ttl as c
 
 HERE = Path(__file__).parent
 DATA = HERE / "example-output.ttl"
@@ -26,10 +27,10 @@ QUERY_FILES = sorted((HERE / "sparql" / "queries").glob("*.rq"))
 EXAMPLES = HERE / "sparql" / "examples"
 SH = Namespace("http://www.w3.org/ns/shacl#")
 ENDPOINT = "https://another-endpoint.example/sparql"
-PREFIXES = """PREFIX ciaaw: <https://hendrikborgelt.github.io/Draft_for_IUPAC_CIAAW-Isotopic-Abundances-and-Atomic-Weights/ciaaw-draft#>
-PREFIX ciaaw_draft: <https://hendrikborgelt.github.io/Draft_for_IUPAC_CIAAW-Isotopic-Abundances-and-Atomic-Weights/id/>
-PREFIX element: <https://hendrikborgelt.github.io/Draft_for_IUPAC_CIAAW-Isotopic-Abundances-and-Atomic-Weights/elements/>
-PREFIX qudt: <http://qudt.org/schema/qudt/>
+PREFIXES = f"""PREFIX ciaaw: <{c.DEFAULT_VOCAB_NS}>
+PREFIX ciaaw_draft: <{c.DEFAULT_DATA_NS}>
+PREFIX element: <{c.DEFAULT_ELEMENT_NS}>
+PREFIX qudt: <{c.QUDT}>
 """
 
 

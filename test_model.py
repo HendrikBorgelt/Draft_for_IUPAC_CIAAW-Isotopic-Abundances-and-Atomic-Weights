@@ -45,6 +45,12 @@ def quantity(g, decl):
     return g.value(decl, CIAAW.value)
 
 
+def remove(g, *triple):
+    """Remove what a test relies on. Graph.remove() is silent when nothing matches, which hides a stale IRI."""
+    assert triple in g, triple
+    g.remove(triple)
+
+
 def replace(g, subject, predicate, new):
     g.remove((subject, predicate, None))
     g.add((subject, predicate, new))
@@ -181,7 +187,7 @@ def test_planned_declaration_types_conform(data, shapes):
 
 # --- broken data: every rule must fire ----------------------------------------------------
 def missing_symbol(g):
-    g.remove((ELEMENT["Hydrogen"], CHEMROF.symbol, None))
+    remove(g, ELEMENT["Hydrogen"], CHEMROF.symbol, None)
 
 
 def two_symbols(g):
@@ -201,7 +207,7 @@ def wrong_chebi_namespace(g):
 
 
 def isotope_without_abundance(g):
-    g.remove((EX["H-1"], CIAAW.currentAbundance, None))
+    remove(g, EX["H-1"], CIAAW.currentAbundance, None)
 
 
 def wrong_kind_of_declaration(g):
@@ -209,19 +215,19 @@ def wrong_kind_of_declaration(g):
 
 
 def declaration_without_value(g):
-    g.remove((EX["AW-He-standard"], CIAAW.value, None))
+    remove(g, EX["AW-He-standard"], CIAAW.value, None)
 
 
 def weight_as_a_single_value(g):
     q = quantity(g, EX["AW-He-standard"])
     for p in (QUDT.standardUncertainty, CIAAW.significantFigures, CIAAW.significantFiguresUncertainty):
-        g.remove((q, p, None))
+        remove(g, q, p, None)
 
 
 def standard_value_without_a_number(g):
     q = quantity(g, EX["AW-He-standard"])
     for p in (QUDT.numericValue, QUDT.standardUncertainty):
-        g.remove((q, p, None))
+        remove(g, q, p, None)
 
 
 def bounds_and_value_mixed(g):
@@ -229,7 +235,7 @@ def bounds_and_value_mixed(g):
 
 
 def interval_missing_upper_bound(g):
-    g.remove((quantity(g, EX["AW-H-standard-2009"]), QUDT.upperBound, None))
+    remove(g, quantity(g, EX["AW-H-standard-2009"]), QUDT.upperBound, None)
 
 
 def float_instead_of_decimal(g):
@@ -276,7 +282,7 @@ def abundance_below_zero(g):
 
 
 def isotope_without_element(g):
-    g.remove((None, CIAAW.hasIsotope, EX["H-1"]))
+    remove(g, None, CIAAW.hasIsotope, EX["H-1"])
 
 
 def isotope_in_two_elements(g):
@@ -284,7 +290,7 @@ def isotope_in_two_elements(g):
 
 
 def current_not_in_history(g):
-    g.remove((ELEMENT["Hydrogen"], CIAAW.hasDeclaration, EX["AW-H-standard-2009"]))
+    remove(g, ELEMENT["Hydrogen"], CIAAW.hasDeclaration, EX["AW-H-standard-2009"])
 
 
 def declaration_points_elsewhere(g):
@@ -333,7 +339,7 @@ def test_broken_data_is_rejected_by_the_expected_shape(break_it, expected, data,
 def test_a_standard_value_may_be_exact_as_in_the_older_tables(data, shapes):
     """The historical tables give some values without an uncertainty, for example oxygen in 1902 as 16."""
     weight_as_a_single_value(data)
-    data.remove((EX["Helium"], CIAAW.standardAtomicWeightUncertainty, None))   # derived from the uncertainty
+    remove(data, ELEMENT["Helium"], CIAAW.standardAtomicWeightUncertainty, None)   # derived from the uncertainty
     conforms, _, text = t.validate_graph(data, shapes)
     assert conforms, text
 
@@ -346,15 +352,15 @@ def pointer_to_deprecated(g):
 
 
 def deprecated_without_replacement(g):
-    g.remove((OLD, DCTERMS.isReplacedBy, None))
+    remove(g, OLD, DCTERMS.isReplacedBy, None)
 
 
 def deprecated_without_status(g):
-    g.remove((OLD, c.ADMS.status, None))
+    remove(g, OLD, c.ADMS.status, None)
 
 
 def replacement_one_way(g):
-    g.remove((NEW, DCTERMS.replaces, None))
+    remove(g, NEW, DCTERMS.replaces, None)
 
 
 def replaced_by_a_non_declaration(g):

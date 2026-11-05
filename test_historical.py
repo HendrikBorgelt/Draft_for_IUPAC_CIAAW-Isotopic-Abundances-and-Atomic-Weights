@@ -19,9 +19,8 @@ CIAAW_TTL = HERE / "ciaaw.ttl"
 HISTORY_CSV = HERE / "historical" / "IUPAC-TSAW.csv"
 ID = Namespace(c.DEFAULT_DATA_NS)
 ELEMENT = Namespace(c.DEFAULT_ELEMENT_NS)
-CIAAW = Namespace("https://example.org/ciaaw-draft#")
-CHEMROF = Namespace("https://w3id.org/chemrof/")
-QUDT = Namespace("http://qudt.org/schema/qudt/")
+CIAAW = Namespace(c.DEFAULT_VOCAB_NS)
+QUDT, CHEMROF = c.QUDT, c.CHEMROF
 
 
 @pytest.fixture(scope="module")
