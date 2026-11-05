@@ -164,16 +164,21 @@ without publishing it.
 
 ## The SPARQL endpoint
 
-**Status: not deployed yet.** It needs a Cloudflare account. See
-[issue 1](https://github.com/HendrikBorgelt/Draft_for_IUPAC_CIAAW-Isotopic-Abundances-and-Atomic-Weights/issues/1).
-Until then, the SPARQL page on the site shows the example queries with results computed with
-Oxigraph, the same engine.
+The endpoint is running at <https://ciaaw-draft.jerven-bolleman.workers.dev/sparql>, hosted by
+Jerven Bolleman. The SPARQL page on the site has a query form and example queries. From the
+command line:
 
-The endpoint uses
+```
+curl -H 'Accept: text/turtle' --data-urlencode 'query=CONSTRUCT { ?s a ?o } WHERE { ?s a ?o }' https://ciaaw-draft.jerven-bolleman.workers.dev/sparql
+```
+
+It uses
 [oxigraph-cloudflare-webworker](https://github.com/JervenBolleman/oxigraph-cloudflare-webworker),
 a Cloudflare Worker that loads `data/ciaaw.ttl` from the published site into an in-memory
-Oxigraph store. Its code is not copied here: `make` checks out the commit pinned in `WORKER_REF`.
-You need Node.js for the two targets below.
+Oxigraph store. The site finds the endpoint through `SPARQL_ENDPOINT` in `build_site.py`.
+
+The worker's code is not copied here: `make` checks out the commit pinned in `WORKER_REF`. You
+need Node.js for the two targets below.
 
 To run it on your own machine, without a Cloudflare account:
 
@@ -184,21 +189,27 @@ make sparql-dev
 Then query <http://localhost:8787/sparql>. To try the query form as well, build the site with
 `make site SPARQL_ENDPOINT=http://localhost:8787/sparql`.
 
-To publish it:
+The running endpoint is deployed separately from this repository. To deploy from here instead:
 
 1. Create a Cloudflare API token with only **Account → Workers Scripts → Edit**.
 2. In the repository settings, add it as the secret `CLOUDFLARE_API_TOKEN`. Add
    `CLOUDFLARE_ACCOUNT_ID` too if the token can reach more than one account.
-3. Set the repository variable `SPARQL_ENDPOINT` to
-   `https://ciaaw-sparql-prototype.<your-subdomain>.workers.dev/sparql`.
+3. Set the repository variable `SPARQL_DEPLOY` to `true`.
 4. Run the workflow again. From then on, each push to `main` publishes the site and then
    redeploys the worker, which makes it load the new data.
+
+A token for another Cloudflare account creates a separate worker at a different address, so
+`SPARQL_ENDPOINT` in `build_site.py` then has to change too.
 
 Things to know:
 
 - **Decimals are normalised.** Oxigraph returns `162.500` as `162.5` and `0.0000` as `0`. Use
   `ciaaw:significantFigures` or the Turtle file when the printed digits matter. Zero bounds have
   no significant figures, so their printed form is only in the Turtle file.
+- **`CONSTRUCT` and `DESCRIBE` need an RDF format in the `Accept` header**, for example
+  `text/turtle`. Without one, the endpoint answers with error 400.
+- **New data is not picked up straight away.** The worker loads the Turtle once per instance, so
+  it can keep serving older data after the site changes, until it restarts or is redeployed.
 - **The free Cloudflare plan allows 10 ms of CPU per request.** The current 8 elements load in
   about 1 ms. The real 118-element file took about 10 ms in native Oxigraph, and the worker's
   WebAssembly build will be slower, so the full dataset will probably need a paid plan.
@@ -249,4 +260,3 @@ The table adds four columns to the 12 DCTAP elements, all declared in `dctap.yam
 - **Atomic masses and abridged values are modelled but not generated**, because the two source tables do not contain them.
 - **The ADMS status IRI has not been confirmed yet.** See the note in `ciaaw2ttl.py`.
 - **No licence has been chosen yet** for the code or the data.
-- **The SPARQL endpoint is set up but not deployed.** See [above](#the-sparql-endpoint).

@@ -26,11 +26,11 @@ WEIGHTS_URL    ?= https://ciaaw.org/atomic-weights.htm
 ABUNDANCES_URL ?= https://ciaaw.org/isotopic-abundances.htm
 
 # SPARQL endpoint: oxigraph-cloudflare-webworker, run from a pinned commit (see README.md).
-# SPARQL_ENDPOINT is the public URL. Without it the site leaves out the live query form.
+# Set SPARQL_ENDPOINT to point the site at another endpoint than the default in build_site.py.
 WORKER_REPO ?= https://github.com/JervenBolleman/oxigraph-cloudflare-webworker.git
 WORKER_REF  ?= 406eef7a49cfc497787ca03e0772d309d21d14ca
 WORKER_DIR  ?= $(BUILD_DIR)/sparql-worker
-WORKER_NAME ?= ciaaw-sparql-prototype
+WORKER_NAME ?= ciaaw-draft
 SPARQL_DATA ?= https://hendrikborgelt.github.io/Draft_for_IUPAC_CIAAW-Isotopic-Abundances-and-Atomic-Weights/data/ciaaw.ttl
 SPARQL_ENDPOINT ?=
 
@@ -113,7 +113,7 @@ validate:
 
 site:
 	$(PYTHON) build_site.py --data $(SITE_DATA) --revision $(SITE_REVISION) --out $(SITE_DIR) \
-		--sparql-endpoint "$(SPARQL_ENDPOINT)"
+		$(if $(SPARQL_ENDPOINT),--sparql-endpoint "$(SPARQL_ENDPOINT)")
 
 serve: site
 	$(PYTHON) -m http.server 8000 --directory $(SITE_DIR)

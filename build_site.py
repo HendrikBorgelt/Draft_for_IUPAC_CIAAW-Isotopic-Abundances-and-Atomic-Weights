@@ -9,8 +9,8 @@ in site/template.html, so both versions always say the same thing. The Turtle is
 and the other RDF formats are translated from it.
 
 The SPARQL page shows the queries in sparql/queries with their results, computed with Oxigraph because
-that is the engine behind the endpoint. A live query form appears once an endpoint URL is given, through
---sparql-endpoint or the SPARQL_ENDPOINT environment variable.
+that is the engine behind the endpoint. Its live query form uses SPARQL_ENDPOINT below. Use --sparql-endpoint
+or the SPARQL_ENDPOINT environment variable for another endpoint, and --sparql-endpoint "" to leave the form out.
 """
 from __future__ import annotations
 
@@ -66,6 +66,7 @@ SUBNAV = {"model": [("model", "Data Model"), ("revision-example", "Revision Exam
 
 QUERIES = HERE / "sparql" / "queries"
 WORKER_URL = "https://github.com/JervenBolleman/oxigraph-cloudflare-webworker"
+SPARQL_ENDPOINT = "https://ciaaw-draft.jerven-bolleman.workers.dev/sparql"
 SHORT_NAMES = {c.DEFAULT_DATA_NS: "ex:", str(c.CHEBI): "chebi:"}
 SPARQL_FORM_MARK = "<!-- sparql-form -->"
 SPARQL_FORM = """<form id="sparql-form" data-endpoint="{endpoint}">
@@ -556,18 +557,21 @@ def result_table(example: Example) -> str:
     return "\n".join(lines)
 
 
-def page_sparql(examples: list[Example], endpoint: str) -> str:
+def page_sparql(examples: list[Example], endpoint: str, coverage: str = "") -> str:
     if endpoint:
-        status = [f"The prototype endpoint is at `{endpoint}`. It may change or disappear without notice.\n",
+        construct = "query=CONSTRUCT { ?s a ?o } WHERE { ?s a ?o }"
+        status = [f"A prototype endpoint is running at `{endpoint}`. It may change or disappear without notice. "
+                  "It only answers SPARQL requests, so opening the address in a browser shows an error.\n",
                   "## Try it\n", f"{SPARQL_FORM_MARK}\n",
                   "From the command line:\n",
                   f'```bash\ncurl --data-urlencode "query=ASK {{ ?s ?p ?o }}" {endpoint}\n```\n',
-                  "For `CONSTRUCT` and `DESCRIBE`, ask for an RDF format, for example with "
-                  "`-H \"Accept: text/turtle\"`.\n"]
+                  f'```bash\ncurl -H "Accept: text/turtle" --data-urlencode "{construct}" {endpoint}\n```\n',
+                  "`CONSTRUCT` and `DESCRIBE` need an RDF format in the `Accept` header, as in the second example. "
+                  "Without one, the endpoint answers with error 400.\n"]
     else:
-        status = [f"> **The live endpoint is not running yet.** See [issue 1]({ISSUES_URL}/1). "
-                  "The queries below can already be run on the [downloaded data](downloads.md).\n"]
-    parts = ["# SPARQL\n", *status,
+        status = ["> This build of the site has no live endpoint. "
+                  "The queries below can be run on the [downloaded data](downloads.md).\n"]
+    parts = ["# SPARQL\n", coverage, *status,
              "## What the endpoint holds\n",
              f"It serves the [current data](data/ciaaw.ttl) read-only, using [Oxigraph](https://github.com/oxigraph/oxigraph) "
              f"inside a Cloudflare Worker ([oxigraph-cloudflare-webworker]({WORKER_URL})). The "
@@ -694,7 +698,7 @@ def build(data_path: Path, revision_path: Path, out: Path, sparql_endpoint: str 
     site.add("comparison", "Comparison", page_comparison(resources), "comparison")
     for resource in resources:
         site.add(resource.key, f"Comparison with {resource.name}", page_resource_comparison(resource), "comparison")
-    site.add("sparql", "SPARQL", page_sparql(read_examples(data_path), sparql_endpoint), "downloads")
+    site.add("sparql", "SPARQL", page_sparql(read_examples(data_path), sparql_endpoint, coverage_note(elements)), "downloads")
     return reports
 
 
@@ -704,8 +708,8 @@ def main(argv=None) -> int:
     ap.add_argument("--revision", type=Path, default=HERE / "example-output-next.ttl",
                     help="Turtle for the revision example")
     ap.add_argument("--out", type=Path, default=HERE / "_site")
-    ap.add_argument("--sparql-endpoint", default=os.environ.get("SPARQL_ENDPOINT", ""),
-                    help="URL of the live SPARQL endpoint; without it the query form is left out")
+    ap.add_argument("--sparql-endpoint", default=os.environ.get("SPARQL_ENDPOINT") or SPARQL_ENDPOINT,
+                    help='URL of the live SPARQL endpoint; "" leaves the query form out')
     ap.add_argument("--wikidata", type=Path, default=WIKIDATA_CSV,
                     help="CSV with the Wikidata items, see wikidata_links.py (missing file: no Wikidata links)")
     args = ap.parse_args(argv)

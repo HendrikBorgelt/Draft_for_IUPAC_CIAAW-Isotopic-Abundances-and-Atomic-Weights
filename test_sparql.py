@@ -20,7 +20,7 @@ import build_site as b
 HERE = Path(__file__).parent
 DATA = HERE / "example-output.ttl"
 QUERY_FILES = sorted((HERE / "sparql" / "queries").glob("*.rq"))
-ENDPOINT = "https://ciaaw-sparql-prototype.example.workers.dev/sparql"
+ENDPOINT = "https://another-endpoint.example/sparql"
 PREFIXES = """PREFIX ciaaw: <https://example.org/ciaaw-draft#>
 PREFIX ex: <https://example.org/data/>
 PREFIX qudt: <http://qudt.org/schema/qudt/>
@@ -143,9 +143,8 @@ def test_terms_are_shortened(examples):
 
 
 # --- the page without an endpoint ---------------------------------------------------------
-def test_page_says_the_endpoint_is_not_running(plain_site):
-    text = text_of(plain_site / "sparql.md")
-    assert "not running yet" in text and "/issues/1" in text
+def test_page_says_when_a_build_has_no_endpoint(plain_site):
+    assert "has no live endpoint" in text_of(plain_site / "sparql.md")
 
 
 def test_no_form_or_script_without_an_endpoint(plain_site):
@@ -187,7 +186,34 @@ def test_form_and_script_appear_with_an_endpoint(live_site):
     assert soup.find(id="sparql-form")["data-endpoint"] == ENDPOINT
     assert soup.find("script", src="static/sparql.js") is not None
     assert (live_site / "static" / "sparql.js").exists()
-    assert "not running yet" not in soup.get_text()
+    assert "has no live endpoint" not in soup.get_text()
+
+
+def test_page_explains_how_to_call_the_endpoint(live_site):
+    text = text_of(live_site / "sparql.md")
+    assert 'curl -H "Accept: text/turtle" --data-urlencode "query=CONSTRUCT { ?s a ?o } WHERE { ?s a ?o }"' in text
+    assert "need an RDF format in the `Accept` header" in text
+
+
+def test_page_says_the_endpoint_holds_a_sample(live_site):
+    assert "sample of 8 of the 118 elements" in text_of(live_site / "sparql.md")
+
+
+def test_default_build_uses_the_running_endpoint(tmp_path, monkeypatch):
+    monkeypatch.delenv("SPARQL_ENDPOINT", raising=False)
+    out = tmp_path / "_site"
+    assert b.main(["--out", str(out)]) == 0
+    form = BeautifulSoup(text_of(out / "sparql.html"), "html.parser").find(id="sparql-form")
+    assert form["data-endpoint"] == b.SPARQL_ENDPOINT
+    assert b.SPARQL_ENDPOINT.endswith("/sparql")                  # the root of the worker answers with 404
+
+
+def test_empty_environment_variable_keeps_the_running_endpoint(tmp_path, monkeypatch):
+    """GitHub Actions turns an unset repository variable into an empty value."""
+    monkeypatch.setenv("SPARQL_ENDPOINT", "")
+    out = tmp_path / "_site"
+    assert b.main(["--out", str(out)]) == 0
+    assert b.SPARQL_ENDPOINT in text_of(out / "sparql.md")
 
 
 def test_markdown_page_has_no_form_markup(live_site):
@@ -219,8 +245,8 @@ def test_worker_is_pinned_to_a_full_commit():
     assert re.fullmatch(r"[0-9a-f]{40}", make_variable("WORKER_REF"))
 
 
-def test_worker_name_says_it_is_a_prototype():
-    assert "prototype" in make_variable("WORKER_NAME")
+def test_worker_name_matches_the_running_endpoint():
+    assert f"//{make_variable('WORKER_NAME')}." in b.SPARQL_ENDPOINT
 
 
 def test_endpoint_loads_the_published_current_data():
@@ -231,15 +257,16 @@ def test_deploy_job_is_optional_and_runs_after_the_site():
     workflow = YAML(typ="safe").load(text_of(HERE / ".github" / "workflows" / "pages.yml"))
     job = workflow["jobs"]["deploy-sparql"]
     assert job["needs"] == "deploy"                               # the worker must load the new data
-    assert "vars.SPARQL_ENDPOINT != ''" in job["if"] and "pull_request" in job["if"]
+    assert "vars.SPARQL_DEPLOY == 'true'" in job["if"] and "pull_request" in job["if"]
     assert job["steps"][-1]["run"] == "make sparql-deploy"
     assert "secrets.CLOUDFLARE_API_TOKEN" in job["steps"][-1]["env"]["CLOUDFLARE_API_TOKEN"]
 
 
-def test_site_build_receives_the_endpoint():
+def test_workflow_does_not_override_the_endpoint():
+    """An unset repository variable would reach the build as an empty value."""
     workflow = YAML(typ="safe").load(text_of(HERE / ".github" / "workflows" / "pages.yml"))
     step = next(s for s in workflow["jobs"]["build"]["steps"] if "make site" in s.get("run", ""))
-    assert "vars.SPARQL_ENDPOINT" in step["env"]["SPARQL_ENDPOINT"]
+    assert "SPARQL_ENDPOINT" not in step.get("env", {})
 
 
 if __name__ == "__main__":
