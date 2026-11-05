@@ -36,7 +36,8 @@ We want to develop this together with the Commission. Decisions about the conten
 | `tap2model.py` | DCTAP → SHACL shapes and UML diagrams |
 | `model/` | The data model, see [below](#the-data-model) |
 | `build_site.py`, `site/` | Static site for GitHub Pages |
-| `sparql/queries/` | Example SPARQL queries, shown on the site |
+| `sparql/queries/` | Example SPARQL queries, shown on the SPARQL tab and published as `.rq` files |
+| `sparql/examples/` | The same queries as sparql-examples Turtle, made by `make sparql-examples` |
 | `update_references.js`, `site/references.json` | The formatted sources for the Bibliography |
 | `check_wikidata.py`, `site/wikidata-comparison.json` | The comparison with Wikidata, shown in the Comparison section of the site |
 | `check_bodr.py`, `site/bodr-comparison.json` | The comparison with BODR, shown in the Comparison section |
@@ -178,7 +179,7 @@ without publishing it.
 ## The SPARQL endpoint
 
 The endpoint is running at <https://ciaaw-draft.jerven-bolleman.workers.dev/sparql>, hosted by
-Jerven Bolleman. The SPARQL page on the site has a query form and example queries. From the
+Jerven Bolleman. The SPARQL tab on the site has a query editor, with each example in its own tab. From the
 command line:
 
 ```
@@ -199,7 +200,7 @@ To run it on your own machine, without a Cloudflare account:
 make sparql-dev
 ```
 
-Then query <http://localhost:8787/sparql>. To try the query form as well, build the site with
+Then query <http://localhost:8787/sparql>. To try the query editor on the SPARQL tab as well, build the site with
 `make site SPARQL_ENDPOINT=http://localhost:8787/sparql`.
 
 The running endpoint is deployed separately from this repository. To deploy from here instead:

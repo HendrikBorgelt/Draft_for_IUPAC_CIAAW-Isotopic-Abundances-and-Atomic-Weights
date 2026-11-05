@@ -1,5 +1,9 @@
 # Standard atomic weights
 # The current declaration of each element, which is either an interval or a value with an uncertainty. Elements without a standard atomic weight are left out.
+#+ summary: Standard atomic weights
+#+ tags:
+#+ - standard atomic weight
+#+ - interval
 PREFIX chemrof: <https://w3id.org/chemrof/>
 PREFIX ciaaw: <https://example.org/ciaaw-draft#>
 PREFIX qudt: <http://qudt.org/schema/qudt/>

@@ -1,5 +1,9 @@
 # Declarations and their sources
 # Every declaration that cites a report, with the year when it is known.
+#+ summary: Declarations and their sources
+#+ tags:
+#+ - provenance
+#+ - declarations
 PREFIX dcterms: <http://purl.org/dc/terms/>
 
 SELECT ?declaration ?year ?source WHERE {

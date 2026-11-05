@@ -35,7 +35,15 @@ WORKER_NAME ?= ciaaw-draft
 SPARQL_DATA ?= https://hendrikborgelt.github.io/Draft_for_IUPAC_CIAAW-Isotopic-Abundances-and-Atomic-Weights/data/ciaaw.ttl
 SPARQL_ENDPOINT ?=
 
-.PHONY: help install download ttl example quickstatements check-wikidata wikidata-links wikidata-comparison bodr-comparison references test model validate site serve sparql-dev sparql-deploy clean
+# The queries in sparql/queries as sparql-examples Turtle in sparql/examples, made by sparql-examples-utils
+# (https://github.com/sib-swiss/sparql-examples-utils). The release jar is downloaded into $(BUILD_DIR).
+# The base IRI is where the .rq files are published on the site.
+SPARQL_EXAMPLES_UTILS_VERSION ?= 2.0.24
+SPARQL_EXAMPLES_JAR  ?= $(BUILD_DIR)/sparql-examples-utils-$(SPARQL_EXAMPLES_UTILS_VERSION)-uber.jar
+SPARQL_EXAMPLES_URL  ?= https://github.com/sib-swiss/sparql-examples-utils/releases/download/v$(SPARQL_EXAMPLES_UTILS_VERSION)/sparql-examples-utils-$(SPARQL_EXAMPLES_UTILS_VERSION)-uber.jar
+SPARQL_EXAMPLES_BASE ?= https://hendrikborgelt.github.io/Draft_for_IUPAC_CIAAW-Isotopic-Abundances-and-Atomic-Weights/sparql/queries/
+
+.PHONY: help install download ttl example quickstatements check-wikidata wikidata-links wikidata-comparison bodr-comparison references test model validate sparql-examples print-sparql-examples-version site serve sparql-dev sparql-deploy clean
 
 help:
 	@echo "make install         install the Python dependencies"
@@ -51,6 +59,7 @@ help:
 	@echo "make test            run all tests"
 	@echo "make model           regenerate the SHACL shapes and diagrams from the DCTAP"
 	@echo "make validate        check the site data against the SHACL shapes"
+	@echo "make sparql-examples convert the queries in sparql/queries to sparql-examples Turtle in sparql/examples"
 	@echo "make site            build the static site into $(SITE_DIR)"
 	@echo "make serve           build the site and serve it on http://localhost:8000"
 	@echo "make sparql-dev      run the SPARQL worker locally on http://localhost:8787/sparql"
@@ -117,6 +126,19 @@ model:
 
 validate:
 	$(PYTHON) tap2model.py --validate $(SITE_DATA) $(SITE_REVISION)
+
+print-sparql-examples-version:
+	@echo $(SPARQL_EXAMPLES_UTILS_VERSION)
+
+# The jar is downloaded once per version. CI caches $(BUILD_DIR) to avoid downloading it again.
+$(SPARQL_EXAMPLES_JAR):
+	@mkdir -p $(dir $@)
+	curl -fsSL -o $@.partial $(SPARQL_EXAMPLES_URL)
+	mv $@.partial $@
+
+# Committed, so the site build does not need Java. Run again after changing a query.
+sparql-examples: $(SPARQL_EXAMPLES_JAR) $(wildcard sparql/queries/*.rq)
+	java -jar $(SPARQL_EXAMPLES_JAR) import-rq -i sparql/queries -b $(SPARQL_EXAMPLES_BASE) -o sparql/examples
 
 site:
 	$(PYTHON) build_site.py --data $(SITE_DATA) --revision $(SITE_REVISION) --out $(SITE_DIR) \
