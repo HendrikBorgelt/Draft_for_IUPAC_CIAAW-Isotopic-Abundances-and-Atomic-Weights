@@ -37,6 +37,7 @@ We want to develop this together with the Commission. Decisions about the conten
 | `model/` | The data model, see [below](#the-data-model) |
 | `build_site.py`, `site/` | Static site for GitHub Pages |
 | `sparql/queries/` | Example SPARQL queries, shown on the site |
+| `update_references.js`, `site/references.json` | The formatted sources for the Bibliography |
 | `wikidata_links.py`, `site/wikidata.csv` | The Wikidata items linked from the element pages |
 | `test_*.py`, `fixtures/` | Tests and their small hand-built input tables |
 | `example-output*.ttl` | Example results |
@@ -142,6 +143,13 @@ The element pages link to Wikidata, for the element and for each isotope. The Q-
 with `make wikidata-links` (`wikidata_links.py`): elements are found by atomic number, isotopes by
 atomic number and number of neutrons. When Wikidata has several items for one isotope, the one with a
 natural abundance is used, and the script reports these cases.
+
+Each element page ends with a Bibliography of the DOIs in `dcterms:source` of its declarations.
+They are formatted as APA by [citation.js](https://citation.js.org), the way the author's blog does it:
+`make references` (`update_references.js`, needs Node.js; if the system npm fails use
+`make references NPM="node path/to/npm-cli.js"`) looks up the DOIs that are not yet in
+`site/references.json`. That file is committed, so the build and the tests work offline. A DOI that is
+not in it is listed as the bare DOI.
 
 Each push to `main` runs the tests and publishes the site through
 [pages.yml](.github/workflows/pages.yml). Pull requests run the tests and build the site

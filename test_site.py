@@ -226,3 +226,21 @@ def test_site_builds_without_the_wikidata_csv(tmp_path):
     out = tmp_path / "_site"
     assert b.main(["--out", str(out), "--wikidata", str(tmp_path / "missing.csv")]) == 0
     assert "wikidata.org" not in text_of(out / "elements" / "Hydrogen.md")
+
+
+# --- Bibliography ---------------------------------------------------------------------------
+def test_element_page_has_a_bibliography_of_its_sources(site):
+    html = text_of(site / "elements" / "Hydrogen.html")
+    assert ">Bibliography</h2>" in html
+    assert "Isotopic compositions of the elements 2013" in html      # formatted by citation.js
+    assert 'href="https://doi.org/10.1515/pac-2015-0503"' in html
+
+
+def test_no_bibliography_without_sources(site):
+    assert "Bibliography" not in text_of(site / "elements" / "Technetium.html")
+
+
+def test_bibliography_falls_back_to_the_doi_when_not_cached(tmp_path):
+    h = next(e for e in b.read_elements(b.Graph().parse(HERE / "example-output.ttl", format="turtle")) if e.symbol == "H")
+    assert "Isotopic compositions" in b.bibliography(h, b.read_references(b.REFERENCES_JSON))
+    assert "10.1515/pac-2015-0503</div>" not in b.bibliography(h, {}) and "10.1515/pac-2015-0503 <a" in b.bibliography(h, {})

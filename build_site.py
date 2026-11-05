@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import json
 import os
 import re
 import shutil
@@ -41,6 +42,7 @@ ISSUES_URL = f"{REPO_URL}/issues"
 MERMAID_URL = "https://cdn.jsdelivr.net/npm/mermaid@12.2.0/dist/mermaid.esm.min.mjs"
 ELEMENT_COUNT = 118
 WIKIDATA_CSV = SITE_SRC / "wikidata.csv"
+REFERENCES_JSON = SITE_SRC / "references.json"
 WIKIDATA_ENTITY = "https://www.wikidata.org/wiki/"
 NBSP = " "
 
@@ -234,6 +236,23 @@ def read_wikidata(path: Path) -> dict[tuple[int, int | None], str]:
         return {(int(r["z"]), int(r["a"]) if r["a"] else None): r["qid"] for r in csv.DictReader(f)}
 
 
+def read_references(path: Path) -> dict[str, str]:
+    """DOI (upper case) -> APA reference as HTML, see update_references.js."""
+    return json.loads(path.read_text(encoding="utf-8")) if path.exists() else {}
+
+
+def bibliography(e: Element, references: dict[str, str]) -> str:
+    """The sources of all declarations on an element page, formatted by citation.js, or "" without sources."""
+    dois = {s.removeprefix("https://doi.org/") for d in [*e.history, *(d for i in e.isotopes for d in i.history)]
+            for s in d.sources if s.startswith("https://doi.org/10.")}
+    if not dois:
+        return ""
+    entries = sorted(((references.get(doi.upper(), doi), doi) for doi in dois), key=lambda r: r[0].lower())
+    items = "\n".join(f'<div class="csl-entry">{text} <a href="https://doi.org/{doi}">CrossRef</a> '
+                      f'<a href="https://qlever.scholia.wiki/doi/{doi}">Scholia</a></div>' for text, doi in entries)
+    return f'## Bibliography\n\n<div class="csl-bib-body">\n{items}\n</div>\n'
+
+
 def wikidata_link(links: dict, z: int, a: int | None = None) -> str:
     qid = links.get((z, a))
     return f"[{qid}]({WIKIDATA_ENTITY}{qid})" if qid else ""
@@ -279,7 +298,8 @@ def declaration_table(history: list[Declaration]) -> str:
     return "\n".join(lines)
 
 
-def page_element(e: Element, notes: dict[str, str], links: dict | None = None) -> str:
+def page_element(e: Element, notes: dict[str, str], links: dict | None = None,
+                 references: dict | None = None) -> str:
     links = links or {}
     facts = ["| Property | Value |", "| --- | --- |", f"| Symbol | {e.symbol} |", f"| Atomic number | {e.z} |",
              f"| IRI | `{e.iri}` |"]
@@ -312,6 +332,8 @@ def page_element(e: Element, notes: dict[str, str], links: dict | None = None) -
     used = set(e.abundance_notes) | set(e.weight.notes if e.weight else [])
     if used:
         parts.append(notes_section(notes, used))
+    if bib := bibliography(e, references or {}):
+        parts.append(bib)
     parts.append("[All atomic weights](../atomic-weights.md) · [All isotopic abundances](../isotopic-abundances.md)\n")
     return "\n".join(parts)
 
@@ -547,7 +569,7 @@ def hand_written(name: str, elements: list[Element]) -> str:
 
 
 def build(data_path: Path, revision_path: Path, out: Path, sparql_endpoint: str = "",
-          wikidata_path: Path = WIKIDATA_CSV) -> dict[str, bool]:
+          wikidata_path: Path = WIKIDATA_CSV, references_path: Path = REFERENCES_JSON) -> dict[str, bool]:
     if out.exists():
         shutil.rmtree(out)
     out.mkdir(parents=True)
@@ -570,13 +592,14 @@ def build(data_path: Path, revision_path: Path, out: Path, sparql_endpoint: str 
     elements = read_elements(data)
     notes = footnotes(data)
     links = read_wikidata(wikidata_path)
+    references = read_references(references_path)
     site = Site(out, sparql_endpoint)
     site.add("index", "Home", hand_written("index", elements), "index")
     site.add("about", "About", hand_written("about", elements), "about")
     site.add("atomic-weights", "Standard Atomic Weights", page_atomic_weights(elements, notes), "atomic-weights")
     site.add("isotopic-abundances", "Isotopic Abundances", page_isotopic_abundances(elements, notes), "isotopic-abundances")
     for element in elements:
-        site.add(f"elements/{element.page}", element.name.capitalize(), page_element(element, notes, links), "atomic-weights")
+        site.add(f"elements/{element.page}", element.name.capitalize(), page_element(element, notes, links, references), "atomic-weights")
     site.add("model", "Data Model", page_model(tap, reports), "model")
     site.add("revision-example", "Revision Example", page_revision(revision), "model")
     site.add("downloads", "Downloads", page_downloads(out, elements), "downloads")
