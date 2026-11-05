@@ -1,0 +1,2197 @@
+{
+  "generated": "2026-11-05",
+  "source": "example-output.ttl",
+  "local_isotopes": 24,
+  "resource_items": 3171,
+  "resource_version": "Debian package bodr 10-3",
+  "counts": {
+    "DIFFERENT": 9,
+    "ONLY-RESOURCE": 264
+  },
+  "differences": [
+    {
+      "kind": "DIFFERENT",
+      "name": "dysprosium-156",
+      "qid": "Dy156",
+      "local": "0.056~0.003",
+      "wikidata": "0.06",
+      "text": "local 0.056~0.003  Dy156 bodr 0.06"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "dysprosium-158",
+      "qid": "Dy158",
+      "local": "0.095~0.003",
+      "wikidata": "0.10",
+      "text": "local 0.095~0.003  Dy158 bodr 0.10"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "dysprosium-160",
+      "qid": "Dy160",
+      "local": "2.329~0.018",
+      "wikidata": "2.34",
+      "text": "local 2.329~0.018  Dy160 bodr 2.34"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "dysprosium-161",
+      "qid": "Dy161",
+      "local": "18.889~0.042",
+      "wikidata": "18.91",
+      "text": "local 18.889~0.042  Dy161 bodr 18.91"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "dysprosium-162",
+      "qid": "Dy162",
+      "local": "25.475~0.036",
+      "wikidata": "25.51",
+      "text": "local 25.475~0.036  Dy162 bodr 25.51"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "dysprosium-163",
+      "qid": "Dy163",
+      "local": "24.896~0.042",
+      "wikidata": "24.90",
+      "text": "local 24.896~0.042  Dy163 bodr 24.90"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "dysprosium-164",
+      "qid": "Dy164",
+      "local": "28.260~0.054",
+      "wikidata": "28.18",
+      "text": "local 28.260~0.054  Dy164 bodr 28.18"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "helium-3",
+      "qid": "He3",
+      "local": "0.0002~0.0002",
+      "wikidata": "0.000137",
+      "text": "local 0.0002~0.0002  He3 bodr 0.000137"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "helium-4",
+      "qid": "He4",
+      "local": "99.9998~0.0002",
+      "wikidata": "99.999863",
+      "text": "local 99.9998~0.0002  He4 bodr 99.999863"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Li6",
+      "qid": "Li6",
+      "local": "",
+      "wikidata": "7.59",
+      "text": "Li6 bodr 7.59  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Li7",
+      "qid": "Li7",
+      "local": "",
+      "wikidata": "92.41",
+      "text": "Li7 bodr 92.41  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "B10",
+      "qid": "B10",
+      "local": "",
+      "wikidata": "19.9",
+      "text": "B10 bodr 19.9  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "B11",
+      "qid": "B11",
+      "local": "",
+      "wikidata": "80.1",
+      "text": "B11 bodr 80.1  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "C12",
+      "qid": "C12",
+      "local": "",
+      "wikidata": "98.93",
+      "text": "C12 bodr 98.93  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "C13",
+      "qid": "C13",
+      "local": "",
+      "wikidata": "1.07",
+      "text": "C13 bodr 1.07  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "N14",
+      "qid": "N14",
+      "local": "",
+      "wikidata": "99.632",
+      "text": "N14 bodr 99.632  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "N15",
+      "qid": "N15",
+      "local": "",
+      "wikidata": "0.368",
+      "text": "N15 bodr 0.368  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "O16",
+      "qid": "O16",
+      "local": "",
+      "wikidata": "99.757",
+      "text": "O16 bodr 99.757  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "O17",
+      "qid": "O17",
+      "local": "",
+      "wikidata": "0.038",
+      "text": "O17 bodr 0.038  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "O18",
+      "qid": "O18",
+      "local": "",
+      "wikidata": "0.205",
+      "text": "O18 bodr 0.205  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "F19",
+      "qid": "F19",
+      "local": "",
+      "wikidata": "100",
+      "text": "F19 bodr 100  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Na23",
+      "qid": "Na23",
+      "local": "",
+      "wikidata": "100",
+      "text": "Na23 bodr 100  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Mg24",
+      "qid": "Mg24",
+      "local": "",
+      "wikidata": "78.99",
+      "text": "Mg24 bodr 78.99  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Mg25",
+      "qid": "Mg25",
+      "local": "",
+      "wikidata": "10.00",
+      "text": "Mg25 bodr 10.00  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Mg26",
+      "qid": "Mg26",
+      "local": "",
+      "wikidata": "11.01",
+      "text": "Mg26 bodr 11.01  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Al27",
+      "qid": "Al27",
+      "local": "",
+      "wikidata": "100",
+      "text": "Al27 bodr 100  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Si28",
+      "qid": "Si28",
+      "local": "",
+      "wikidata": "92.2297",
+      "text": "Si28 bodr 92.2297  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Si29",
+      "qid": "Si29",
+      "local": "",
+      "wikidata": "4.6832",
+      "text": "Si29 bodr 4.6832  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Si30",
+      "qid": "Si30",
+      "local": "",
+      "wikidata": "3.0872",
+      "text": "Si30 bodr 3.0872  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "P31",
+      "qid": "P31",
+      "local": "",
+      "wikidata": "100",
+      "text": "P31 bodr 100  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "S32",
+      "qid": "S32",
+      "local": "",
+      "wikidata": "94.93",
+      "text": "S32 bodr 94.93  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "S33",
+      "qid": "S33",
+      "local": "",
+      "wikidata": "0.76",
+      "text": "S33 bodr 0.76  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "S34",
+      "qid": "S34",
+      "local": "",
+      "wikidata": "4.29",
+      "text": "S34 bodr 4.29  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "S36",
+      "qid": "S36",
+      "local": "",
+      "wikidata": "0.02",
+      "text": "S36 bodr 0.02  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Cl35",
+      "qid": "Cl35",
+      "local": "",
+      "wikidata": "75.78",
+      "text": "Cl35 bodr 75.78  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Cl37",
+      "qid": "Cl37",
+      "local": "",
+      "wikidata": "24.22",
+      "text": "Cl37 bodr 24.22  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "K39",
+      "qid": "K39",
+      "local": "",
+      "wikidata": "93.2581",
+      "text": "K39 bodr 93.2581  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "K40",
+      "qid": "K40",
+      "local": "",
+      "wikidata": "0.0117",
+      "text": "K40 bodr 0.0117  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "K41",
+      "qid": "K41",
+      "local": "",
+      "wikidata": "6.7302",
+      "text": "K41 bodr 6.7302  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Sc45",
+      "qid": "Sc45",
+      "local": "",
+      "wikidata": "100",
+      "text": "Sc45 bodr 100  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Ti46",
+      "qid": "Ti46",
+      "local": "",
+      "wikidata": "8.25",
+      "text": "Ti46 bodr 8.25  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Ti47",
+      "qid": "Ti47",
+      "local": "",
+      "wikidata": "7.44",
+      "text": "Ti47 bodr 7.44  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Ti48",
+      "qid": "Ti48",
+      "local": "",
+      "wikidata": "73.72",
+      "text": "Ti48 bodr 73.72  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Ti49",
+      "qid": "Ti49",
+      "local": "",
+      "wikidata": "5.41",
+      "text": "Ti49 bodr 5.41  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Ti50",
+      "qid": "Ti50",
+      "local": "",
+      "wikidata": "5.18",
+      "text": "Ti50 bodr 5.18  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "V50",
+      "qid": "V50",
+      "local": "",
+      "wikidata": "0.250",
+      "text": "V50 bodr 0.250  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "V51",
+      "qid": "V51",
+      "local": "",
+      "wikidata": "99.750",
+      "text": "V51 bodr 99.750  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Cr50",
+      "qid": "Cr50",
+      "local": "",
+      "wikidata": "4.345",
+      "text": "Cr50 bodr 4.345  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Cr52",
+      "qid": "Cr52",
+      "local": "",
+      "wikidata": "83.789",
+      "text": "Cr52 bodr 83.789  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Cr53",
+      "qid": "Cr53",
+      "local": "",
+      "wikidata": "9.501",
+      "text": "Cr53 bodr 9.501  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Cr54",
+      "qid": "Cr54",
+      "local": "",
+      "wikidata": "2.365",
+      "text": "Cr54 bodr 2.365  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Mn55",
+      "qid": "Mn55",
+      "local": "",
+      "wikidata": "100",
+      "text": "Mn55 bodr 100  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Fe54",
+      "qid": "Fe54",
+      "local": "",
+      "wikidata": "5.845",
+      "text": "Fe54 bodr 5.845  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Fe56",
+      "qid": "Fe56",
+      "local": "",
+      "wikidata": "91.754",
+      "text": "Fe56 bodr 91.754  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Fe57",
+      "qid": "Fe57",
+      "local": "",
+      "wikidata": "2.119",
+      "text": "Fe57 bodr 2.119  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Fe58",
+      "qid": "Fe58",
+      "local": "",
+      "wikidata": "0.282",
+      "text": "Fe58 bodr 0.282  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Co59",
+      "qid": "Co59",
+      "local": "",
+      "wikidata": "100",
+      "text": "Co59 bodr 100  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Ni58",
+      "qid": "Ni58",
+      "local": "",
+      "wikidata": "68.0769",
+      "text": "Ni58 bodr 68.0769  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Ni60",
+      "qid": "Ni60",
+      "local": "",
+      "wikidata": "26.2231",
+      "text": "Ni60 bodr 26.2231  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Ni61",
+      "qid": "Ni61",
+      "local": "",
+      "wikidata": "1.1399",
+      "text": "Ni61 bodr 1.1399  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Ni62",
+      "qid": "Ni62",
+      "local": "",
+      "wikidata": "3.6345",
+      "text": "Ni62 bodr 3.6345  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Ni64",
+      "qid": "Ni64",
+      "local": "",
+      "wikidata": "0.9256",
+      "text": "Ni64 bodr 0.9256  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Cu63",
+      "qid": "Cu63",
+      "local": "",
+      "wikidata": "69.17",
+      "text": "Cu63 bodr 69.17  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Cu65",
+      "qid": "Cu65",
+      "local": "",
+      "wikidata": "30.83",
+      "text": "Cu65 bodr 30.83  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Zn64",
+      "qid": "Zn64",
+      "local": "",
+      "wikidata": "48.63",
+      "text": "Zn64 bodr 48.63  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Zn66",
+      "qid": "Zn66",
+      "local": "",
+      "wikidata": "27.90",
+      "text": "Zn66 bodr 27.90  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Zn67",
+      "qid": "Zn67",
+      "local": "",
+      "wikidata": "4.10",
+      "text": "Zn67 bodr 4.10  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Zn68",
+      "qid": "Zn68",
+      "local": "",
+      "wikidata": "18.75",
+      "text": "Zn68 bodr 18.75  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Zn70",
+      "qid": "Zn70",
+      "local": "",
+      "wikidata": "0.62",
+      "text": "Zn70 bodr 0.62  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Ga69",
+      "qid": "Ga69",
+      "local": "",
+      "wikidata": "60.108",
+      "text": "Ga69 bodr 60.108  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Ga71",
+      "qid": "Ga71",
+      "local": "",
+      "wikidata": "39.892",
+      "text": "Ga71 bodr 39.892  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Ge70",
+      "qid": "Ge70",
+      "local": "",
+      "wikidata": "20.84",
+      "text": "Ge70 bodr 20.84  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Ge72",
+      "qid": "Ge72",
+      "local": "",
+      "wikidata": "27.54",
+      "text": "Ge72 bodr 27.54  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Ge73",
+      "qid": "Ge73",
+      "local": "",
+      "wikidata": "7.73",
+      "text": "Ge73 bodr 7.73  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Ge74",
+      "qid": "Ge74",
+      "local": "",
+      "wikidata": "36.28",
+      "text": "Ge74 bodr 36.28  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Ge76",
+      "qid": "Ge76",
+      "local": "",
+      "wikidata": "7.61",
+      "text": "Ge76 bodr 7.61  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "As75",
+      "qid": "As75",
+      "local": "",
+      "wikidata": "100",
+      "text": "As75 bodr 100  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Se74",
+      "qid": "Se74",
+      "local": "",
+      "wikidata": "0.89",
+      "text": "Se74 bodr 0.89  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Se76",
+      "qid": "Se76",
+      "local": "",
+      "wikidata": "9.37",
+      "text": "Se76 bodr 9.37  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Se77",
+      "qid": "Se77",
+      "local": "",
+      "wikidata": "7.63",
+      "text": "Se77 bodr 7.63  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Se78",
+      "qid": "Se78",
+      "local": "",
+      "wikidata": "23.77",
+      "text": "Se78 bodr 23.77  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Se80",
+      "qid": "Se80",
+      "local": "",
+      "wikidata": "49.61",
+      "text": "Se80 bodr 49.61  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Se82",
+      "qid": "Se82",
+      "local": "",
+      "wikidata": "8.73",
+      "text": "Se82 bodr 8.73  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Br79",
+      "qid": "Br79",
+      "local": "",
+      "wikidata": "50.69",
+      "text": "Br79 bodr 50.69  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Br81",
+      "qid": "Br81",
+      "local": "",
+      "wikidata": "49.31",
+      "text": "Br81 bodr 49.31  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Kr78",
+      "qid": "Kr78",
+      "local": "",
+      "wikidata": "0.35",
+      "text": "Kr78 bodr 0.35  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Kr80",
+      "qid": "Kr80",
+      "local": "",
+      "wikidata": "2.28",
+      "text": "Kr80 bodr 2.28  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Kr82",
+      "qid": "Kr82",
+      "local": "",
+      "wikidata": "11.58",
+      "text": "Kr82 bodr 11.58  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Kr83",
+      "qid": "Kr83",
+      "local": "",
+      "wikidata": "11.49",
+      "text": "Kr83 bodr 11.49  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Kr84",
+      "qid": "Kr84",
+      "local": "",
+      "wikidata": "57.00",
+      "text": "Kr84 bodr 57.00  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Kr86",
+      "qid": "Kr86",
+      "local": "",
+      "wikidata": "17.30",
+      "text": "Kr86 bodr 17.30  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Rb85",
+      "qid": "Rb85",
+      "local": "",
+      "wikidata": "72.17",
+      "text": "Rb85 bodr 72.17  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Rb87",
+      "qid": "Rb87",
+      "local": "",
+      "wikidata": "27.83",
+      "text": "Rb87 bodr 27.83  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Sr84",
+      "qid": "Sr84",
+      "local": "",
+      "wikidata": "0.56",
+      "text": "Sr84 bodr 0.56  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Sr86",
+      "qid": "Sr86",
+      "local": "",
+      "wikidata": "9.86",
+      "text": "Sr86 bodr 9.86  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Sr87",
+      "qid": "Sr87",
+      "local": "",
+      "wikidata": "7.00",
+      "text": "Sr87 bodr 7.00  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Sr88",
+      "qid": "Sr88",
+      "local": "",
+      "wikidata": "82.58",
+      "text": "Sr88 bodr 82.58  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Y89",
+      "qid": "Y89",
+      "local": "",
+      "wikidata": "100",
+      "text": "Y89 bodr 100  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Zr90",
+      "qid": "Zr90",
+      "local": "",
+      "wikidata": "51.45",
+      "text": "Zr90 bodr 51.45  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Zr91",
+      "qid": "Zr91",
+      "local": "",
+      "wikidata": "11.22",
+      "text": "Zr91 bodr 11.22  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Zr92",
+      "qid": "Zr92",
+      "local": "",
+      "wikidata": "17.15",
+      "text": "Zr92 bodr 17.15  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Zr94",
+      "qid": "Zr94",
+      "local": "",
+      "wikidata": "17.38",
+      "text": "Zr94 bodr 17.38  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Zr96",
+      "qid": "Zr96",
+      "local": "",
+      "wikidata": "2.80",
+      "text": "Zr96 bodr 2.80  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Nb93",
+      "qid": "Nb93",
+      "local": "",
+      "wikidata": "100",
+      "text": "Nb93 bodr 100  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Mo92",
+      "qid": "Mo92",
+      "local": "",
+      "wikidata": "14.84",
+      "text": "Mo92 bodr 14.84  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Mo94",
+      "qid": "Mo94",
+      "local": "",
+      "wikidata": "9.25",
+      "text": "Mo94 bodr 9.25  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Mo95",
+      "qid": "Mo95",
+      "local": "",
+      "wikidata": "15.92",
+      "text": "Mo95 bodr 15.92  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Mo96",
+      "qid": "Mo96",
+      "local": "",
+      "wikidata": "16.68",
+      "text": "Mo96 bodr 16.68  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Mo97",
+      "qid": "Mo97",
+      "local": "",
+      "wikidata": "9.55",
+      "text": "Mo97 bodr 9.55  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Mo98",
+      "qid": "Mo98",
+      "local": "",
+      "wikidata": "24.13",
+      "text": "Mo98 bodr 24.13  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Mo100",
+      "qid": "Mo100",
+      "local": "",
+      "wikidata": "9.63",
+      "text": "Mo100 bodr 9.63  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Ru96",
+      "qid": "Ru96",
+      "local": "",
+      "wikidata": "5.54",
+      "text": "Ru96 bodr 5.54  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Ru98",
+      "qid": "Ru98",
+      "local": "",
+      "wikidata": "1.87",
+      "text": "Ru98 bodr 1.87  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Ru99",
+      "qid": "Ru99",
+      "local": "",
+      "wikidata": "12.76",
+      "text": "Ru99 bodr 12.76  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Ru100",
+      "qid": "Ru100",
+      "local": "",
+      "wikidata": "12.60",
+      "text": "Ru100 bodr 12.60  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Ru101",
+      "qid": "Ru101",
+      "local": "",
+      "wikidata": "17.06",
+      "text": "Ru101 bodr 17.06  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Ru102",
+      "qid": "Ru102",
+      "local": "",
+      "wikidata": "31.55",
+      "text": "Ru102 bodr 31.55  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Ru104",
+      "qid": "Ru104",
+      "local": "",
+      "wikidata": "18.62",
+      "text": "Ru104 bodr 18.62  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Rh103",
+      "qid": "Rh103",
+      "local": "",
+      "wikidata": "100",
+      "text": "Rh103 bodr 100  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Pd102",
+      "qid": "Pd102",
+      "local": "",
+      "wikidata": "1.02",
+      "text": "Pd102 bodr 1.02  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Pd104",
+      "qid": "Pd104",
+      "local": "",
+      "wikidata": "11.14",
+      "text": "Pd104 bodr 11.14  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Pd105",
+      "qid": "Pd105",
+      "local": "",
+      "wikidata": "22.33",
+      "text": "Pd105 bodr 22.33  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Pd106",
+      "qid": "Pd106",
+      "local": "",
+      "wikidata": "27.33",
+      "text": "Pd106 bodr 27.33  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Pd108",
+      "qid": "Pd108",
+      "local": "",
+      "wikidata": "26.46",
+      "text": "Pd108 bodr 26.46  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Pd110",
+      "qid": "Pd110",
+      "local": "",
+      "wikidata": "11.72",
+      "text": "Pd110 bodr 11.72  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Ag107",
+      "qid": "Ag107",
+      "local": "",
+      "wikidata": "51.839",
+      "text": "Ag107 bodr 51.839  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Ag109",
+      "qid": "Ag109",
+      "local": "",
+      "wikidata": "48.161",
+      "text": "Ag109 bodr 48.161  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Cd106",
+      "qid": "Cd106",
+      "local": "",
+      "wikidata": "1.25",
+      "text": "Cd106 bodr 1.25  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Cd108",
+      "qid": "Cd108",
+      "local": "",
+      "wikidata": "0.89",
+      "text": "Cd108 bodr 0.89  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Cd110",
+      "qid": "Cd110",
+      "local": "",
+      "wikidata": "12.49",
+      "text": "Cd110 bodr 12.49  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Cd111",
+      "qid": "Cd111",
+      "local": "",
+      "wikidata": "12.80",
+      "text": "Cd111 bodr 12.80  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Cd112",
+      "qid": "Cd112",
+      "local": "",
+      "wikidata": "24.13",
+      "text": "Cd112 bodr 24.13  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Cd113",
+      "qid": "Cd113",
+      "local": "",
+      "wikidata": "12.22",
+      "text": "Cd113 bodr 12.22  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Cd114",
+      "qid": "Cd114",
+      "local": "",
+      "wikidata": "28.73",
+      "text": "Cd114 bodr 28.73  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Cd116",
+      "qid": "Cd116",
+      "local": "",
+      "wikidata": "7.49",
+      "text": "Cd116 bodr 7.49  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "In113",
+      "qid": "In113",
+      "local": "",
+      "wikidata": "4.29",
+      "text": "In113 bodr 4.29  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "In115",
+      "qid": "In115",
+      "local": "",
+      "wikidata": "95.71",
+      "text": "In115 bodr 95.71  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Sn112",
+      "qid": "Sn112",
+      "local": "",
+      "wikidata": "0.97",
+      "text": "Sn112 bodr 0.97  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Sn114",
+      "qid": "Sn114",
+      "local": "",
+      "wikidata": "0.66",
+      "text": "Sn114 bodr 0.66  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Sn115",
+      "qid": "Sn115",
+      "local": "",
+      "wikidata": "0.34",
+      "text": "Sn115 bodr 0.34  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Sn116",
+      "qid": "Sn116",
+      "local": "",
+      "wikidata": "14.54",
+      "text": "Sn116 bodr 14.54  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Sn117",
+      "qid": "Sn117",
+      "local": "",
+      "wikidata": "7.68",
+      "text": "Sn117 bodr 7.68  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Sn118",
+      "qid": "Sn118",
+      "local": "",
+      "wikidata": "24.22",
+      "text": "Sn118 bodr 24.22  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Sn119",
+      "qid": "Sn119",
+      "local": "",
+      "wikidata": "8.59",
+      "text": "Sn119 bodr 8.59  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Sn120",
+      "qid": "Sn120",
+      "local": "",
+      "wikidata": "32.58",
+      "text": "Sn120 bodr 32.58  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Sn122",
+      "qid": "Sn122",
+      "local": "",
+      "wikidata": "4.63",
+      "text": "Sn122 bodr 4.63  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Sn124",
+      "qid": "Sn124",
+      "local": "",
+      "wikidata": "5.79",
+      "text": "Sn124 bodr 5.79  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Sb121",
+      "qid": "Sb121",
+      "local": "",
+      "wikidata": "57.21",
+      "text": "Sb121 bodr 57.21  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Sb123",
+      "qid": "Sb123",
+      "local": "",
+      "wikidata": "42.79",
+      "text": "Sb123 bodr 42.79  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Te120",
+      "qid": "Te120",
+      "local": "",
+      "wikidata": "0.09",
+      "text": "Te120 bodr 0.09  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Te122",
+      "qid": "Te122",
+      "local": "",
+      "wikidata": "2.55",
+      "text": "Te122 bodr 2.55  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Te123",
+      "qid": "Te123",
+      "local": "",
+      "wikidata": "0.89",
+      "text": "Te123 bodr 0.89  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Te124",
+      "qid": "Te124",
+      "local": "",
+      "wikidata": "4.74",
+      "text": "Te124 bodr 4.74  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Te125",
+      "qid": "Te125",
+      "local": "",
+      "wikidata": "7.07",
+      "text": "Te125 bodr 7.07  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Te126",
+      "qid": "Te126",
+      "local": "",
+      "wikidata": "18.84",
+      "text": "Te126 bodr 18.84  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Te128",
+      "qid": "Te128",
+      "local": "",
+      "wikidata": "31.74",
+      "text": "Te128 bodr 31.74  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Te130",
+      "qid": "Te130",
+      "local": "",
+      "wikidata": "34.08",
+      "text": "Te130 bodr 34.08  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "I127",
+      "qid": "I127",
+      "local": "",
+      "wikidata": "100",
+      "text": "I127 bodr 100  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Xe124",
+      "qid": "Xe124",
+      "local": "",
+      "wikidata": "0.09",
+      "text": "Xe124 bodr 0.09  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Xe126",
+      "qid": "Xe126",
+      "local": "",
+      "wikidata": "0.09",
+      "text": "Xe126 bodr 0.09  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Xe128",
+      "qid": "Xe128",
+      "local": "",
+      "wikidata": "1.92",
+      "text": "Xe128 bodr 1.92  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Xe129",
+      "qid": "Xe129",
+      "local": "",
+      "wikidata": "26.44",
+      "text": "Xe129 bodr 26.44  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Xe130",
+      "qid": "Xe130",
+      "local": "",
+      "wikidata": "4.08",
+      "text": "Xe130 bodr 4.08  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Xe131",
+      "qid": "Xe131",
+      "local": "",
+      "wikidata": "21.18",
+      "text": "Xe131 bodr 21.18  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Xe132",
+      "qid": "Xe132",
+      "local": "",
+      "wikidata": "26.89",
+      "text": "Xe132 bodr 26.89  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Xe134",
+      "qid": "Xe134",
+      "local": "",
+      "wikidata": "10.44",
+      "text": "Xe134 bodr 10.44  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Xe136",
+      "qid": "Xe136",
+      "local": "",
+      "wikidata": "8.87",
+      "text": "Xe136 bodr 8.87  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Cs133",
+      "qid": "Cs133",
+      "local": "",
+      "wikidata": "100",
+      "text": "Cs133 bodr 100  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Ba130",
+      "qid": "Ba130",
+      "local": "",
+      "wikidata": "0.106",
+      "text": "Ba130 bodr 0.106  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Ba132",
+      "qid": "Ba132",
+      "local": "",
+      "wikidata": "0.101",
+      "text": "Ba132 bodr 0.101  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Ba134",
+      "qid": "Ba134",
+      "local": "",
+      "wikidata": "2.417",
+      "text": "Ba134 bodr 2.417  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Ba135",
+      "qid": "Ba135",
+      "local": "",
+      "wikidata": "6.592",
+      "text": "Ba135 bodr 6.592  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Ba136",
+      "qid": "Ba136",
+      "local": "",
+      "wikidata": "7.854",
+      "text": "Ba136 bodr 7.854  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Ba137",
+      "qid": "Ba137",
+      "local": "",
+      "wikidata": "11.232",
+      "text": "Ba137 bodr 11.232  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Ba138",
+      "qid": "Ba138",
+      "local": "",
+      "wikidata": "71.698",
+      "text": "Ba138 bodr 71.698  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "La138",
+      "qid": "La138",
+      "local": "",
+      "wikidata": "0.090",
+      "text": "La138 bodr 0.090  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "La139",
+      "qid": "La139",
+      "local": "",
+      "wikidata": "99.910",
+      "text": "La139 bodr 99.910  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Ce136",
+      "qid": "Ce136",
+      "local": "",
+      "wikidata": "0.185",
+      "text": "Ce136 bodr 0.185  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Ce138",
+      "qid": "Ce138",
+      "local": "",
+      "wikidata": "0.251",
+      "text": "Ce138 bodr 0.251  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Ce140",
+      "qid": "Ce140",
+      "local": "",
+      "wikidata": "88.450",
+      "text": "Ce140 bodr 88.450  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Ce142",
+      "qid": "Ce142",
+      "local": "",
+      "wikidata": "11.114",
+      "text": "Ce142 bodr 11.114  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Pr141",
+      "qid": "Pr141",
+      "local": "",
+      "wikidata": "100",
+      "text": "Pr141 bodr 100  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Nd142",
+      "qid": "Nd142",
+      "local": "",
+      "wikidata": "27.2",
+      "text": "Nd142 bodr 27.2  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Nd143",
+      "qid": "Nd143",
+      "local": "",
+      "wikidata": "12.2",
+      "text": "Nd143 bodr 12.2  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Nd144",
+      "qid": "Nd144",
+      "local": "",
+      "wikidata": "23.8",
+      "text": "Nd144 bodr 23.8  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Nd145",
+      "qid": "Nd145",
+      "local": "",
+      "wikidata": "8.3",
+      "text": "Nd145 bodr 8.3  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Nd146",
+      "qid": "Nd146",
+      "local": "",
+      "wikidata": "17.2",
+      "text": "Nd146 bodr 17.2  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Nd148",
+      "qid": "Nd148",
+      "local": "",
+      "wikidata": "5.7",
+      "text": "Nd148 bodr 5.7  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Nd150",
+      "qid": "Nd150",
+      "local": "",
+      "wikidata": "5.6",
+      "text": "Nd150 bodr 5.6  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Sm144",
+      "qid": "Sm144",
+      "local": "",
+      "wikidata": "3.07",
+      "text": "Sm144 bodr 3.07  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Sm147",
+      "qid": "Sm147",
+      "local": "",
+      "wikidata": "14.99",
+      "text": "Sm147 bodr 14.99  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Sm148",
+      "qid": "Sm148",
+      "local": "",
+      "wikidata": "11.24",
+      "text": "Sm148 bodr 11.24  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Sm149",
+      "qid": "Sm149",
+      "local": "",
+      "wikidata": "13.82",
+      "text": "Sm149 bodr 13.82  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Sm150",
+      "qid": "Sm150",
+      "local": "",
+      "wikidata": "7.38",
+      "text": "Sm150 bodr 7.38  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Sm152",
+      "qid": "Sm152",
+      "local": "",
+      "wikidata": "26.75",
+      "text": "Sm152 bodr 26.75  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Sm154",
+      "qid": "Sm154",
+      "local": "",
+      "wikidata": "22.75",
+      "text": "Sm154 bodr 22.75  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Eu151",
+      "qid": "Eu151",
+      "local": "",
+      "wikidata": "47.81",
+      "text": "Eu151 bodr 47.81  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Eu153",
+      "qid": "Eu153",
+      "local": "",
+      "wikidata": "52.19",
+      "text": "Eu153 bodr 52.19  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Gd152",
+      "qid": "Gd152",
+      "local": "",
+      "wikidata": "0.20",
+      "text": "Gd152 bodr 0.20  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Gd154",
+      "qid": "Gd154",
+      "local": "",
+      "wikidata": "2.18",
+      "text": "Gd154 bodr 2.18  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Gd155",
+      "qid": "Gd155",
+      "local": "",
+      "wikidata": "14.80",
+      "text": "Gd155 bodr 14.80  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Gd156",
+      "qid": "Gd156",
+      "local": "",
+      "wikidata": "20.47",
+      "text": "Gd156 bodr 20.47  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Gd157",
+      "qid": "Gd157",
+      "local": "",
+      "wikidata": "15.65",
+      "text": "Gd157 bodr 15.65  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Gd158",
+      "qid": "Gd158",
+      "local": "",
+      "wikidata": "24.84",
+      "text": "Gd158 bodr 24.84  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Gd160",
+      "qid": "Gd160",
+      "local": "",
+      "wikidata": "21.86",
+      "text": "Gd160 bodr 21.86  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Tb159",
+      "qid": "Tb159",
+      "local": "",
+      "wikidata": "100",
+      "text": "Tb159 bodr 100  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Ho165",
+      "qid": "Ho165",
+      "local": "",
+      "wikidata": "100",
+      "text": "Ho165 bodr 100  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Er162",
+      "qid": "Er162",
+      "local": "",
+      "wikidata": "0.14",
+      "text": "Er162 bodr 0.14  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Er164",
+      "qid": "Er164",
+      "local": "",
+      "wikidata": "1.61",
+      "text": "Er164 bodr 1.61  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Er166",
+      "qid": "Er166",
+      "local": "",
+      "wikidata": "33.61",
+      "text": "Er166 bodr 33.61  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Er167",
+      "qid": "Er167",
+      "local": "",
+      "wikidata": "22.93",
+      "text": "Er167 bodr 22.93  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Er168",
+      "qid": "Er168",
+      "local": "",
+      "wikidata": "26.78",
+      "text": "Er168 bodr 26.78  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Er170",
+      "qid": "Er170",
+      "local": "",
+      "wikidata": "14.93",
+      "text": "Er170 bodr 14.93  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Tm169",
+      "qid": "Tm169",
+      "local": "",
+      "wikidata": "100",
+      "text": "Tm169 bodr 100  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Yb168",
+      "qid": "Yb168",
+      "local": "",
+      "wikidata": "0.13",
+      "text": "Yb168 bodr 0.13  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Yb170",
+      "qid": "Yb170",
+      "local": "",
+      "wikidata": "3.04",
+      "text": "Yb170 bodr 3.04  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Yb171",
+      "qid": "Yb171",
+      "local": "",
+      "wikidata": "14.28",
+      "text": "Yb171 bodr 14.28  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Yb172",
+      "qid": "Yb172",
+      "local": "",
+      "wikidata": "21.83",
+      "text": "Yb172 bodr 21.83  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Yb173",
+      "qid": "Yb173",
+      "local": "",
+      "wikidata": "16.13",
+      "text": "Yb173 bodr 16.13  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Yb174",
+      "qid": "Yb174",
+      "local": "",
+      "wikidata": "31.83",
+      "text": "Yb174 bodr 31.83  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Yb176",
+      "qid": "Yb176",
+      "local": "",
+      "wikidata": "12.76",
+      "text": "Yb176 bodr 12.76  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Lu175",
+      "qid": "Lu175",
+      "local": "",
+      "wikidata": "97.41",
+      "text": "Lu175 bodr 97.41  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Lu176",
+      "qid": "Lu176",
+      "local": "",
+      "wikidata": "2.59",
+      "text": "Lu176 bodr 2.59  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Hf174",
+      "qid": "Hf174",
+      "local": "",
+      "wikidata": "0.16",
+      "text": "Hf174 bodr 0.16  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Hf176",
+      "qid": "Hf176",
+      "local": "",
+      "wikidata": "5.26",
+      "text": "Hf176 bodr 5.26  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Hf177",
+      "qid": "Hf177",
+      "local": "",
+      "wikidata": "18.60",
+      "text": "Hf177 bodr 18.60  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Hf178",
+      "qid": "Hf178",
+      "local": "",
+      "wikidata": "27.28",
+      "text": "Hf178 bodr 27.28  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Hf179",
+      "qid": "Hf179",
+      "local": "",
+      "wikidata": "13.62",
+      "text": "Hf179 bodr 13.62  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Hf180",
+      "qid": "Hf180",
+      "local": "",
+      "wikidata": "35.08",
+      "text": "Hf180 bodr 35.08  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Ta180",
+      "qid": "Ta180",
+      "local": "",
+      "wikidata": "0.012",
+      "text": "Ta180 bodr 0.012  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Ta181",
+      "qid": "Ta181",
+      "local": "",
+      "wikidata": "99.988",
+      "text": "Ta181 bodr 99.988  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "W180",
+      "qid": "W180",
+      "local": "",
+      "wikidata": "0.12",
+      "text": "W180 bodr 0.12  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "W182",
+      "qid": "W182",
+      "local": "",
+      "wikidata": "26.50",
+      "text": "W182 bodr 26.50  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "W183",
+      "qid": "W183",
+      "local": "",
+      "wikidata": "14.31",
+      "text": "W183 bodr 14.31  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "W184",
+      "qid": "W184",
+      "local": "",
+      "wikidata": "30.64",
+      "text": "W184 bodr 30.64  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "W186",
+      "qid": "W186",
+      "local": "",
+      "wikidata": "28.43",
+      "text": "W186 bodr 28.43  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Re185",
+      "qid": "Re185",
+      "local": "",
+      "wikidata": "37.40",
+      "text": "Re185 bodr 37.40  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Re187",
+      "qid": "Re187",
+      "local": "",
+      "wikidata": "62.60",
+      "text": "Re187 bodr 62.60  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Os184",
+      "qid": "Os184",
+      "local": "",
+      "wikidata": "0.02",
+      "text": "Os184 bodr 0.02  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Os186",
+      "qid": "Os186",
+      "local": "",
+      "wikidata": "1.59",
+      "text": "Os186 bodr 1.59  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Os187",
+      "qid": "Os187",
+      "local": "",
+      "wikidata": "1.96",
+      "text": "Os187 bodr 1.96  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Os188",
+      "qid": "Os188",
+      "local": "",
+      "wikidata": "13.24",
+      "text": "Os188 bodr 13.24  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Os189",
+      "qid": "Os189",
+      "local": "",
+      "wikidata": "16.15",
+      "text": "Os189 bodr 16.15  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Os190",
+      "qid": "Os190",
+      "local": "",
+      "wikidata": "26.26",
+      "text": "Os190 bodr 26.26  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Os192",
+      "qid": "Os192",
+      "local": "",
+      "wikidata": "40.78",
+      "text": "Os192 bodr 40.78  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Ir191",
+      "qid": "Ir191",
+      "local": "",
+      "wikidata": "37.3",
+      "text": "Ir191 bodr 37.3  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Ir193",
+      "qid": "Ir193",
+      "local": "",
+      "wikidata": "62.7",
+      "text": "Ir193 bodr 62.7  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Pt190",
+      "qid": "Pt190",
+      "local": "",
+      "wikidata": "0.014",
+      "text": "Pt190 bodr 0.014  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Pt192",
+      "qid": "Pt192",
+      "local": "",
+      "wikidata": "0.782",
+      "text": "Pt192 bodr 0.782  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Pt194",
+      "qid": "Pt194",
+      "local": "",
+      "wikidata": "32.967",
+      "text": "Pt194 bodr 32.967  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Pt195",
+      "qid": "Pt195",
+      "local": "",
+      "wikidata": "33.832",
+      "text": "Pt195 bodr 33.832  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Pt196",
+      "qid": "Pt196",
+      "local": "",
+      "wikidata": "25.242",
+      "text": "Pt196 bodr 25.242  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Pt198",
+      "qid": "Pt198",
+      "local": "",
+      "wikidata": "7.163",
+      "text": "Pt198 bodr 7.163  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Au197",
+      "qid": "Au197",
+      "local": "",
+      "wikidata": "100",
+      "text": "Au197 bodr 100  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Hg196",
+      "qid": "Hg196",
+      "local": "",
+      "wikidata": "0.15",
+      "text": "Hg196 bodr 0.15  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Hg198",
+      "qid": "Hg198",
+      "local": "",
+      "wikidata": "9.97",
+      "text": "Hg198 bodr 9.97  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Hg199",
+      "qid": "Hg199",
+      "local": "",
+      "wikidata": "16.87",
+      "text": "Hg199 bodr 16.87  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Hg200",
+      "qid": "Hg200",
+      "local": "",
+      "wikidata": "23.10",
+      "text": "Hg200 bodr 23.10  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Hg201",
+      "qid": "Hg201",
+      "local": "",
+      "wikidata": "13.18",
+      "text": "Hg201 bodr 13.18  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Hg202",
+      "qid": "Hg202",
+      "local": "",
+      "wikidata": "29.86",
+      "text": "Hg202 bodr 29.86  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Hg204",
+      "qid": "Hg204",
+      "local": "",
+      "wikidata": "6.87",
+      "text": "Hg204 bodr 6.87  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Tl203",
+      "qid": "Tl203",
+      "local": "",
+      "wikidata": "29.524",
+      "text": "Tl203 bodr 29.524  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Tl205",
+      "qid": "Tl205",
+      "local": "",
+      "wikidata": "70.476",
+      "text": "Tl205 bodr 70.476  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Pb204",
+      "qid": "Pb204",
+      "local": "",
+      "wikidata": "1.4",
+      "text": "Pb204 bodr 1.4  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Pb206",
+      "qid": "Pb206",
+      "local": "",
+      "wikidata": "24.1",
+      "text": "Pb206 bodr 24.1  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Pb207",
+      "qid": "Pb207",
+      "local": "",
+      "wikidata": "22.1",
+      "text": "Pb207 bodr 22.1  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Pb208",
+      "qid": "Pb208",
+      "local": "",
+      "wikidata": "52.4",
+      "text": "Pb208 bodr 52.4  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Bi209",
+      "qid": "Bi209",
+      "local": "",
+      "wikidata": "100",
+      "text": "Bi209 bodr 100  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Th232",
+      "qid": "Th232",
+      "local": "",
+      "wikidata": "100",
+      "text": "Th232 bodr 100  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "Pa231",
+      "qid": "Pa231",
+      "local": "",
+      "wikidata": "100",
+      "text": "Pa231 bodr 100  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "U234",
+      "qid": "U234",
+      "local": "",
+      "wikidata": "0.0055",
+      "text": "U234 bodr 0.0055  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "U235",
+      "qid": "U235",
+      "local": "",
+      "wikidata": "0.7200",
+      "text": "U235 bodr 0.7200  not in local data"
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "U238",
+      "qid": "U238",
+      "local": "",
+      "wikidata": "99.2745",
+      "text": "U238 bodr 99.2745  not in local data"
+    }
+  ]
+}

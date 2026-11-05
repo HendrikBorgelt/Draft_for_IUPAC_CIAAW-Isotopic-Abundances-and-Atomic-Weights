@@ -265,6 +265,7 @@ class Resource:
     command: str        # make target that writes the JSON
     description: str
     item_url: str = ""  # prefix of the identifiers in the "Item" column; without it they are not linked
+    doi: str = ""       # article to cite for the resource, formatted from references.json
 
 
 RESOURCES = [
@@ -273,6 +274,13 @@ RESOURCES = [
              "Isotopic abundances in this data compared with the natural abundance (P2374) of the isotopes in "
              "[Wikidata](https://www.wikidata.org), matched on atomic number and number of neutrons. Values are in "
              "percent. The comparison is made by `check_wikidata.py`.", WIKIDATA_ENTITY),
+    Resource("bodr-comparison", "BODR", "https://github.com/egonw/bodr", SITE_SRC / "bodr-comparison.json",
+             "bodr-comparison",
+             "Isotopic abundances in this data compared with the relative abundances in the isotopes file of the "
+             "[Blue Obelisk Data Repository](https://github.com/egonw/bodr) (BODR), matched on atomic number and mass "
+             "number. Values are in percent. BODR gives no uncertainty: a local value must equal the BODR value, and "
+             "for a local interval the BODR value must fall within it. The comparison is made by `check_bodr.py`.",
+             doi="10.1186/1758-2946-3-37"),
 ]
 
 SUBNAV["comparison"] = [("comparison", "Overview"), *((r.key, r.name) for r in RESOURCES)]
@@ -283,7 +291,7 @@ COMPARISON_KINDS = [
     ("NO-VALUE", "No value", "The isotope is in {name}, but without a natural abundance."),
     ("NOT-FOUND", "Not found", "{name} has no item for this isotope."),
     ("UNIT", "Unexpected unit", "The abundance in {name} is not a percentage or a plain number."),
-    ("ONLY-WIKIDATA", "Only in the resource", "{name} has an abundance, the local data has no such isotope."),
+    ("ONLY-RESOURCE", "Only in the resource", "{name} has an abundance, the local data has no such isotope."),
 ]
 
 
@@ -319,13 +327,18 @@ def page_comparison(resources: list[Resource]) -> str:
 def page_resource_comparison(resource: Resource) -> str:
     """The differences between the local abundances and one resource, from the JSON of its script."""
     intro = f"# Comparison with {resource.name}\n\n{resource.description}\n"
+    if resource.doi:
+        cited = read_references(REFERENCES_JSON).get(resource.doi.upper(), resource.doi)
+        intro += (f'\n<div class="csl-bib-body">\n<div class="csl-entry">{cited} '
+                  f'<a href="https://doi.org/{resource.doi}">CrossRef</a></div>\n</div>\n')
     result = read_comparison(resource)
     if result is None:
         return intro + f"\n> The comparison has not been generated yet. Run `make {resource.command}`.\n"
     counts = result["counts"]
     parts = [intro,
              f"Compared on {result['generated']}: {result['local_isotopes']} isotopes in `{result['source']}`, "
-             f"{result.get('resource_items', result.get('wikidata_items'))} items in {resource.name}. Only a sample of the elements is on this site, "
+             f"{result.get('resource_items', result.get('wikidata_items'))} items in {resource.name}"
+             f"{' (' + result['resource_version'] + ')' if result.get('resource_version') else ''}. Only a sample of the elements is on this site, "
              "so many isotopes are only in the resource.\n",
              "| Result | Count |", "| --- | --- |",
              *(f"| {title} | {counts.get(kind, 0)} |" for kind, title, _ in COMPARISON_KINDS)]

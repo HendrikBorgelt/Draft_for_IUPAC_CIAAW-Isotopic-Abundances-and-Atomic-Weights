@@ -2,7 +2,9 @@
 // site/references.json (DOI -> HTML). build_site.py uses it for the Bibliography on the element pages.
 // Only DOIs not yet in the cache are looked up. Same approach as updateReferences.js in the blog.
 //
-//   node update_references.js example-output.ttl example-output-next.ttl
+//   node update_references.js example-output.ttl example-output-next.ttl 10.1186/1758-2946-3-37
+//
+// An argument that starts with "10." is a DOI to format, any other argument is a Turtle file to scan.
 //
 // DOIs are found in the Turtle as dcterms:source <https://doi.org/10.xxxx/yyyy>.
 
@@ -18,6 +20,10 @@ const cache = fs.existsSync(cacheFile) ? JSON.parse(fs.readFileSync(cacheFile, '
 // DOIs start with "10."; as in the blog, the cache is keyed on the upper-case DOI
 const dois = new Set()
 for (const file of process.argv.slice(2)) {
+  if (file.startsWith('10.')) {
+    dois.add(file.toUpperCase())
+    continue
+  }
   for (const match of fs.readFileSync(file, 'utf8').matchAll(/doi\.org\/(10\.[^>\s"]+)/g)) {
     dois.add(match[1].toUpperCase())
   }

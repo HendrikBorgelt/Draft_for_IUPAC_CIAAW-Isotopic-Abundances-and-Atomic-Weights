@@ -205,7 +205,7 @@ def compare(local: list[dict], wikidata: dict[str, dict]):
             yield row("UNIT", entry["name"], f"{where} abundance has unexpected unit {unit}", where, show(entry), unit)
     for item in wikidata.values():
         if item["values"] and item["qid"] not in matched:
-            yield row("ONLY-WIKIDATA", item["label"], f"{item['qid']} wikidata {show_wd(item['values'][0])}  not in local data",
+            yield row("ONLY-RESOURCE", item["label"], f"{item['qid']} wikidata {show_wd(item['values'][0])}  not in local data",
                       item["qid"], "", show_wd(item["values"][0]))
 
 

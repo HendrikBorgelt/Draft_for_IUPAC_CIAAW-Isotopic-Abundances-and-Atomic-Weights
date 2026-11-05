@@ -39,6 +39,7 @@ We want to develop this together with the Commission. Decisions about the conten
 | `sparql/queries/` | Example SPARQL queries, shown on the site |
 | `update_references.js`, `site/references.json` | The formatted sources for the Bibliography |
 | `check_wikidata.py`, `site/wikidata-comparison.json` | The comparison with Wikidata, shown in the Comparison section of the site |
+| `check_bodr.py`, `site/bodr-comparison.json` | The comparison with BODR, shown in the Comparison section |
 | `wikidata_links.py`, `site/wikidata.csv` | The Wikidata items linked from the element pages |
 | `test_*.py`, `fixtures/` | Tests and their small hand-built input tables |
 | `example-output*.ttl` | Example results |
@@ -116,7 +117,7 @@ to STDOUT, a summary to STDERR:
 DIFFERENT     hydrogen-2      local [0.001, 0.028]  Q2 wikidata 0.0115
 NO-VALUE      helium-3        local 0.0002~0.0002  Q3 has no abundance
 NOT-FOUND     argon-36        local ...  no Wikidata item
-ONLY-WIKIDATA ...             Wikidata has an abundance, the local data has not
+ONLY-RESOURCE ...             Wikidata has an abundance, the local data has not
 ```
 
 Call `python3 check_wikidata.py --help` for `--strict` (exit 1 on differences) and
@@ -126,6 +127,15 @@ Call `python3 check_wikidata.py --help` for `--strict` (exit 1 on differences) a
 `make wikidata-comparison` writes that JSON for the site data to `site/wikidata-comparison.json`. It
 is committed, so the build and the tests work offline, and `make serve` shows it on the
 "Comparison" section of the site. Refresh it with `make wikidata-comparison`.
+
+## Comparing with BODR
+
+`make bodr-comparison` compares the abundances with the [Blue Obelisk Data Repository](https://github.com/egonw/bodr)
+([doi:10.1186/1758-2946-3-37](https://doi.org/10.1186/1758-2946-3-37)), using `isotopes.xml` of the Debian
+package `bodr` (`sudo apt install bodr`, or give the file with `--bodr`). BODR gives no uncertainty, so a
+local value must equal the BODR value, and for a local interval the BODR value must fall within it. The result
+is written to STDOUT in the same format as for Wikidata, and the JSON to `site/bodr-comparison.json` for the
+Comparison section of the site. `check_bodr.py` has `--strict` and `--json` as well.
 
 ## Tests
 
@@ -137,6 +147,7 @@ make test
 |---|---|
 | `test_ciaaw2ttl.py` | Reading the tables, number handling, the deprecation chain |
 | `test_model.py` | The DCTAP, and that each SHACL rule rejects data broken on purpose |
+| `test_check_bodr.py` | The comparison with BODR, on a small isotopes file |
 | `test_site.py` | The pages, the watermark, links, and that every RDF format holds the same triples |
 | `test_sparql.py` | The example queries on Oxigraph, the SPARQL page and the deployment setup |
 
