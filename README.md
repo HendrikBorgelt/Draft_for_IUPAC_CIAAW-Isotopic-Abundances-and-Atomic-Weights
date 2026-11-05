@@ -23,7 +23,8 @@ declaration and its history.
 ## Creating the Turtle
 
 1. **Install the dependencies** (Python 3.9+): `make install`
-2. **Save the two CIAAW pages** into `data/`, as they are:
+2. **Download the two CIAAW pages** with `make download`, which saves them into `data/` as they
+   are (or save them yourself from the browser):
    - <https://ciaaw.org/atomic-weights.htm> → `data/atomic-weights.htm`
    - <https://ciaaw.org/isotopic-abundances.htm> → `data/isotopic-abundances.htm`
 3. **Check `supplement.csv`** (`subject,role,year,doi,chebi`). Roles are `standard`,

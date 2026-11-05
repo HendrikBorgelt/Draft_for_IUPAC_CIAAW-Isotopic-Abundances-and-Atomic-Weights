@@ -17,10 +17,14 @@ PREVIOUS    ?=
 TTL         ?= $(BUILD_DIR)/ciaaw.ttl
 QS          ?= $(BUILD_DIR)/quickstatements.csv
 
-.PHONY: help install ttl quickstatements test clean
+WEIGHTS_URL    ?= https://ciaaw.org/atomic-weights.htm
+ABUNDANCES_URL ?= https://ciaaw.org/isotopic-abundances.htm
+
+.PHONY: help install download ttl quickstatements test clean
 
 help:
 	@echo "make install         install the Python dependencies"
+	@echo "make download        download the CIAAW pages into $(DATA_DIR)"
 	@echo "make ttl             create $(TTL) from the saved CIAAW pages"
 	@echo "make quickstatements create $(QS) from the Turtle"
 	@echo "make test            run the unit tests"
@@ -28,6 +32,11 @@ help:
 
 install:
 	$(PYTHON) -m pip install -r requirements.txt
+
+download:
+	@mkdir -p $(DATA_DIR)
+	curl -fsSL -o $(WEIGHTS) $(WEIGHTS_URL)
+	curl -fsSL -o $(ABUNDANCES) $(ABUNDANCES_URL)
 
 ttl: $(TTL)
 
