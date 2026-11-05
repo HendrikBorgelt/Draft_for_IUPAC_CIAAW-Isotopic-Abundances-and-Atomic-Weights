@@ -25,6 +25,20 @@ jobs:
           cache-dependency-path: requirements.txt
       - run: make install PYTHON=python
       - run: make test PYTHON=python
+      # The sparql-examples-utils jar is downloaded once per version and cached.
+      - id: sparql-examples-utils
+        run: echo "version=$(make -s print-sparql-examples-version)" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@v6
+        with:
+          path: build/sparql-examples-utils-${{ steps.sparql-examples-utils.outputs.version }}-uber.jar
+          key: sparql-examples-utils-${{ steps.sparql-examples-utils.outputs.version }}
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: "25"
+      - run: make sparql-examples
+      - name: The committed sparql-examples Turtle matches the queries
+        run: git diff --exit-code -- sparql/examples
       - run: make site PYTHON=python
         env:
           SPARQL_ENDPOINT: ${{ vars.SPARQL_ENDPOINT }}

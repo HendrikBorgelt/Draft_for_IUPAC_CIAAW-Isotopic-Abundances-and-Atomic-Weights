@@ -1,0 +1,20 @@
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix ex: <https://hendrikborgelt.github.io/Draft_for_IUPAC_CIAAW-Isotopic-Abundances-and-Atomic-Weights/sparql/queries/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix schema: <https://schema.org/> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix spex: <https://purl.expasy.org/sparql-examples/ontology#> .
+
+ex:5_05-provenance a sh:SPARQLExecutable, sh:SPARQLSelectExecutable;
+  rdfs:comment """ Declarations and their sources
+ Every declaration that cites a report, with the year when it is known.""";
+  rdfs:label "Declarations and their sources";
+  sh:prefixes _:sparql_examples_prefixes;
+  sh:select """PREFIX dcterms: <http://purl.org/dc/terms/>
+SELECT ?declaration ?year ?source WHERE {
+  ?declaration dcterms:source ?source .
+  OPTIONAL { ?declaration dcterms:issued ?year }
+}
+ORDER BY ?declaration""";
+  schema:keywords "declarations", "provenance" .

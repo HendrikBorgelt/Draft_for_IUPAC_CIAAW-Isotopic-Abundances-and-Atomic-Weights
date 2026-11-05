@@ -36,7 +36,8 @@ We want to develop this together with the Commission. Decisions about the conten
 | `tap2model.py` | DCTAP → SHACL shapes and UML diagrams |
 | `model/` | The data model, see [below](#the-data-model) |
 | `build_site.py`, `site/` | Static site for GitHub Pages |
-| `sparql/queries/` | Example SPARQL queries, shown on the site |
+| `sparql/queries/` | Example SPARQL queries, shown on the SPARQL tab and published as `.rq` files |
+| `sparql/examples/` | The same queries as sparql-examples Turtle, made by `make sparql-examples` |
 | `update_references.js`, `site/references.json` | The formatted sources for the Bibliography |
 | `check_wikidata.py`, `site/wikidata-comparison.json` | The comparison with Wikidata, shown in the Comparison section of the site |
 | `wikidata_links.py`, `site/wikidata.csv` | The Wikidata items linked from the element pages |
@@ -166,8 +167,12 @@ without publishing it.
 
 **Status: not deployed yet.** It needs a Cloudflare account. See
 [issue 1](https://github.com/HendrikBorgelt/Draft_for_IUPAC_CIAAW-Isotopic-Abundances-and-Atomic-Weights/issues/1).
-Until then, the SPARQL page on the site shows the example queries with results computed with
-Oxigraph, the same engine.
+Until then, the SPARQL tab on the site shows the example queries with results computed with
+Oxigraph, the same engine. Each example opens in its own tab of the query editor. The queries are also published as `.rq` files.
+
+The Turtle in `sparql/examples` comes from the `.rq` files with
+[sparql-examples-utils](https://github.com/sib-swiss/sparql-examples-utils). Run `make sparql-examples`
+after changing a query. It needs the jar of that project, see `SPARQL_EXAMPLES_JAR` in the Makefile.
 
 The endpoint uses
 [oxigraph-cloudflare-webworker](https://github.com/JervenBolleman/oxigraph-cloudflare-webworker),
@@ -181,7 +186,7 @@ To run it on your own machine, without a Cloudflare account:
 make sparql-dev
 ```
 
-Then query <http://localhost:8787/sparql>. To try the query form as well, build the site with
+Then query <http://localhost:8787/sparql>. To try the query editor on the SPARQL tab as well, build the site with
 `make site SPARQL_ENDPOINT=http://localhost:8787/sparql`.
 
 To publish it:

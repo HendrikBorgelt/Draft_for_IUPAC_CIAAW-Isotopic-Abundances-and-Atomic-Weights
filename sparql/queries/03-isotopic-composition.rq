@@ -1,5 +1,9 @@
 # Isotopic composition of calcium
 # The current abundance of each isotope, with the number of significant figures printed in the table.
+#+ summary: Isotopic composition of calcium
+#+ tags:
+#+ - isotopes
+#+ - abundance
 PREFIX ciaaw: <https://example.org/ciaaw-draft#>
 PREFIX qudt: <http://qudt.org/schema/qudt/>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>

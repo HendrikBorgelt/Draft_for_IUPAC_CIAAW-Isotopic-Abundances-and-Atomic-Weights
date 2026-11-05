@@ -1,5 +1,9 @@
 # Elements with footnote g
 # Elements whose current standard atomic weight carries note g, for materials outside the limits for normal material.
+#+ summary: Elements with footnote g
+#+ tags:
+#+ - footnotes
+#+ - elements
 PREFIX chemrof: <https://w3id.org/chemrof/>
 PREFIX ciaaw: <https://example.org/ciaaw-draft#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>

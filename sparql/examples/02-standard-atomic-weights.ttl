@@ -1,0 +1,25 @@
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix ex: <https://hendrikborgelt.github.io/Draft_for_IUPAC_CIAAW-Isotopic-Abundances-and-Atomic-Weights/sparql/queries/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix schema: <https://schema.org/> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix spex: <https://purl.expasy.org/sparql-examples/ontology#> .
+
+ex:2_02-standard-atomic-weights a sh:SPARQLExecutable, sh:SPARQLSelectExecutable;
+  rdfs:comment """ Standard atomic weights
+ The current declaration of each element, which is either an interval or a value with an uncertainty. Elements without a standard atomic weight are left out.""";
+  rdfs:label "Standard atomic weights";
+  sh:prefixes _:sparql_examples_prefixes;
+  sh:select """PREFIX chemrof: <https://w3id.org/chemrof/>
+PREFIX ciaaw: <https://example.org/ciaaw-draft#>
+PREFIX qudt: <http://qudt.org/schema/qudt/>
+SELECT ?symbol ?lower ?upper ?value ?uncertainty WHERE {
+  ?element chemrof:symbol ?symbol ;
+    chemrof:atomic_number ?z ;
+    ciaaw:currentStandardAtomicWeight/ciaaw:value ?quantity .
+  OPTIONAL { ?quantity qudt:lowerBound ?lower ; qudt:upperBound ?upper }
+  OPTIONAL { ?quantity qudt:numericValue ?value ; qudt:standardUncertainty ?uncertainty }
+}
+ORDER BY ?z""";
+  schema:keywords "interval", "standard atomic weight" .
