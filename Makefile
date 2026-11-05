@@ -49,7 +49,7 @@ SPARQL_EXAMPLES_JAR  ?= $(BUILD_DIR)/sparql-examples-utils-$(SPARQL_EXAMPLES_UTI
 SPARQL_EXAMPLES_URL  ?= https://github.com/sib-swiss/sparql-examples-utils/releases/download/v$(SPARQL_EXAMPLES_UTILS_VERSION)/sparql-examples-utils-$(SPARQL_EXAMPLES_UTILS_VERSION)-uber.jar
 SPARQL_EXAMPLES_BASE ?= https://hendrikborgelt.github.io/Draft_for_IUPAC_CIAAW-Isotopic-Abundances-and-Atomic-Weights/sparql/queries/
 
-.PHONY: help install download ttl example quickstatements sssom check-wikidata check-wikidata-weights wikidata-links wikidata-comparison wikidata-weights-comparison bodr-comparison references test model validate sparql-examples print-sparql-examples-version site serve sparql-dev sparql-deploy clean
+.PHONY: help install download ttl example quickstatements sssom check-wikidata check-wikidata-weights wikidata-links history wikidata-comparison wikidata-weights-comparison bodr-comparison references test model validate sparql-examples print-sparql-examples-version site serve sparql-dev sparql-deploy clean
 
 help:
 	@echo "make install         install the Python dependencies"
@@ -61,6 +61,7 @@ help:
 	@echo "make check-wikidata-weights compare the standard atomic weights in $(TTL) with the mass in Wikidata"
 	@echo "make check-wikidata compare the abundances in $(TTL) with Wikidata"
 	@echo "make wikidata-links refresh site/wikidata.csv, the Wikidata items linked from the element pages"
+	@echo "make history        refresh site/historical-atomic-weights.csv, CIAAW's standard atomic weights since 1902 (Visualization page)"
 	@echo "make wikidata-comparison compare $(SITE_DATA) with Wikidata, for the site (site/wikidata-comparison.json)"
 	@echo "make wikidata-weights-comparison compare the atomic weights in $(SITE_DATA) with Wikidata (site/wikidata-weights-comparison.json)"
 	@echo "make bodr-comparison compare $(SITE_DATA) with the bodr package, for the site (site/bodr-comparison.json)"
@@ -125,6 +126,11 @@ bodr-comparison:
 
 wikidata-links:
 	$(PYTHON) wikidata_links.py
+
+HISTORY_URL ?= https://ciaaw.org/data/IUPAC-TSAW.csv
+
+history:
+	curl -fsSL -o site/historical-atomic-weights.csv $(HISTORY_URL)
 
 # override if the system npm does not work, e.g. make references NPM="node ~/opt/npm10/bin/npm-cli.js"
 NPM ?= npm

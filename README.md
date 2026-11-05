@@ -46,6 +46,7 @@ We want to develop this together with the Commission. Decisions about the conten
 | `check_wikidata_weights.py`, `site/wikidata-weights-comparison.json` | The comparison of the atomic weights with Wikidata, also in the Comparison section |
 | `check_bodr.py`, `site/bodr-comparison.json` | The comparison with BODR, shown in the Comparison section |
 | `wikidata_links.py`, `site/wikidata.csv` | The Wikidata items linked from the element pages |
+| `visualization.py`, `site/historical-atomic-weights.csv` | The Visualization tab: periodic table of the weights, their history since 1902, isotopic compositions |
 | `test_*.py`, `fixtures/` | Tests and their small hand-built input tables |
 | `ciaaw.ttl` | The full data, published on the site and loaded by the SPARQL endpoint |
 | `example-output*.ttl` | Small example results, used by the tests and the revision example |
@@ -223,6 +224,19 @@ The element pages link to Wikidata, for the element and for each isotope. The Q-
 with `make wikidata-links` (`wikidata_links.py`): elements are found by atomic number, isotopes by
 atomic number and number of neutrons. When Wikidata has several items for one isotope, the one with a
 natural abundance is used, and the script reports these cases.
+
+### Visualization
+
+The Visualization tab under Atomic Weights (`visualization.py`) draws the same data: a periodic table coloured by
+the relative uncertainty of each standard atomic weight, by the year of the current value or by the number of
+values recommended since 1902; the element chosen in the table, with its history as a timeline; a chart of how
+many weights changed in each year; and the isotopic composition of every element as a segmented bar. The page
+is HTML and CSS without JavaScript, and its Markdown twin holds the same figures as tables.
+
+The history comes from `site/historical-atomic-weights.csv`, CIAAW's table of every standard atomic weight it
+has recommended since 1902 (<https://ciaaw.org/historical-atomic-weights.htm>, © CIAAW 2016–2024, reproduced
+under the terms of its [Impressum](https://ciaaw.org/impressum.htm)), committed so that the build works offline
+and refreshed with `make history`. Without the file the tab shows the current values only.
 
 ### Atomic weights
 
