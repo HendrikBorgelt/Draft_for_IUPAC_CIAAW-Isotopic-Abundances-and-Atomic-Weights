@@ -64,6 +64,8 @@ NAV = [("index", "Home"), ("atomic-weights", "Atomic Weights"), ("isotopic-abund
        ("comparison", "Comparison"),
        ("model", "Data Model"), ("downloads", "Downloads"), ("sparql", "SPARQL"), ("about", "About")]
 SUBNAV = {"model": [("model", "Data Model"), ("revision-example", "Revision Example")]}
+ONTOLOGY_QUERY = HERE / "model" / "ontology.rq"
+ONTOLOGY_OUT = HERE / "model" / "ciaaw.owl"
 
 QUERIES = HERE / "sparql" / "queries"
 EXAMPLES = HERE / "sparql" / "examples"
@@ -547,7 +549,8 @@ def page_model(tap: t.Tap, reports: dict[str, bool]) -> str:
              "| [model_dctap.csv](model/model_dctap.csv) | The DCTAP profile, the source of the model |",
              "| [dctap.yaml](model/dctap.yaml) | Prefixes, extra columns and aspects |",
              "| [rules.ttl](model/rules.ttl) | Rules that compare several nodes, which a DCTAP row cannot express |",
-             "| [model_shacl.ttl](model/model_shacl.ttl) | The generated SHACL shapes, including those rules |\n",
+             "| [model_shacl.ttl](model/model_shacl.ttl) | The generated SHACL shapes, including those rules |",
+             "| [ciaaw.owl](model/ciaaw.owl) | OWL ontology generated via SPARQL CONSTRUCT |\n",
              "## Validation\n", f"Checked against the shapes when this site was built:\n\n{status}\n",
              "## Overview\n", f"{t.OVERVIEW_NOTE}\n", f"```mermaid\n{t.mermaid(tap)}```\n"]
     for key, aspect in tap.aspects.items():
@@ -873,7 +876,7 @@ def build(data_path: Path, revision_path: Path, out: Path, sparql_endpoint: str 
     # pyshacl adds triples to the shapes graph it is given, so it gets its own copy.
     shapes = t.load_shapes()
     reports = {p.name: t.validate_graph(g, shapes)[0] for p, g in ((data_path, data), (revision_path, revision))}
-    for source in (t.TAP_CSV, t.TAP_CONFIG, t.RULES, t.DIAGRAMS_OUT):
+    for source in (t.TAP_CSV, t.TAP_CONFIG, t.RULES, t.DIAGRAMS_OUT, ONTOLOGY_QUERY, ONTOLOGY_OUT):
         shutil.copyfile(source, out / "model" / source.name)
 
     elements = read_elements(data)
