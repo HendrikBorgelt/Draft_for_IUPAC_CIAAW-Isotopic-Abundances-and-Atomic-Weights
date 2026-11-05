@@ -107,7 +107,7 @@ def rows(g: Graph, wikidata: dict):
 
 
 def header(set_id: str, license_: str, authors: list[str], version: str) -> list[str]:
-    lines = ["sssom_version: 1.0", "curie_map:", *(f"  {p}: {ns}" for p, ns in CURIE_MAP.items()),
+    lines = ['sssom_version: "1.0"', "curie_map:", *(f"  {p}: {ns}" for p, ns in CURIE_MAP.items()),
              f"mapping_set_id: {set_id}", "mapping_set_title: CIAAW draft - elements and isotopes",
              "mapping_set_description: >",
              "  Mappings of the elements and isotopes in the unofficial CIAAW linked-data prototype to Wikidata",

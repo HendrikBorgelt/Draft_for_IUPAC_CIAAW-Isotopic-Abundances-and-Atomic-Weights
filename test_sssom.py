@@ -32,6 +32,13 @@ def test_header_has_the_required_set_metadata(sssom):
     assert values["mapping_set_id"].startswith("https://") and values["license"].startswith("https://")
 
 
+def test_sssom_version_is_a_string_so_yaml_does_not_read_it_as_a_number(sssom):
+    """Unquoted, 1.0 is a float and the SSSOM validator rejects the file."""
+    from ruamel.yaml import YAML
+    parsed = YAML(typ="safe").load("\n".join(sssom[0]))
+    assert parsed["sssom_version"] == "1.0" and isinstance(parsed["sssom_version"], str)
+
+
 def test_curie_map_in_the_header_is_the_one_in_the_code(sssom):
     lines = sssom[0][sssom[0].index("curie_map:") + 1:]
     declared = dict(re.findall(r"^  (\w+): (\S+)$", "\n".join(lines), re.M))
