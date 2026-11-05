@@ -28,7 +28,7 @@ from pathlib import Path
 from rdflib import Graph, Namespace, RDF, RDFS
 from rdflib.namespace import SKOS
 
-CIAAW = Namespace("https://example.org/ciaaw-draft#")
+CIAAW = Namespace("https://hendrikborgelt.github.io/Draft_for_IUPAC_CIAAW-Isotopic-Abundances-and-Atomic-Weights/ciaaw-draft#")
 CHEMROF = Namespace("https://w3id.org/chemrof/")
 
 HERE = Path(__file__).parent

@@ -297,6 +297,18 @@ def test_element_page_has_a_bibliography_of_its_sources(site):
     assert 'href="https://doi.org/10.1515/pac-2015-0503"' in html
 
 
+def test_isotope_and_abundance_pages_have_a_bibliography_of_their_sources(site):
+    for name in ("H-1", "Abundance-H1"):
+        html = text_of(site / "id" / f"{name}.html")
+        assert ">Bibliography</h2>" in html, name
+        assert "Isotopic compositions of the elements 2013" in html, name      # formatted by citation.js
+        assert 'href="https://doi.org/10.1515/pac-2015-0503"' in html, name
+
+
+def test_weight_declaration_pages_have_no_bibliography(site):
+    assert all("Bibliography" not in text_of(p) for p in (site / "id").glob("AW-*.html"))
+
+
 def test_no_bibliography_without_sources(site):
     assert "Bibliography" not in text_of(site / "elements" / "Technetium.html")
 

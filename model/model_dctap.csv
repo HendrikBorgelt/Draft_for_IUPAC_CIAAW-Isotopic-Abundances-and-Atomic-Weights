@@ -32,7 +32,7 @@ shape:Declaration,,,,,dcterms:isReplacedBy,replaced by,false,false,IRI,,,,shape:
 shape:Declaration,,,,,dcterms:replaces,replaces,false,false,IRI,,,,shape:Declaration,history,
 shape:StandardAtomicWeightDeclaration,Standard atomic weight declaration,ciaaw:StandardAtomicWeightDeclaration,shape:Declaration,,rdf:type,type,true,true,IRI,,ciaaw:StandardAtomicWeightDeclaration,picklist,,atomicWeight,
 shape:StandardAtomicWeightDeclaration,,,,,ciaaw:ofElement,of element,true,false,IRI,,,,shape:Element,atomicWeight,
-shape:StandardAtomicWeightDeclaration,,,,,ciaaw:value,value,true,false,bnode,,,,shape:IntervalValue shape:ValueWithUncertainty,atomicWeight value,
+shape:StandardAtomicWeightDeclaration,,,,,ciaaw:value,value,true,false,bnode,,,,shape:IntervalValue shape:ValueWithUncertainty shape:SingleValue,atomicWeight value,
 shape:ConventionalAtomicWeightDeclaration,Conventional atomic weight declaration,ciaaw:ConventionalAtomicWeightDeclaration,shape:Declaration,,rdf:type,type,true,true,IRI,,ciaaw:ConventionalAtomicWeightDeclaration,picklist,,atomicWeight,
 shape:ConventionalAtomicWeightDeclaration,,,,,ciaaw:ofElement,of element,true,false,IRI,,,,shape:Element,atomicWeight,
 shape:ConventionalAtomicWeightDeclaration,,,,,ciaaw:value,value,true,false,bnode,,,,shape:SingleValue,atomicWeight value,Not generated yet. The two source tables do not contain abridged values.

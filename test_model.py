@@ -218,6 +218,12 @@ def weight_as_a_single_value(g):
         g.remove((q, p, None))
 
 
+def standard_value_without_a_number(g):
+    q = quantity(g, EX["AW-He-standard"])
+    for p in (QUDT.numericValue, QUDT.standardUncertainty):
+        g.remove((q, p, None))
+
+
 def bounds_and_value_mixed(g):
     g.add((quantity(g, EX["AW-H-standard-2009"]), QUDT.numericValue, Literal("1.008", datatype=XSD.decimal)))
 
@@ -298,7 +304,7 @@ def shortcut_differs(g):
     (isotope_without_abundance, "Isotope-ciaaw-currentAbundance"),
     (wrong_kind_of_declaration, "Element-ciaaw-currentStandardAtomicWeight"),
     (declaration_without_value, "StandardAtomicWeightDeclaration-ciaaw-value"),
-    (weight_as_a_single_value, "StandardAtomicWeightDeclaration-ciaaw-value"),
+    (standard_value_without_a_number, "StandardAtomicWeightDeclaration-ciaaw-value"),
     (bounds_and_value_mixed, "StandardAtomicWeightDeclaration-ciaaw-value"),
     (interval_missing_upper_bound, "StandardAtomicWeightDeclaration-ciaaw-value"),
     (float_instead_of_decimal, "StandardAtomicWeightDeclaration-ciaaw-value"),
@@ -322,6 +328,14 @@ def test_broken_data_is_rejected_by_the_expected_shape(break_it, expected, data,
     conforms, report, text = t.validate_graph(data, shapes)
     assert not conforms
     assert expected in text, text
+
+
+def test_a_standard_value_may_be_exact_as_in_the_older_tables(data, shapes):
+    """The historical tables give some values without an uncertainty, for example oxygen in 1902 as 16."""
+    weight_as_a_single_value(data)
+    data.remove((EX["Helium"], CIAAW.standardAtomicWeightUncertainty, None))   # derived from the uncertainty
+    conforms, _, text = t.validate_graph(data, shapes)
+    assert conforms, text
 
 
 OLD, NEW = EX["AW-H-standard-2009"], EX["AW-H-standard-2027"]

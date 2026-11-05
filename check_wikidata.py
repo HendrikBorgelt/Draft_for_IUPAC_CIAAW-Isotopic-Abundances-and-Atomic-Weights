@@ -39,7 +39,7 @@ from pathlib import Path
 from rdflib import Graph, Literal, Namespace, RDF, RDFS, URIRef
 
 
-CIAAW = Namespace("https://example.org/ciaaw-draft#")
+CIAAW = Namespace("https://hendrikborgelt.github.io/Draft_for_IUPAC_CIAAW-Isotopic-Abundances-and-Atomic-Weights/ciaaw-draft#")
 CHEMROF = Namespace("https://w3id.org/chemrof/")
 QUDT = Namespace("http://qudt.org/schema/qudt/")
 P_ABUNDANCE = "P2374"

@@ -2,14 +2,14 @@
 
 @prefix adms: <http://www.w3.org/ns/adms#> .
 @prefix chemrof: <https://w3id.org/chemrof/> .
-@prefix ciaaw: <https://example.org/ciaaw-draft#> .
+@prefix ciaaw: <https://hendrikborgelt.github.io/Draft_for_IUPAC_CIAAW-Isotopic-Abundances-and-Atomic-Weights/ciaaw-draft#> .
 @prefix dcterms: <http://purl.org/dc/terms/> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix qudt: <http://qudt.org/schema/qudt/> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix sh: <http://www.w3.org/ns/shacl#> .
-@prefix shape: <https://example.org/ciaaw-draft/shapes#> .
+@prefix shape: <https://hendrikborgelt.github.io/Draft_for_IUPAC_CIAAW-Isotopic-Abundances-and-Atomic-Weights/ciaaw-draft/shapes#> .
 @prefix skos: <http://www.w3.org/2004/02/skos/core#> .
 @prefix unit: <http://qudt.org/vocab/unit/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
@@ -520,7 +520,7 @@ shape:StandardAtomicWeightDeclaration-ciaaw-value sh:maxCount 1 ;
     sh:name "value"@en ;
     sh:nodeKind sh:BlankNode ;
     sh:path ciaaw:value ;
-    sh:xone ( shape:IntervalValue shape:ValueWithUncertainty ) .
+    sh:xone ( shape:IntervalValue shape:ValueWithUncertainty shape:SingleValue ) .
 
 shape:StandardAtomicWeightDeclaration-rdf-type sh:hasValue ciaaw:StandardAtomicWeightDeclaration ;
     sh:minCount 1 ;
@@ -582,14 +582,6 @@ shape:IntervalValue a sh:NodeShape ;
         shape:IntervalValue-qudt-upperBound,
         shape:IntervalValue-rdf-type .
 
-shape:SingleValue a sh:NodeShape ;
-    rdfs:label "Single value"@en ;
-    sh:closed true ;
-    sh:property shape:SingleValue-ciaaw-significantFigures,
-        shape:SingleValue-qudt-hasUnit,
-        shape:SingleValue-qudt-numericValue,
-        shape:SingleValue-rdf-type .
-
 shape:ValueWithUncertainty a sh:NodeShape ;
     rdfs:label "Value with uncertainty"@en ;
     sh:closed true ;
@@ -599,6 +591,14 @@ shape:ValueWithUncertainty a sh:NodeShape ;
         shape:ValueWithUncertainty-qudt-numericValue,
         shape:ValueWithUncertainty-qudt-standardUncertainty,
         shape:ValueWithUncertainty-rdf-type .
+
+shape:SingleValue a sh:NodeShape ;
+    rdfs:label "Single value"@en ;
+    sh:closed true ;
+    sh:property shape:SingleValue-ciaaw-significantFigures,
+        shape:SingleValue-qudt-hasUnit,
+        shape:SingleValue-qudt-numericValue,
+        shape:SingleValue-rdf-type .
 
 shape:Declaration a sh:NodeShape ;
     rdfs:label "Declaration"@en ;
@@ -623,17 +623,17 @@ shape:NotDeprecated a sh:NodeShape ;
 # tap2model.py appends this file unchanged to the shapes generated from model_dctap.csv.
 
 @prefix chemrof: <https://w3id.org/chemrof/> .
-@prefix ciaaw: <https://example.org/ciaaw-draft#> .
+@prefix ciaaw: <https://hendrikborgelt.github.io/Draft_for_IUPAC_CIAAW-Isotopic-Abundances-and-Atomic-Weights/ciaaw-draft#> .
 @prefix dcterms: <http://purl.org/dc/terms/> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix qudt: <http://qudt.org/schema/qudt/> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix sh: <http://www.w3.org/ns/shacl#> .
-@prefix shape: <https://example.org/ciaaw-draft/shapes#> .
+@prefix shape: <https://hendrikborgelt.github.io/Draft_for_IUPAC_CIAAW-Isotopic-Abundances-and-Atomic-Weights/ciaaw-draft/shapes#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 shape:prefixes a owl:Ontology ;
-    sh:declare [ sh:prefix "ciaaw" ; sh:namespace "https://example.org/ciaaw-draft#"^^xsd:anyURI ] ,
+    sh:declare [ sh:prefix "ciaaw" ; sh:namespace "https://hendrikborgelt.github.io/Draft_for_IUPAC_CIAAW-Isotopic-Abundances-and-Atomic-Weights/ciaaw-draft#"^^xsd:anyURI ] ,
         [ sh:prefix "dcterms" ; sh:namespace "http://purl.org/dc/terms/"^^xsd:anyURI ] ,
         [ sh:prefix "owl" ; sh:namespace "http://www.w3.org/2002/07/owl#"^^xsd:anyURI ] ,
         [ sh:prefix "adms" ; sh:namespace "http://www.w3.org/ns/adms#"^^xsd:anyURI ] ,

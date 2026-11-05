@@ -4,7 +4,7 @@
 #+ tags:
 #+ - isotopes
 #+ - abundance
-PREFIX ciaaw: <https://example.org/ciaaw-draft#>
+PREFIX ciaaw: <https://hendrikborgelt.github.io/Draft_for_IUPAC_CIAAW-Isotopic-Abundances-and-Atomic-Weights/ciaaw-draft#>
 PREFIX qudt: <http://qudt.org/schema/qudt/>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 

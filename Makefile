@@ -17,6 +17,7 @@ PREVIOUS    ?=
 
 # The full data. It is committed, so that the site can be built without downloading anything.
 TTL         ?= ciaaw.ttl
+HISTORY     ?= historical/IUPAC-TSAW.csv   # the historical standard atomic weights from ciaaw.org
 QS          ?= $(BUILD_DIR)/quickstatements.csv
 SSSOM       ?= $(BUILD_DIR)/ciaaw.sssom.tsv
 
@@ -87,6 +88,7 @@ ttl: $(WEIGHTS) $(ABUNDANCES)
 	@mkdir -p $(dir $(TTL))
 	$(PYTHON) ciaaw2ttl.py --weights $(WEIGHTS) --abundances $(ABUNDANCES) \
 		--supplement $(SUPPLEMENT) $(if $(PREVIOUS),--previous $(PREVIOUS)) -o $(TTL)
+	$(PYTHON) historical2ttl.py --current $(TTL) --history $(HISTORY) -o $(TTL)
 
 example:
 	@mkdir -p $(BUILD_DIR)

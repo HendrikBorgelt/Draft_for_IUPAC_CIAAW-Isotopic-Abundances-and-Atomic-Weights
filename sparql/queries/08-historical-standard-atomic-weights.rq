@@ -1,0 +1,23 @@
+# Historical standard atomic weights
+# Every standard atomic weight the Commission recommended for an element, oldest first, with its year. The current one has no deprecated flag.
+#+ summary: Historical standard atomic weights
+#+ tags:
+#+ - standard atomic weight
+#+ - history
+PREFIX chemrof: <https://w3id.org/chemrof/>
+PREFIX ciaaw: <https://example.org/ciaaw-draft#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX qudt: <http://qudt.org/schema/qudt/>
+
+SELECT ?symbol ?year ?value ?lower ?upper ?deprecated WHERE {
+  ?element chemrof:symbol ?symbol ;
+    ciaaw:hasDeclaration ?declaration .
+  ?declaration a ciaaw:StandardAtomicWeightDeclaration ;
+    dcterms:issued ?year ;
+    ciaaw:value ?quantity .
+  OPTIONAL { ?quantity qudt:numericValue ?value }
+  OPTIONAL { ?quantity qudt:lowerBound ?lower ; qudt:upperBound ?upper }
+  OPTIONAL { ?declaration owl:deprecated ?deprecated }
+}
+ORDER BY ?symbol ?year

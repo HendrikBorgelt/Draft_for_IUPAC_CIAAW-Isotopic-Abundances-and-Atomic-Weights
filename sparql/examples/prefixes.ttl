@@ -10,11 +10,14 @@
 _:prefix_chemrof sh:namespace "https://w3id.org/chemrof/"^^xsd:anyURI;
   sh:prefix "chemrof" .
 
-_:prefix_ciaaw sh:namespace "https://example.org/ciaaw-draft#"^^xsd:anyURI;
+_:prefix_ciaaw sh:namespace "https://hendrikborgelt.github.io/Draft_for_IUPAC_CIAAW-Isotopic-Abundances-and-Atomic-Weights/ciaaw-draft#"^^xsd:anyURI;
   sh:prefix "ciaaw" .
 
 _:prefix_dcterms sh:namespace "http://purl.org/dc/terms/"^^xsd:anyURI;
   sh:prefix "dcterms" .
+
+_:prefix_owl sh:namespace "http://www.w3.org/2002/07/owl#"^^xsd:anyURI;
+  sh:prefix "owl" .
 
 _:prefix_qudt sh:namespace "http://qudt.org/schema/qudt/"^^xsd:anyURI;
   sh:prefix "qudt" .
@@ -27,5 +30,5 @@ _:prefix_skos sh:namespace "http://www.w3.org/2004/02/skos/core#"^^xsd:anyURI;
 
 _:sparql_examples_prefixes a owl:Ontology;
   owl:imports <http://www.w3.org/ns/shacl#>;
-  sh:declare _:prefix_chemrof, _:prefix_ciaaw, _:prefix_dcterms, _:prefix_qudt, _:prefix_rdfs,
-    _:prefix_skos .
+  sh:declare _:prefix_chemrof, _:prefix_ciaaw, _:prefix_dcterms, _:prefix_owl, _:prefix_qudt,
+    _:prefix_rdfs, _:prefix_skos .

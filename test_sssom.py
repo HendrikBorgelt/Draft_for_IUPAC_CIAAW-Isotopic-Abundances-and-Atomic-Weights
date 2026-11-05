@@ -70,5 +70,5 @@ def test_the_creators_come_from_the_authors_file(sssom):
 
 
 def test_curie_uses_the_longest_prefix():
-    assert s.curie("https://example.org/ciaaw-draft#value") == "ciaaw:value"
+    assert s.curie("https://hendrikborgelt.github.io/Draft_for_IUPAC_CIAAW-Isotopic-Abundances-and-Atomic-Weights/ciaaw-draft#value") == "ciaaw:value"
     assert s.curie("http://purl.obolibrary.org/obo/CHEBI_49637") == "CHEBI:49637"
