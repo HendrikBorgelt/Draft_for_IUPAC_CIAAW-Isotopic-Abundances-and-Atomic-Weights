@@ -1,0 +1,106 @@
+/* Follows the look of ciaaw.org: pale blue-grey header and footer, upper-case navigation,
+   grey upper-case headings over a dotted rule, zebra tables. No CIAAW or IUPAC artwork is used. */
+:root {
+  color-scheme: light;
+  --band: #ebf0f2;
+  --rule: #547995;
+  --heading: #666;
+  --text: #222;
+  --link: #016abb;
+  --active: #e00000;
+  --line: #cdcdcd;
+  --zebra: #f2f2f2;
+  --head: #f2f6f6;
+  --warning: #b3261e;
+  --body-font: Calibri, Carlito, "Segoe UI", Arial, Helvetica, sans-serif;
+  --title-font: "Century Gothic", "Avenir Next", Montserrat, "Segoe UI", Arial, sans-serif;
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: #fefefe; color: var(--text); font: 16px/1.5 var(--body-font); }
+a { color: var(--link); }
+
+/* The watermark lies over the page, so it stays visible on tables and in screenshots. */
+.watermark {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  pointer-events: none;
+  background: url("watermark.svg") repeat center top;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+.prototype-banner {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  padding: 8px 16px;
+  background: var(--warning);
+  color: #fff;
+  font-size: 15px;
+  text-align: center;
+}
+.prototype-banner a { color: #fff; font-weight: 700; }
+
+#pagewidth { max-width: 1009px; margin: 0 auto; background: #fefefe; }
+
+#header-top { padding: 22px 16px 0; background: var(--band); }
+#logo-top { display: block; margin-left: auto; width: fit-content; color: #000; text-align: right; text-decoration: none; }
+#logo-top .name { display: block; font: 700 50px/1 var(--title-font); letter-spacing: -1px; }
+#logo-top .tagline { display: block; margin-top: 4px; font-size: 13px; letter-spacing: .4px; text-transform: uppercase; }
+#logo-top .stamp { color: var(--warning); font-weight: 700; }
+
+#main-navigation ul, #breadcrumb ul { display: flex; flex-wrap: wrap; justify-content: center; margin: 0; padding: 0; list-style: none; }
+#main-navigation { margin-top: 18px; }
+#main-navigation a { display: block; padding: 6px 10px; color: #000; text-decoration: none; text-transform: uppercase; }
+#main-navigation a:hover { background: #fefefe; }
+#main-navigation .selected a { background: #fefefe; }
+
+#breadcrumb { padding: 8px 16px 0; }
+#breadcrumb a { padding: 5px 9px 0; display: block; color: var(--link); font-size: 13.6px; text-decoration: none; text-transform: uppercase; }
+#breadcrumb .selected a { color: var(--active); }
+
+#content { padding: 8px 76px 40px; }
+h1, h2 { color: var(--heading); font-family: var(--title-font); font-weight: 600; text-transform: uppercase; }
+h1 { margin: 26px 0 16px; padding-bottom: 8px; border-bottom: 1px dotted var(--rule); font-size: 24px; }
+h2 { margin: 34px 0 10px; font-size: 18px; }
+h3 { margin: 24px 0 8px; color: var(--heading); font-size: 16px; }
+p, li { font-size: 15.2px; }
+
+table { display: block; max-width: 100%; margin: 14px 0; overflow-x: auto; border-collapse: collapse; background: #fff; }
+th, td { padding: 5px 9px; border: 1px solid var(--line); font-size: 14.4px; text-align: left; vertical-align: top; }
+th { background: var(--head); font-weight: 400; }
+tbody tr:nth-child(even) td { background: var(--zebra); }
+td { font-variant-numeric: tabular-nums; }
+
+/* Isotope rows of one element read as a group, like the merged cells on ciaaw.org. */
+.page-isotopic-abundances tbody tr:nth-child(even) td { background: none; }
+.page-isotopic-abundances tbody td { border-top-color: transparent; border-bottom-color: transparent; }
+.page-isotopic-abundances tbody tr:has(td:first-child:not(:empty)) td { border-top-color: var(--line); }
+.page-isotopic-abundances tbody tr:last-child td { border-bottom-color: var(--line); }
+
+blockquote { margin: 14px 0; padding: 8px 14px; border-left: 4px solid var(--warning); background: #fdf1f0; }
+blockquote p { margin: 4px 0; }
+code { font-family: Consolas, Menlo, monospace; font-size: .9em; }
+pre { overflow-x: auto; padding: 10px; background: var(--band); }
+pre.mermaid { padding: 8px 0; background: none; text-align: center; }
+
+/* Diagrams may use the side margins of the page, which keeps their text readable. */
+@media (min-width: 1010px) {
+  pre.mermaid { margin-left: -60px; margin-right: -60px; }
+}
+
+#footer { padding: 12px 16px; background: var(--band); font-size: 12.8px; text-align: center; }
+
+@media (max-width: 800px) {
+  #content { padding: 8px 16px 32px; }
+  #logo-top .name { font-size: 38px; }
+  #main-navigation a { padding: 5px 7px; font-size: 14px; }
+}
+
+@media print {
+  .prototype-banner { position: static; }
+  #main-navigation, #breadcrumb { display: none; }
+}

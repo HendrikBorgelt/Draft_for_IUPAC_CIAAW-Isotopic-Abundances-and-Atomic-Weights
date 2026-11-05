@@ -1,0 +1,8 @@
+subject,role,year,doi,chebi
+# year of the assigning report and its DOI; role "match" -> skos:closeMatch to ChEBI
+H,standard,2027,,
+H,abundance,,10.1515/pac-2015-0503,
+H-2,abundance,2016,10.1515/pac-2015-0503,
+H,match,,,49637
+H-1,match,,,29236
+H-2,match,,,29237

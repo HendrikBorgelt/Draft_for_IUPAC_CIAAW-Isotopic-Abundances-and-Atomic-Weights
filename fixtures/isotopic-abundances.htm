@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Fixture: isotopic compositions</title></head>
+<body>
+<!-- Hand-built test fixture that mimics the layout of the CIAAW table. Eight elements only.
+     It is not a copy of ciaaw.org. See the docstring of test_ciaaw2ttl.py. -->
+<table id="mytable">
+<thead><tr><th><i>Z</i></th><th>E</th><th>Element</th><th>A</th><th>Representative isotopic composition</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td rowspan="2">1</td><td rowspan="2">H</td><td rowspan="2">hydrogen</td><td>1</td><td>[0.999&nbsp;72, 0.999&nbsp;99]</td><td rowspan="2"><a href="#m">m</a></td></tr>
+<tr><td>2</td><td>[0.000&nbsp;01, 0.000&nbsp;28]</td></tr>
+<tr><td rowspan="2">2</td><td rowspan="2">He</td><td rowspan="2">helium</td><td>3</td><td>0.000&nbsp;002(2)</td><td rowspan="2"><a href="#g">g</a> <a href="#r">r</a></td></tr>
+<tr><td>4</td><td>0.999&nbsp;998(2)</td></tr>
+<tr><td rowspan="1">4</td><td rowspan="1">Be</td><td rowspan="1">beryllium</td><td>9</td><td>1</td><td rowspan="1"></td></tr>
+<tr><td rowspan="3">10</td><td rowspan="3">Ne</td><td rowspan="3">neon</td><td>20</td><td>0.9048(3)</td><td rowspan="3"><a href="#g">g</a> <a href="#m">m</a></td></tr>
+<tr><td>21</td><td>0.0027(1)</td></tr>
+<tr><td>22</td><td>0.0925(3)</td></tr>
+<tr><td rowspan="3">18</td><td rowspan="3">Ar</td><td rowspan="3">argon</td><td>36</td><td>[0.0000, 0.0207]</td><td rowspan="3"><a href="#g">g</a> <a href="#r">r</a></td></tr>
+<tr><td>38</td><td>[0.000, 0.043]</td></tr>
+<tr><td>40</td><td>[0.936, 1.000]</td></tr>
+<tr><td rowspan="6">20</td><td rowspan="6">Ca</td><td rowspan="6">calcium</td><td>40</td><td>0.969&nbsp;41(156)</td><td rowspan="6"><a href="#g">g</a></td></tr>
+<tr><td>42</td><td>0.006&nbsp;47(23)</td></tr>
+<tr><td>43</td><td>0.001&nbsp;35(10)</td></tr>
+<tr><td>44</td><td>0.020&nbsp;86(110)</td></tr>
+<tr><td>46</td><td>0.000&nbsp;04(3)</td></tr>
+<tr><td>48</td><td>0.001&nbsp;87(21)</td></tr>
+<tr><td>43</td><td>Tc</td><td>technetium</td><td>[97]</td><td>—</td><td></td></tr>
+<tr><td rowspan="7">66</td><td rowspan="7">Dy</td><td rowspan="7">dysprosium</td><td>156</td><td>0.000&nbsp;56(3)</td><td rowspan="7"><a href="#g">g</a></td></tr>
+<tr><td>158</td><td>0.000&nbsp;95(3)</td></tr>
+<tr><td>160</td><td>0.023&nbsp;29(18)</td></tr>
+<tr><td>161</td><td>0.188&nbsp;89(42)</td></tr>
+<tr><td>162</td><td>0.254&nbsp;75(36)</td></tr>
+<tr><td>163</td><td>0.248&nbsp;96(42)</td></tr>
+<tr><td>164</td><td>0.282&nbsp;60(54)</td></tr>
+</tbody>
+</table>
+<p id="g"><b>g</b> Geological and biological materials are known in which the element has an isotopic composition outside the limits for normal material. The difference between the atomic weight of the element in such materials and that given in the table may exceed the stated uncertainty.</p>
+<p id="m"><b>m</b> Modified isotopic compositions may be found in commercially available material because the material has been subjected to some undisclosed or inadvertent isotopic fractionation. Substantial deviations in atomic weight of the element from that given in the table can occur.</p>
+<p id="r"><b>r</b> Range in isotopic composition of normal terrestrial material prevents a more precise standard atomic weight being given; the tabulated value and uncertainty should be applicable to normal material.</p>
+</body>
+</html>

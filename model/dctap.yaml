@@ -1,0 +1,81 @@
+# Configuration for model_dctap.csv, read by dctap-python and by tap2model.py.
+# See https://dctap-python.readthedocs.io/en/latest/config/
+#
+# The namespaces ending in example.org are placeholders until CIAAW chooses persistent IRIs.
+
+prefixes:
+  "adms:": "http://www.w3.org/ns/adms#"
+  "chemrof:": "https://w3id.org/chemrof/"
+  "ciaaw:": "https://example.org/ciaaw-draft#"
+  "dcterms:": "http://purl.org/dc/terms/"
+  "owl:": "http://www.w3.org/2002/07/owl#"
+  "qudt:": "http://qudt.org/schema/qudt/"
+  "rdf:": "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  "rdfs:": "http://www.w3.org/2000/01/rdf-schema#"
+  "shape:": "https://example.org/ciaaw-draft/shapes#"
+  "skos:": "http://www.w3.org/2004/02/skos/core#"
+  "unit:": "http://qudt.org/vocab/unit/"
+  "xsd:": "http://www.w3.org/2001/XMLSchema#"
+
+# Columns added to the 12 standard DCTAP elements.
+#   targetClass  shape: the class whose instances are validated against this shape.
+#                Shapes without one are only reached through valueShape or extends.
+#   extends      shape: another shape whose statements also apply (UML generalisation).
+#   closed       shape: "true" when no other properties are allowed.
+#   aspect       statement: which diagrams show this row. Space-separated keys from "aspects" below.
+extra_shape_elements:
+  - targetClass
+  - extends
+  - closed
+extra_statement_template_elements:
+  - aspect
+
+# valueShape may list alternatives; a value has to match exactly one of them.
+picklist_elements:
+  - valueShape
+picklist_item_separator: " "
+
+# One UML diagram is generated per aspect, in this order.
+# direction is the Mermaid layout: LR (left to right) or TB (top to bottom).
+aspects:
+  identity:
+    direction: LR
+    title: Elements and isotopes
+    description: >-
+      Elements and isotopes keep a stable IRI. They hold identifying facts and pointers,
+      while every published value lives in a separate declaration.
+  atomicWeight:
+    direction: TB
+    title: Atomic weight declarations
+    description: >-
+      A standard atomic weight is either an interval or a value with an uncertainty.
+      The element points to the one current declaration and repeats its numbers as derived shortcuts.
+  abundance:
+    direction: TB
+    title: Isotopic abundance declarations
+    description: >-
+      The representative isotopic composition of one isotope. It can be an interval,
+      a value with an uncertainty, or a single value such as 1 for monoisotopic elements.
+  atomicMass:
+    direction: TB
+    title: Atomic masses (planned)
+    description: >-
+      Part of the draft vocabulary, but not generated yet because the two source tables
+      do not contain atomic masses.
+  value:
+    direction: LR
+    title: Quantity values
+    description: >-
+      Numbers are qudt:QuantityValue nodes in one of a few closed forms. Significant figures are
+      stored separately because xsd:decimal does not preserve trailing zeros.
+  footnote:
+    direction: LR
+    title: Footnotes
+    description: >-
+      The g, m and r notes printed below the CIAAW tables are shared nodes that declarations refer to.
+  history:
+    direction: LR
+    title: History and provenance
+    description: >-
+      Declarations are never edited. A new value creates a new declaration, and the old one is
+      kept, flagged as deprecated, and linked to its replacement.

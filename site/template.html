@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<meta name="description" content="Unofficial prototype: a suggestion for publishing CIAAW data as linked data.">
+<title>$title | Unofficial CIAAW linked-data prototype</title>
+<link rel="stylesheet" href="${root}static/style.css">
+</head>
+<body class="page-$page">
+<div class="watermark" aria-hidden="true"></div>
+<div class="prototype-banner" role="note"><strong>PROTOTYPE</strong>: a suggestion, not an official CIAAW or IUPAC page. Official values are at <a href="https://ciaaw.org">ciaaw.org</a>.</div>
+<div id="pagewidth">
+<header id="header-top">
+<a id="logo-top" href="${root}index.html"><span class="name">CIAAW</span><span class="tagline">Linked-data suggestion · <span class="stamp">unofficial prototype</span></span></a>
+<nav id="main-navigation" aria-label="Main"><ul>$nav</ul></nav>
+</header>
+$subnav
+<main id="content">
+$body
+</main>
+<footer id="footer">
+Unofficial prototype, not endorsed by CIAAW or IUPAC &nbsp;|&nbsp; <a href="$issues">Open an issue</a> &nbsp;|&nbsp; <a href="$repo">Source on GitHub</a> &nbsp;|&nbsp; <a href="$markdown">This page as Markdown</a>
+</footer>
+</div>
+$scripts
+</body>
+</html>
