@@ -6,6 +6,7 @@
 @prefix chemrof: <https://w3id.org/chemrof/> .
 @prefix ciaaw: <https://example.org/ciaaw-draft#> .
 @prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix element: <https://hendrikborgelt.github.io/Draft_for_IUPAC_CIAAW-Isotopic-Abundances-and-Atomic-Weights/elements/> .
 @prefix ex: <https://example.org/data/> .
 @prefix qudt: <http://qudt.org/schema/qudt/> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
@@ -79,185 +80,185 @@ ciaaw:standardAtomicWeightValue a rdf:Property .
 ciaaw:value a rdf:Property ;
     rdfs:range qudt:QuantityValue .
 
-ex:Actinium a chemrof:ChemicalElement ;
+element:Actinium a chemrof:ChemicalElement ;
     rdfs:label "actinium"@en ;
     ciaaw:longestLivedMassNumber 227 ;
     chemrof:atomic_number 89 ;
     chemrof:symbol "Ac" .
 
-ex:Americium a chemrof:ChemicalElement ;
+element:Americium a chemrof:ChemicalElement ;
     rdfs:label "americium"@en ;
     chemrof:atomic_number 95 ;
     chemrof:symbol "Am" .
 
-ex:Astatine a chemrof:ChemicalElement ;
+element:Astatine a chemrof:ChemicalElement ;
     rdfs:label "astatine"@en ;
     ciaaw:longestLivedMassNumber 210 ;
     chemrof:atomic_number 85 ;
     chemrof:symbol "At" .
 
-ex:Berkelium a chemrof:ChemicalElement ;
+element:Berkelium a chemrof:ChemicalElement ;
     rdfs:label "berkelium"@en ;
     chemrof:atomic_number 97 ;
     chemrof:symbol "Bk" .
 
-ex:Bohrium a chemrof:ChemicalElement ;
+element:Bohrium a chemrof:ChemicalElement ;
     rdfs:label "bohrium"@en ;
     chemrof:atomic_number 107 ;
     chemrof:symbol "Bh" .
 
-ex:Californium a chemrof:ChemicalElement ;
+element:Californium a chemrof:ChemicalElement ;
     rdfs:label "californium"@en ;
     chemrof:atomic_number 98 ;
     chemrof:symbol "Cf" .
 
-ex:Copernicium a chemrof:ChemicalElement ;
+element:Copernicium a chemrof:ChemicalElement ;
     rdfs:label "copernicium"@en ;
     chemrof:atomic_number 112 ;
     chemrof:symbol "Cn" .
 
-ex:Curium a chemrof:ChemicalElement ;
+element:Curium a chemrof:ChemicalElement ;
     rdfs:label "curium"@en ;
     chemrof:atomic_number 96 ;
     chemrof:symbol "Cm" .
 
-ex:Darmstadtium a chemrof:ChemicalElement ;
+element:Darmstadtium a chemrof:ChemicalElement ;
     rdfs:label "darmstadtium"@en ;
     chemrof:atomic_number 110 ;
     chemrof:symbol "Ds" .
 
-ex:Dubnium a chemrof:ChemicalElement ;
+element:Dubnium a chemrof:ChemicalElement ;
     rdfs:label "dubnium"@en ;
     chemrof:atomic_number 105 ;
     chemrof:symbol "Db" .
 
-ex:Einsteinium a chemrof:ChemicalElement ;
+element:Einsteinium a chemrof:ChemicalElement ;
     rdfs:label "einsteinium"@en ;
     chemrof:atomic_number 99 ;
     chemrof:symbol "Es" .
 
-ex:Fermium a chemrof:ChemicalElement ;
+element:Fermium a chemrof:ChemicalElement ;
     rdfs:label "fermium"@en ;
     chemrof:atomic_number 100 ;
     chemrof:symbol "Fm" .
 
-ex:Flerovium a chemrof:ChemicalElement ;
+element:Flerovium a chemrof:ChemicalElement ;
     rdfs:label "flerovium"@en ;
     chemrof:atomic_number 114 ;
     chemrof:symbol "Fl" .
 
-ex:Francium a chemrof:ChemicalElement ;
+element:Francium a chemrof:ChemicalElement ;
     rdfs:label "francium"@en ;
     ciaaw:longestLivedMassNumber 223 ;
     chemrof:atomic_number 87 ;
     chemrof:symbol "Fr" .
 
-ex:Hassium a chemrof:ChemicalElement ;
+element:Hassium a chemrof:ChemicalElement ;
     rdfs:label "hassium"@en ;
     chemrof:atomic_number 108 ;
     chemrof:symbol "Hs" .
 
-ex:Lawrencium a chemrof:ChemicalElement ;
+element:Lawrencium a chemrof:ChemicalElement ;
     rdfs:label "lawrencium"@en ;
     chemrof:atomic_number 103 ;
     chemrof:symbol "Lr" .
 
-ex:Livermorium a chemrof:ChemicalElement ;
+element:Livermorium a chemrof:ChemicalElement ;
     rdfs:label "livermorium"@en ;
     chemrof:atomic_number 116 ;
     chemrof:symbol "Lv" .
 
-ex:Meitnerium a chemrof:ChemicalElement ;
+element:Meitnerium a chemrof:ChemicalElement ;
     rdfs:label "meitnerium"@en ;
     chemrof:atomic_number 109 ;
     chemrof:symbol "Mt" .
 
-ex:Mendelevium a chemrof:ChemicalElement ;
+element:Mendelevium a chemrof:ChemicalElement ;
     rdfs:label "mendelevium"@en ;
     chemrof:atomic_number 101 ;
     chemrof:symbol "Md" .
 
-ex:Moscovium a chemrof:ChemicalElement ;
+element:Moscovium a chemrof:ChemicalElement ;
     rdfs:label "moscovium"@en ;
     chemrof:atomic_number 115 ;
     chemrof:symbol "Mc" .
 
-ex:Neptunium a chemrof:ChemicalElement ;
+element:Neptunium a chemrof:ChemicalElement ;
     rdfs:label "neptunium"@en ;
     chemrof:atomic_number 93 ;
     chemrof:symbol "Np" .
 
-ex:Nihonium a chemrof:ChemicalElement ;
+element:Nihonium a chemrof:ChemicalElement ;
     rdfs:label "nihonium"@en ;
     chemrof:atomic_number 113 ;
     chemrof:symbol "Nh" .
 
-ex:Nobelium a chemrof:ChemicalElement ;
+element:Nobelium a chemrof:ChemicalElement ;
     rdfs:label "nobelium"@en ;
     chemrof:atomic_number 102 ;
     chemrof:symbol "No" .
 
-ex:Oganesson a chemrof:ChemicalElement ;
+element:Oganesson a chemrof:ChemicalElement ;
     rdfs:label "oganesson"@en ;
     chemrof:atomic_number 118 ;
     chemrof:symbol "Og" .
 
-ex:Plutonium a chemrof:ChemicalElement ;
+element:Plutonium a chemrof:ChemicalElement ;
     rdfs:label "plutonium"@en ;
     chemrof:atomic_number 94 ;
     chemrof:symbol "Pu" .
 
-ex:Polonium a chemrof:ChemicalElement ;
+element:Polonium a chemrof:ChemicalElement ;
     rdfs:label "polonium"@en ;
     ciaaw:longestLivedMassNumber 209 ;
     chemrof:atomic_number 84 ;
     chemrof:symbol "Po" .
 
-ex:Promethium a chemrof:ChemicalElement ;
+element:Promethium a chemrof:ChemicalElement ;
     rdfs:label "promethium"@en ;
     ciaaw:longestLivedMassNumber 145 ;
     chemrof:atomic_number 61 ;
     chemrof:symbol "Pm" .
 
-ex:Radium a chemrof:ChemicalElement ;
+element:Radium a chemrof:ChemicalElement ;
     rdfs:label "radium"@en ;
     ciaaw:longestLivedMassNumber 226 ;
     chemrof:atomic_number 88 ;
     chemrof:symbol "Ra" .
 
-ex:Radon a chemrof:ChemicalElement ;
+element:Radon a chemrof:ChemicalElement ;
     rdfs:label "radon"@en ;
     ciaaw:longestLivedMassNumber 222 ;
     chemrof:atomic_number 86 ;
     chemrof:symbol "Rn" .
 
-ex:Roentgenium a chemrof:ChemicalElement ;
+element:Roentgenium a chemrof:ChemicalElement ;
     rdfs:label "roentgenium"@en ;
     chemrof:atomic_number 111 ;
     chemrof:symbol "Rg" .
 
-ex:Rutherfordium a chemrof:ChemicalElement ;
+element:Rutherfordium a chemrof:ChemicalElement ;
     rdfs:label "rutherfordium"@en ;
     chemrof:atomic_number 104 ;
     chemrof:symbol "Rf" .
 
-ex:Seaborgium a chemrof:ChemicalElement ;
+element:Seaborgium a chemrof:ChemicalElement ;
     rdfs:label "seaborgium"@en ;
     chemrof:atomic_number 106 ;
     chemrof:symbol "Sg" .
 
-ex:Technetium a chemrof:ChemicalElement ;
+element:Technetium a chemrof:ChemicalElement ;
     rdfs:label "technetium"@en ;
     ciaaw:longestLivedMassNumber 97 ;
     chemrof:atomic_number 43 ;
     chemrof:symbol "Tc" .
 
-ex:Tennessine a chemrof:ChemicalElement ;
+element:Tennessine a chemrof:ChemicalElement ;
     rdfs:label "tennessine"@en ;
     chemrof:atomic_number 117 ;
     chemrof:symbol "Ts" .
 
-ex:Aluminium a chemrof:ChemicalElement ;
+element:Aluminium a chemrof:ChemicalElement ;
     rdfs:label "aluminium"@en ;
     ciaaw:currentStandardAtomicWeight ex:AW-Al-standard ;
     ciaaw:hasDeclaration ex:AW-Al-standard ;
@@ -267,7 +268,7 @@ ex:Aluminium a chemrof:ChemicalElement ;
     chemrof:atomic_number 13 ;
     chemrof:symbol "Al" .
 
-ex:Antimony a chemrof:ChemicalElement ;
+element:Antimony a chemrof:ChemicalElement ;
     rdfs:label "antimony"@en ;
     ciaaw:currentStandardAtomicWeight ex:AW-Sb-standard ;
     ciaaw:hasDeclaration ex:AW-Sb-standard ;
@@ -278,7 +279,7 @@ ex:Antimony a chemrof:ChemicalElement ;
     chemrof:atomic_number 51 ;
     chemrof:symbol "Sb" .
 
-ex:Argon a chemrof:ChemicalElement ;
+element:Argon a chemrof:ChemicalElement ;
     rdfs:label "argon"@en ;
     ciaaw:currentStandardAtomicWeight ex:AW-Ar-standard ;
     ciaaw:hasDeclaration ex:AW-Ar-standard ;
@@ -290,7 +291,7 @@ ex:Argon a chemrof:ChemicalElement ;
     chemrof:atomic_number 18 ;
     chemrof:symbol "Ar" .
 
-ex:Arsenic a chemrof:ChemicalElement ;
+element:Arsenic a chemrof:ChemicalElement ;
     rdfs:label "arsenic"@en ;
     ciaaw:currentStandardAtomicWeight ex:AW-As-standard ;
     ciaaw:hasDeclaration ex:AW-As-standard ;
@@ -300,7 +301,7 @@ ex:Arsenic a chemrof:ChemicalElement ;
     chemrof:atomic_number 33 ;
     chemrof:symbol "As" .
 
-ex:Barium a chemrof:ChemicalElement ;
+element:Barium a chemrof:ChemicalElement ;
     rdfs:label "barium"@en ;
     ciaaw:currentStandardAtomicWeight ex:AW-Ba-standard ;
     ciaaw:hasDeclaration ex:AW-Ba-standard ;
@@ -316,7 +317,7 @@ ex:Barium a chemrof:ChemicalElement ;
     chemrof:atomic_number 56 ;
     chemrof:symbol "Ba" .
 
-ex:Beryllium a chemrof:ChemicalElement ;
+element:Beryllium a chemrof:ChemicalElement ;
     rdfs:label "beryllium"@en ;
     ciaaw:currentStandardAtomicWeight ex:AW-Be-standard ;
     ciaaw:hasDeclaration ex:AW-Be-standard ;
@@ -326,7 +327,7 @@ ex:Beryllium a chemrof:ChemicalElement ;
     chemrof:atomic_number 4 ;
     chemrof:symbol "Be" .
 
-ex:Bismuth a chemrof:ChemicalElement ;
+element:Bismuth a chemrof:ChemicalElement ;
     rdfs:label "bismuth"@en ;
     ciaaw:currentStandardAtomicWeight ex:AW-Bi-standard ;
     ciaaw:hasDeclaration ex:AW-Bi-standard ;
@@ -336,7 +337,7 @@ ex:Bismuth a chemrof:ChemicalElement ;
     chemrof:atomic_number 83 ;
     chemrof:symbol "Bi" .
 
-ex:Boron a chemrof:ChemicalElement ;
+element:Boron a chemrof:ChemicalElement ;
     rdfs:label "boron"@en ;
     ciaaw:currentStandardAtomicWeight ex:AW-B-standard ;
     ciaaw:hasDeclaration ex:AW-B-standard ;
@@ -347,7 +348,7 @@ ex:Boron a chemrof:ChemicalElement ;
     chemrof:atomic_number 5 ;
     chemrof:symbol "B" .
 
-ex:Bromine a chemrof:ChemicalElement ;
+element:Bromine a chemrof:ChemicalElement ;
     rdfs:label "bromine"@en ;
     ciaaw:currentStandardAtomicWeight ex:AW-Br-standard ;
     ciaaw:hasDeclaration ex:AW-Br-standard ;
@@ -358,7 +359,7 @@ ex:Bromine a chemrof:ChemicalElement ;
     chemrof:atomic_number 35 ;
     chemrof:symbol "Br" .
 
-ex:Cadmium a chemrof:ChemicalElement ;
+element:Cadmium a chemrof:ChemicalElement ;
     rdfs:label "cadmium"@en ;
     ciaaw:currentStandardAtomicWeight ex:AW-Cd-standard ;
     ciaaw:hasDeclaration ex:AW-Cd-standard ;
@@ -375,7 +376,7 @@ ex:Cadmium a chemrof:ChemicalElement ;
     chemrof:atomic_number 48 ;
     chemrof:symbol "Cd" .
 
-ex:Caesium a chemrof:ChemicalElement ;
+element:Caesium a chemrof:ChemicalElement ;
     rdfs:label "caesium"@en ;
     ciaaw:currentStandardAtomicWeight ex:AW-Cs-standard ;
     ciaaw:hasDeclaration ex:AW-Cs-standard ;
@@ -385,7 +386,7 @@ ex:Caesium a chemrof:ChemicalElement ;
     chemrof:atomic_number 55 ;
     chemrof:symbol "Cs" .
 
-ex:Calcium a chemrof:ChemicalElement ;
+element:Calcium a chemrof:ChemicalElement ;
     rdfs:label "calcium"@en ;
     ciaaw:currentStandardAtomicWeight ex:AW-Ca-standard ;
     ciaaw:hasDeclaration ex:AW-Ca-standard ;
@@ -400,7 +401,7 @@ ex:Calcium a chemrof:ChemicalElement ;
     chemrof:atomic_number 20 ;
     chemrof:symbol "Ca" .
 
-ex:Carbon a chemrof:ChemicalElement ;
+element:Carbon a chemrof:ChemicalElement ;
     rdfs:label "carbon"@en ;
     ciaaw:currentStandardAtomicWeight ex:AW-C-standard ;
     ciaaw:hasDeclaration ex:AW-C-standard ;
@@ -411,7 +412,7 @@ ex:Carbon a chemrof:ChemicalElement ;
     chemrof:atomic_number 6 ;
     chemrof:symbol "C" .
 
-ex:Cerium a chemrof:ChemicalElement ;
+element:Cerium a chemrof:ChemicalElement ;
     rdfs:label "cerium"@en ;
     ciaaw:currentStandardAtomicWeight ex:AW-Ce-standard ;
     ciaaw:hasDeclaration ex:AW-Ce-standard ;
@@ -424,7 +425,7 @@ ex:Cerium a chemrof:ChemicalElement ;
     chemrof:atomic_number 58 ;
     chemrof:symbol "Ce" .
 
-ex:Chlorine a chemrof:ChemicalElement ;
+element:Chlorine a chemrof:ChemicalElement ;
     rdfs:label "chlorine"@en ;
     ciaaw:currentStandardAtomicWeight ex:AW-Cl-standard ;
     ciaaw:hasDeclaration ex:AW-Cl-standard ;
@@ -435,7 +436,7 @@ ex:Chlorine a chemrof:ChemicalElement ;
     chemrof:atomic_number 17 ;
     chemrof:symbol "Cl" .
 
-ex:Chromium a chemrof:ChemicalElement ;
+element:Chromium a chemrof:ChemicalElement ;
     rdfs:label "chromium"@en ;
     ciaaw:currentStandardAtomicWeight ex:AW-Cr-standard ;
     ciaaw:hasDeclaration ex:AW-Cr-standard ;
@@ -448,7 +449,7 @@ ex:Chromium a chemrof:ChemicalElement ;
     chemrof:atomic_number 24 ;
     chemrof:symbol "Cr" .
 
-ex:Cobalt a chemrof:ChemicalElement ;
+element:Cobalt a chemrof:ChemicalElement ;
     rdfs:label "cobalt"@en ;
     ciaaw:currentStandardAtomicWeight ex:AW-Co-standard ;
     ciaaw:hasDeclaration ex:AW-Co-standard ;
@@ -458,7 +459,7 @@ ex:Cobalt a chemrof:ChemicalElement ;
     chemrof:atomic_number 27 ;
     chemrof:symbol "Co" .
 
-ex:Copper a chemrof:ChemicalElement ;
+element:Copper a chemrof:ChemicalElement ;
     rdfs:label "copper"@en ;
     ciaaw:currentStandardAtomicWeight ex:AW-Cu-standard ;
     ciaaw:hasDeclaration ex:AW-Cu-standard ;
@@ -469,7 +470,7 @@ ex:Copper a chemrof:ChemicalElement ;
     chemrof:atomic_number 29 ;
     chemrof:symbol "Cu" .
 
-ex:Dysprosium a chemrof:ChemicalElement ;
+element:Dysprosium a chemrof:ChemicalElement ;
     rdfs:label "dysprosium"@en ;
     ciaaw:currentStandardAtomicWeight ex:AW-Dy-standard ;
     ciaaw:hasDeclaration ex:AW-Dy-standard ;
@@ -485,7 +486,7 @@ ex:Dysprosium a chemrof:ChemicalElement ;
     chemrof:atomic_number 66 ;
     chemrof:symbol "Dy" .
 
-ex:Erbium a chemrof:ChemicalElement ;
+element:Erbium a chemrof:ChemicalElement ;
     rdfs:label "erbium"@en ;
     ciaaw:currentStandardAtomicWeight ex:AW-Er-standard ;
     ciaaw:hasDeclaration ex:AW-Er-standard ;
@@ -500,7 +501,7 @@ ex:Erbium a chemrof:ChemicalElement ;
     chemrof:atomic_number 68 ;
     chemrof:symbol "Er" .
 
-ex:Europium a chemrof:ChemicalElement ;
+element:Europium a chemrof:ChemicalElement ;
     rdfs:label "europium"@en ;
     ciaaw:currentStandardAtomicWeight ex:AW-Eu-standard ;
     ciaaw:hasDeclaration ex:AW-Eu-standard ;
@@ -511,7 +512,7 @@ ex:Europium a chemrof:ChemicalElement ;
     chemrof:atomic_number 63 ;
     chemrof:symbol "Eu" .
 
-ex:Fluorine a chemrof:ChemicalElement ;
+element:Fluorine a chemrof:ChemicalElement ;
     rdfs:label "fluorine"@en ;
     ciaaw:currentStandardAtomicWeight ex:AW-F-standard ;
     ciaaw:hasDeclaration ex:AW-F-standard ;
@@ -521,7 +522,7 @@ ex:Fluorine a chemrof:ChemicalElement ;
     chemrof:atomic_number 9 ;
     chemrof:symbol "F" .
 
-ex:Gadolinium a chemrof:ChemicalElement ;
+element:Gadolinium a chemrof:ChemicalElement ;
     rdfs:label "gadolinium"@en ;
     ciaaw:currentStandardAtomicWeight ex:AW-Gd-standard ;
     ciaaw:hasDeclaration ex:AW-Gd-standard ;
@@ -537,7 +538,7 @@ ex:Gadolinium a chemrof:ChemicalElement ;
     chemrof:atomic_number 64 ;
     chemrof:symbol "Gd" .
 
-ex:Gallium a chemrof:ChemicalElement ;
+element:Gallium a chemrof:ChemicalElement ;
     rdfs:label "gallium"@en ;
     ciaaw:currentStandardAtomicWeight ex:AW-Ga-standard ;
     ciaaw:hasDeclaration ex:AW-Ga-standard ;
@@ -548,7 +549,7 @@ ex:Gallium a chemrof:ChemicalElement ;
     chemrof:atomic_number 31 ;
     chemrof:symbol "Ga" .
 
-ex:Germanium a chemrof:ChemicalElement ;
+element:Germanium a chemrof:ChemicalElement ;
     rdfs:label "germanium"@en ;
     ciaaw:currentStandardAtomicWeight ex:AW-Ge-standard ;
     ciaaw:hasDeclaration ex:AW-Ge-standard ;
@@ -562,7 +563,7 @@ ex:Germanium a chemrof:ChemicalElement ;
     chemrof:atomic_number 32 ;
     chemrof:symbol "Ge" .
 
-ex:Gold a chemrof:ChemicalElement ;
+element:Gold a chemrof:ChemicalElement ;
     rdfs:label "gold"@en ;
     ciaaw:currentStandardAtomicWeight ex:AW-Au-standard ;
     ciaaw:hasDeclaration ex:AW-Au-standard ;
@@ -572,7 +573,7 @@ ex:Gold a chemrof:ChemicalElement ;
     chemrof:atomic_number 79 ;
     chemrof:symbol "Au" .
 
-ex:Hafnium a chemrof:ChemicalElement ;
+element:Hafnium a chemrof:ChemicalElement ;
     rdfs:label "hafnium"@en ;
     ciaaw:currentStandardAtomicWeight ex:AW-Hf-standard ;
     ciaaw:hasDeclaration ex:AW-Hf-standard ;
@@ -587,7 +588,7 @@ ex:Hafnium a chemrof:ChemicalElement ;
     chemrof:atomic_number 72 ;
     chemrof:symbol "Hf" .
 
-ex:Helium a chemrof:ChemicalElement ;
+element:Helium a chemrof:ChemicalElement ;
     rdfs:label "helium"@en ;
     ciaaw:currentStandardAtomicWeight ex:AW-He-standard ;
     ciaaw:hasDeclaration ex:AW-He-standard ;
@@ -598,7 +599,7 @@ ex:Helium a chemrof:ChemicalElement ;
     chemrof:atomic_number 2 ;
     chemrof:symbol "He" .
 
-ex:Holmium a chemrof:ChemicalElement ;
+element:Holmium a chemrof:ChemicalElement ;
     rdfs:label "holmium"@en ;
     ciaaw:currentStandardAtomicWeight ex:AW-Ho-standard ;
     ciaaw:hasDeclaration ex:AW-Ho-standard ;
@@ -608,7 +609,7 @@ ex:Holmium a chemrof:ChemicalElement ;
     chemrof:atomic_number 67 ;
     chemrof:symbol "Ho" .
 
-ex:Hydrogen a chemrof:ChemicalElement ;
+element:Hydrogen a chemrof:ChemicalElement ;
     rdfs:label "hydrogen"@en ;
     skos:closeMatch chebi:49637 ;
     ciaaw:currentStandardAtomicWeight ex:AW-H-standard-2009 ;
@@ -620,7 +621,7 @@ ex:Hydrogen a chemrof:ChemicalElement ;
     chemrof:atomic_number 1 ;
     chemrof:symbol "H" .
 
-ex:Indium a chemrof:ChemicalElement ;
+element:Indium a chemrof:ChemicalElement ;
     rdfs:label "indium"@en ;
     ciaaw:currentStandardAtomicWeight ex:AW-In-standard ;
     ciaaw:hasDeclaration ex:AW-In-standard ;
@@ -631,7 +632,7 @@ ex:Indium a chemrof:ChemicalElement ;
     chemrof:atomic_number 49 ;
     chemrof:symbol "In" .
 
-ex:Iodine a chemrof:ChemicalElement ;
+element:Iodine a chemrof:ChemicalElement ;
     rdfs:label "iodine"@en ;
     ciaaw:currentStandardAtomicWeight ex:AW-I-standard ;
     ciaaw:hasDeclaration ex:AW-I-standard ;
@@ -641,7 +642,7 @@ ex:Iodine a chemrof:ChemicalElement ;
     chemrof:atomic_number 53 ;
     chemrof:symbol "I" .
 
-ex:Iridium a chemrof:ChemicalElement ;
+element:Iridium a chemrof:ChemicalElement ;
     rdfs:label "iridium"@en ;
     ciaaw:currentStandardAtomicWeight ex:AW-Ir-standard ;
     ciaaw:hasDeclaration ex:AW-Ir-standard ;
@@ -652,7 +653,7 @@ ex:Iridium a chemrof:ChemicalElement ;
     chemrof:atomic_number 77 ;
     chemrof:symbol "Ir" .
 
-ex:Iron a chemrof:ChemicalElement ;
+element:Iron a chemrof:ChemicalElement ;
     rdfs:label "iron"@en ;
     ciaaw:currentStandardAtomicWeight ex:AW-Fe-standard ;
     ciaaw:hasDeclaration ex:AW-Fe-standard ;
@@ -665,7 +666,7 @@ ex:Iron a chemrof:ChemicalElement ;
     chemrof:atomic_number 26 ;
     chemrof:symbol "Fe" .
 
-ex:Krypton a chemrof:ChemicalElement ;
+element:Krypton a chemrof:ChemicalElement ;
     rdfs:label "krypton"@en ;
     ciaaw:currentStandardAtomicWeight ex:AW-Kr-standard ;
     ciaaw:hasDeclaration ex:AW-Kr-standard ;
@@ -680,7 +681,7 @@ ex:Krypton a chemrof:ChemicalElement ;
     chemrof:atomic_number 36 ;
     chemrof:symbol "Kr" .
 
-ex:Lanthanum a chemrof:ChemicalElement ;
+element:Lanthanum a chemrof:ChemicalElement ;
     rdfs:label "lanthanum"@en ;
     ciaaw:currentStandardAtomicWeight ex:AW-La-standard ;
     ciaaw:hasDeclaration ex:AW-La-standard ;
@@ -691,7 +692,7 @@ ex:Lanthanum a chemrof:ChemicalElement ;
     chemrof:atomic_number 57 ;
     chemrof:symbol "La" .
 
-ex:Lead a chemrof:ChemicalElement ;
+element:Lead a chemrof:ChemicalElement ;
     rdfs:label "lead"@en ;
     ciaaw:currentStandardAtomicWeight ex:AW-Pb-standard ;
     ciaaw:hasDeclaration ex:AW-Pb-standard ;
@@ -704,7 +705,7 @@ ex:Lead a chemrof:ChemicalElement ;
     chemrof:atomic_number 82 ;
     chemrof:symbol "Pb" .
 
-ex:Lithium a chemrof:ChemicalElement ;
+element:Lithium a chemrof:ChemicalElement ;
     rdfs:label "lithium"@en ;
     ciaaw:currentStandardAtomicWeight ex:AW-Li-standard ;
     ciaaw:hasDeclaration ex:AW-Li-standard ;
@@ -715,7 +716,7 @@ ex:Lithium a chemrof:ChemicalElement ;
     chemrof:atomic_number 3 ;
     chemrof:symbol "Li" .
 
-ex:Lutetium a chemrof:ChemicalElement ;
+element:Lutetium a chemrof:ChemicalElement ;
     rdfs:label "lutetium"@en ;
     ciaaw:currentStandardAtomicWeight ex:AW-Lu-standard ;
     ciaaw:hasDeclaration ex:AW-Lu-standard ;
@@ -726,7 +727,7 @@ ex:Lutetium a chemrof:ChemicalElement ;
     chemrof:atomic_number 71 ;
     chemrof:symbol "Lu" .
 
-ex:Magnesium a chemrof:ChemicalElement ;
+element:Magnesium a chemrof:ChemicalElement ;
     rdfs:label "magnesium"@en ;
     ciaaw:currentStandardAtomicWeight ex:AW-Mg-standard ;
     ciaaw:hasDeclaration ex:AW-Mg-standard ;
@@ -738,7 +739,7 @@ ex:Magnesium a chemrof:ChemicalElement ;
     chemrof:atomic_number 12 ;
     chemrof:symbol "Mg" .
 
-ex:Manganese a chemrof:ChemicalElement ;
+element:Manganese a chemrof:ChemicalElement ;
     rdfs:label "manganese"@en ;
     ciaaw:currentStandardAtomicWeight ex:AW-Mn-standard ;
     ciaaw:hasDeclaration ex:AW-Mn-standard ;
@@ -748,7 +749,7 @@ ex:Manganese a chemrof:ChemicalElement ;
     chemrof:atomic_number 25 ;
     chemrof:symbol "Mn" .
 
-ex:Mercury a chemrof:ChemicalElement ;
+element:Mercury a chemrof:ChemicalElement ;
     rdfs:label "mercury"@en ;
     ciaaw:currentStandardAtomicWeight ex:AW-Hg-standard ;
     ciaaw:hasDeclaration ex:AW-Hg-standard ;
@@ -764,7 +765,7 @@ ex:Mercury a chemrof:ChemicalElement ;
     chemrof:atomic_number 80 ;
     chemrof:symbol "Hg" .
 
-ex:Molybdenum a chemrof:ChemicalElement ;
+element:Molybdenum a chemrof:ChemicalElement ;
     rdfs:label "molybdenum"@en ;
     ciaaw:currentStandardAtomicWeight ex:AW-Mo-standard ;
     ciaaw:hasDeclaration ex:AW-Mo-standard ;
@@ -780,7 +781,7 @@ ex:Molybdenum a chemrof:ChemicalElement ;
     chemrof:atomic_number 42 ;
     chemrof:symbol "Mo" .
 
-ex:Neodymium a chemrof:ChemicalElement ;
+element:Neodymium a chemrof:ChemicalElement ;
     rdfs:label "neodymium"@en ;
     ciaaw:currentStandardAtomicWeight ex:AW-Nd-standard ;
     ciaaw:hasDeclaration ex:AW-Nd-standard ;
@@ -796,7 +797,7 @@ ex:Neodymium a chemrof:ChemicalElement ;
     chemrof:atomic_number 60 ;
     chemrof:symbol "Nd" .
 
-ex:Neon a chemrof:ChemicalElement ;
+element:Neon a chemrof:ChemicalElement ;
     rdfs:label "neon"@en ;
     ciaaw:currentStandardAtomicWeight ex:AW-Ne-standard ;
     ciaaw:hasDeclaration ex:AW-Ne-standard ;
@@ -808,7 +809,7 @@ ex:Neon a chemrof:ChemicalElement ;
     chemrof:atomic_number 10 ;
     chemrof:symbol "Ne" .
 
-ex:Nickel a chemrof:ChemicalElement ;
+element:Nickel a chemrof:ChemicalElement ;
     rdfs:label "nickel"@en ;
     ciaaw:currentStandardAtomicWeight ex:AW-Ni-standard ;
     ciaaw:hasDeclaration ex:AW-Ni-standard ;
@@ -822,7 +823,7 @@ ex:Nickel a chemrof:ChemicalElement ;
     chemrof:atomic_number 28 ;
     chemrof:symbol "Ni" .
 
-ex:Niobium a chemrof:ChemicalElement ;
+element:Niobium a chemrof:ChemicalElement ;
     rdfs:label "niobium"@en ;
     ciaaw:currentStandardAtomicWeight ex:AW-Nb-standard ;
     ciaaw:hasDeclaration ex:AW-Nb-standard ;
@@ -832,7 +833,7 @@ ex:Niobium a chemrof:ChemicalElement ;
     chemrof:atomic_number 41 ;
     chemrof:symbol "Nb" .
 
-ex:Nitrogen a chemrof:ChemicalElement ;
+element:Nitrogen a chemrof:ChemicalElement ;
     rdfs:label "nitrogen"@en ;
     ciaaw:currentStandardAtomicWeight ex:AW-N-standard ;
     ciaaw:hasDeclaration ex:AW-N-standard ;
@@ -843,7 +844,7 @@ ex:Nitrogen a chemrof:ChemicalElement ;
     chemrof:atomic_number 7 ;
     chemrof:symbol "N" .
 
-ex:Osmium a chemrof:ChemicalElement ;
+element:Osmium a chemrof:ChemicalElement ;
     rdfs:label "osmium"@en ;
     ciaaw:currentStandardAtomicWeight ex:AW-Os-standard ;
     ciaaw:hasDeclaration ex:AW-Os-standard ;
@@ -859,7 +860,7 @@ ex:Osmium a chemrof:ChemicalElement ;
     chemrof:atomic_number 76 ;
     chemrof:symbol "Os" .
 
-ex:Oxygen a chemrof:ChemicalElement ;
+element:Oxygen a chemrof:ChemicalElement ;
     rdfs:label "oxygen"@en ;
     ciaaw:currentStandardAtomicWeight ex:AW-O-standard ;
     ciaaw:hasDeclaration ex:AW-O-standard ;
@@ -871,7 +872,7 @@ ex:Oxygen a chemrof:ChemicalElement ;
     chemrof:atomic_number 8 ;
     chemrof:symbol "O" .
 
-ex:Palladium a chemrof:ChemicalElement ;
+element:Palladium a chemrof:ChemicalElement ;
     rdfs:label "palladium"@en ;
     ciaaw:currentStandardAtomicWeight ex:AW-Pd-standard ;
     ciaaw:hasDeclaration ex:AW-Pd-standard ;
@@ -886,7 +887,7 @@ ex:Palladium a chemrof:ChemicalElement ;
     chemrof:atomic_number 46 ;
     chemrof:symbol "Pd" .
 
-ex:Phosphorus a chemrof:ChemicalElement ;
+element:Phosphorus a chemrof:ChemicalElement ;
     rdfs:label "phosphorus"@en ;
     ciaaw:currentStandardAtomicWeight ex:AW-P-standard ;
     ciaaw:hasDeclaration ex:AW-P-standard ;
@@ -896,7 +897,7 @@ ex:Phosphorus a chemrof:ChemicalElement ;
     chemrof:atomic_number 15 ;
     chemrof:symbol "P" .
 
-ex:Platinum a chemrof:ChemicalElement ;
+element:Platinum a chemrof:ChemicalElement ;
     rdfs:label "platinum"@en ;
     ciaaw:currentStandardAtomicWeight ex:AW-Pt-standard ;
     ciaaw:hasDeclaration ex:AW-Pt-standard ;
@@ -911,7 +912,7 @@ ex:Platinum a chemrof:ChemicalElement ;
     chemrof:atomic_number 78 ;
     chemrof:symbol "Pt" .
 
-ex:Potassium a chemrof:ChemicalElement ;
+element:Potassium a chemrof:ChemicalElement ;
     rdfs:label "potassium"@en ;
     ciaaw:currentStandardAtomicWeight ex:AW-K-standard ;
     ciaaw:hasDeclaration ex:AW-K-standard ;
@@ -923,7 +924,7 @@ ex:Potassium a chemrof:ChemicalElement ;
     chemrof:atomic_number 19 ;
     chemrof:symbol "K" .
 
-ex:Praseodymium a chemrof:ChemicalElement ;
+element:Praseodymium a chemrof:ChemicalElement ;
     rdfs:label "praseodymium"@en ;
     ciaaw:currentStandardAtomicWeight ex:AW-Pr-standard ;
     ciaaw:hasDeclaration ex:AW-Pr-standard ;
@@ -933,7 +934,7 @@ ex:Praseodymium a chemrof:ChemicalElement ;
     chemrof:atomic_number 59 ;
     chemrof:symbol "Pr" .
 
-ex:Protactinium a chemrof:ChemicalElement ;
+element:Protactinium a chemrof:ChemicalElement ;
     rdfs:label "protactinium"@en ;
     ciaaw:currentStandardAtomicWeight ex:AW-Pa-standard ;
     ciaaw:hasDeclaration ex:AW-Pa-standard ;
@@ -943,7 +944,7 @@ ex:Protactinium a chemrof:ChemicalElement ;
     chemrof:atomic_number 91 ;
     chemrof:symbol "Pa" .
 
-ex:Rhenium a chemrof:ChemicalElement ;
+element:Rhenium a chemrof:ChemicalElement ;
     rdfs:label "rhenium"@en ;
     ciaaw:currentStandardAtomicWeight ex:AW-Re-standard ;
     ciaaw:hasDeclaration ex:AW-Re-standard ;
@@ -954,7 +955,7 @@ ex:Rhenium a chemrof:ChemicalElement ;
     chemrof:atomic_number 75 ;
     chemrof:symbol "Re" .
 
-ex:Rhodium a chemrof:ChemicalElement ;
+element:Rhodium a chemrof:ChemicalElement ;
     rdfs:label "rhodium"@en ;
     ciaaw:currentStandardAtomicWeight ex:AW-Rh-standard ;
     ciaaw:hasDeclaration ex:AW-Rh-standard ;
@@ -964,7 +965,7 @@ ex:Rhodium a chemrof:ChemicalElement ;
     chemrof:atomic_number 45 ;
     chemrof:symbol "Rh" .
 
-ex:Rubidium a chemrof:ChemicalElement ;
+element:Rubidium a chemrof:ChemicalElement ;
     rdfs:label "rubidium"@en ;
     ciaaw:currentStandardAtomicWeight ex:AW-Rb-standard ;
     ciaaw:hasDeclaration ex:AW-Rb-standard ;
@@ -975,7 +976,7 @@ ex:Rubidium a chemrof:ChemicalElement ;
     chemrof:atomic_number 37 ;
     chemrof:symbol "Rb" .
 
-ex:Ruthenium a chemrof:ChemicalElement ;
+element:Ruthenium a chemrof:ChemicalElement ;
     rdfs:label "ruthenium"@en ;
     ciaaw:currentStandardAtomicWeight ex:AW-Ru-standard ;
     ciaaw:hasDeclaration ex:AW-Ru-standard ;
@@ -991,7 +992,7 @@ ex:Ruthenium a chemrof:ChemicalElement ;
     chemrof:atomic_number 44 ;
     chemrof:symbol "Ru" .
 
-ex:Samarium a chemrof:ChemicalElement ;
+element:Samarium a chemrof:ChemicalElement ;
     rdfs:label "samarium"@en ;
     ciaaw:currentStandardAtomicWeight ex:AW-Sm-standard ;
     ciaaw:hasDeclaration ex:AW-Sm-standard ;
@@ -1007,7 +1008,7 @@ ex:Samarium a chemrof:ChemicalElement ;
     chemrof:atomic_number 62 ;
     chemrof:symbol "Sm" .
 
-ex:Scandium a chemrof:ChemicalElement ;
+element:Scandium a chemrof:ChemicalElement ;
     rdfs:label "scandium"@en ;
     ciaaw:currentStandardAtomicWeight ex:AW-Sc-standard ;
     ciaaw:hasDeclaration ex:AW-Sc-standard ;
@@ -1017,7 +1018,7 @@ ex:Scandium a chemrof:ChemicalElement ;
     chemrof:atomic_number 21 ;
     chemrof:symbol "Sc" .
 
-ex:Selenium a chemrof:ChemicalElement ;
+element:Selenium a chemrof:ChemicalElement ;
     rdfs:label "selenium"@en ;
     ciaaw:currentStandardAtomicWeight ex:AW-Se-standard ;
     ciaaw:hasDeclaration ex:AW-Se-standard ;
@@ -1032,7 +1033,7 @@ ex:Selenium a chemrof:ChemicalElement ;
     chemrof:atomic_number 34 ;
     chemrof:symbol "Se" .
 
-ex:Silicon a chemrof:ChemicalElement ;
+element:Silicon a chemrof:ChemicalElement ;
     rdfs:label "silicon"@en ;
     ciaaw:currentStandardAtomicWeight ex:AW-Si-standard ;
     ciaaw:hasDeclaration ex:AW-Si-standard ;
@@ -1044,7 +1045,7 @@ ex:Silicon a chemrof:ChemicalElement ;
     chemrof:atomic_number 14 ;
     chemrof:symbol "Si" .
 
-ex:Silver a chemrof:ChemicalElement ;
+element:Silver a chemrof:ChemicalElement ;
     rdfs:label "silver"@en ;
     ciaaw:currentStandardAtomicWeight ex:AW-Ag-standard ;
     ciaaw:hasDeclaration ex:AW-Ag-standard ;
@@ -1055,7 +1056,7 @@ ex:Silver a chemrof:ChemicalElement ;
     chemrof:atomic_number 47 ;
     chemrof:symbol "Ag" .
 
-ex:Sodium a chemrof:ChemicalElement ;
+element:Sodium a chemrof:ChemicalElement ;
     rdfs:label "sodium"@en ;
     ciaaw:currentStandardAtomicWeight ex:AW-Na-standard ;
     ciaaw:hasDeclaration ex:AW-Na-standard ;
@@ -1065,7 +1066,7 @@ ex:Sodium a chemrof:ChemicalElement ;
     chemrof:atomic_number 11 ;
     chemrof:symbol "Na" .
 
-ex:Strontium a chemrof:ChemicalElement ;
+element:Strontium a chemrof:ChemicalElement ;
     rdfs:label "strontium"@en ;
     ciaaw:currentStandardAtomicWeight ex:AW-Sr-standard ;
     ciaaw:hasDeclaration ex:AW-Sr-standard ;
@@ -1078,7 +1079,7 @@ ex:Strontium a chemrof:ChemicalElement ;
     chemrof:atomic_number 38 ;
     chemrof:symbol "Sr" .
 
-ex:Sulfur a chemrof:ChemicalElement ;
+element:Sulfur a chemrof:ChemicalElement ;
     rdfs:label "sulfur"@en ;
     ciaaw:currentStandardAtomicWeight ex:AW-S-standard ;
     ciaaw:hasDeclaration ex:AW-S-standard ;
@@ -1091,7 +1092,7 @@ ex:Sulfur a chemrof:ChemicalElement ;
     chemrof:atomic_number 16 ;
     chemrof:symbol "S" .
 
-ex:Tantalum a chemrof:ChemicalElement ;
+element:Tantalum a chemrof:ChemicalElement ;
     rdfs:label "tantalum"@en ;
     ciaaw:currentStandardAtomicWeight ex:AW-Ta-standard ;
     ciaaw:hasDeclaration ex:AW-Ta-standard ;
@@ -1102,7 +1103,7 @@ ex:Tantalum a chemrof:ChemicalElement ;
     chemrof:atomic_number 73 ;
     chemrof:symbol "Ta" .
 
-ex:Tellurium a chemrof:ChemicalElement ;
+element:Tellurium a chemrof:ChemicalElement ;
     rdfs:label "tellurium"@en ;
     ciaaw:currentStandardAtomicWeight ex:AW-Te-standard ;
     ciaaw:hasDeclaration ex:AW-Te-standard ;
@@ -1119,7 +1120,7 @@ ex:Tellurium a chemrof:ChemicalElement ;
     chemrof:atomic_number 52 ;
     chemrof:symbol "Te" .
 
-ex:Terbium a chemrof:ChemicalElement ;
+element:Terbium a chemrof:ChemicalElement ;
     rdfs:label "terbium"@en ;
     ciaaw:currentStandardAtomicWeight ex:AW-Tb-standard ;
     ciaaw:hasDeclaration ex:AW-Tb-standard ;
@@ -1129,7 +1130,7 @@ ex:Terbium a chemrof:ChemicalElement ;
     chemrof:atomic_number 65 ;
     chemrof:symbol "Tb" .
 
-ex:Thallium a chemrof:ChemicalElement ;
+element:Thallium a chemrof:ChemicalElement ;
     rdfs:label "thallium"@en ;
     ciaaw:currentStandardAtomicWeight ex:AW-Tl-standard ;
     ciaaw:hasDeclaration ex:AW-Tl-standard ;
@@ -1140,7 +1141,7 @@ ex:Thallium a chemrof:ChemicalElement ;
     chemrof:atomic_number 81 ;
     chemrof:symbol "Tl" .
 
-ex:Thorium a chemrof:ChemicalElement ;
+element:Thorium a chemrof:ChemicalElement ;
     rdfs:label "thorium"@en ;
     ciaaw:currentStandardAtomicWeight ex:AW-Th-standard ;
     ciaaw:hasDeclaration ex:AW-Th-standard ;
@@ -1151,7 +1152,7 @@ ex:Thorium a chemrof:ChemicalElement ;
     chemrof:atomic_number 90 ;
     chemrof:symbol "Th" .
 
-ex:Thulium a chemrof:ChemicalElement ;
+element:Thulium a chemrof:ChemicalElement ;
     rdfs:label "thulium"@en ;
     ciaaw:currentStandardAtomicWeight ex:AW-Tm-standard ;
     ciaaw:hasDeclaration ex:AW-Tm-standard ;
@@ -1161,7 +1162,7 @@ ex:Thulium a chemrof:ChemicalElement ;
     chemrof:atomic_number 69 ;
     chemrof:symbol "Tm" .
 
-ex:Tin a chemrof:ChemicalElement ;
+element:Tin a chemrof:ChemicalElement ;
     rdfs:label "tin"@en ;
     ciaaw:currentStandardAtomicWeight ex:AW-Sn-standard ;
     ciaaw:hasDeclaration ex:AW-Sn-standard ;
@@ -1180,7 +1181,7 @@ ex:Tin a chemrof:ChemicalElement ;
     chemrof:atomic_number 50 ;
     chemrof:symbol "Sn" .
 
-ex:Titanium a chemrof:ChemicalElement ;
+element:Titanium a chemrof:ChemicalElement ;
     rdfs:label "titanium"@en ;
     ciaaw:currentStandardAtomicWeight ex:AW-Ti-standard ;
     ciaaw:hasDeclaration ex:AW-Ti-standard ;
@@ -1194,7 +1195,7 @@ ex:Titanium a chemrof:ChemicalElement ;
     chemrof:atomic_number 22 ;
     chemrof:symbol "Ti" .
 
-ex:Tungsten a chemrof:ChemicalElement ;
+element:Tungsten a chemrof:ChemicalElement ;
     rdfs:label "tungsten"@en ;
     ciaaw:currentStandardAtomicWeight ex:AW-W-standard ;
     ciaaw:hasDeclaration ex:AW-W-standard ;
@@ -1208,7 +1209,7 @@ ex:Tungsten a chemrof:ChemicalElement ;
     chemrof:atomic_number 74 ;
     chemrof:symbol "W" .
 
-ex:Uranium a chemrof:ChemicalElement ;
+element:Uranium a chemrof:ChemicalElement ;
     rdfs:label "uranium"@en ;
     ciaaw:currentStandardAtomicWeight ex:AW-U-standard ;
     ciaaw:hasDeclaration ex:AW-U-standard ;
@@ -1220,7 +1221,7 @@ ex:Uranium a chemrof:ChemicalElement ;
     chemrof:atomic_number 92 ;
     chemrof:symbol "U" .
 
-ex:Vanadium a chemrof:ChemicalElement ;
+element:Vanadium a chemrof:ChemicalElement ;
     rdfs:label "vanadium"@en ;
     ciaaw:currentStandardAtomicWeight ex:AW-V-standard ;
     ciaaw:hasDeclaration ex:AW-V-standard ;
@@ -1231,7 +1232,7 @@ ex:Vanadium a chemrof:ChemicalElement ;
     chemrof:atomic_number 23 ;
     chemrof:symbol "V" .
 
-ex:Xenon a chemrof:ChemicalElement ;
+element:Xenon a chemrof:ChemicalElement ;
     rdfs:label "xenon"@en ;
     ciaaw:currentStandardAtomicWeight ex:AW-Xe-standard ;
     ciaaw:hasDeclaration ex:AW-Xe-standard ;
@@ -1249,7 +1250,7 @@ ex:Xenon a chemrof:ChemicalElement ;
     chemrof:atomic_number 54 ;
     chemrof:symbol "Xe" .
 
-ex:Ytterbium a chemrof:ChemicalElement ;
+element:Ytterbium a chemrof:ChemicalElement ;
     rdfs:label "ytterbium"@en ;
     ciaaw:currentStandardAtomicWeight ex:AW-Yb-standard ;
     ciaaw:hasDeclaration ex:AW-Yb-standard ;
@@ -1265,7 +1266,7 @@ ex:Ytterbium a chemrof:ChemicalElement ;
     chemrof:atomic_number 70 ;
     chemrof:symbol "Yb" .
 
-ex:Yttrium a chemrof:ChemicalElement ;
+element:Yttrium a chemrof:ChemicalElement ;
     rdfs:label "yttrium"@en ;
     ciaaw:currentStandardAtomicWeight ex:AW-Y-standard ;
     ciaaw:hasDeclaration ex:AW-Y-standard ;
@@ -1275,7 +1276,7 @@ ex:Yttrium a chemrof:ChemicalElement ;
     chemrof:atomic_number 39 ;
     chemrof:symbol "Y" .
 
-ex:Zinc a chemrof:ChemicalElement ;
+element:Zinc a chemrof:ChemicalElement ;
     rdfs:label "zinc"@en ;
     ciaaw:currentStandardAtomicWeight ex:AW-Zn-standard ;
     ciaaw:hasDeclaration ex:AW-Zn-standard ;
@@ -1289,7 +1290,7 @@ ex:Zinc a chemrof:ChemicalElement ;
     chemrof:atomic_number 30 ;
     chemrof:symbol "Zn" .
 
-ex:Zirconium a chemrof:ChemicalElement ;
+element:Zirconium a chemrof:ChemicalElement ;
     rdfs:label "zirconium"@en ;
     ciaaw:currentStandardAtomicWeight ex:AW-Zr-standard ;
     ciaaw:hasDeclaration ex:AW-Zr-standard ;
@@ -1305,7 +1306,7 @@ ex:Zirconium a chemrof:ChemicalElement ;
 
 ex:AW-Ag-standard a ciaaw:StandardAtomicWeightDeclaration ;
     ciaaw:footnote ciaaw:note-g ;
-    ciaaw:ofElement ex:Silver ;
+    ciaaw:ofElement element:Silver ;
     ciaaw:value [ a qudt:QuantityValue ;
             qudt:hasUnit unit:UNITLESS ;
             qudt:numericValue 107.8682 ;
@@ -1314,7 +1315,7 @@ ex:AW-Ag-standard a ciaaw:StandardAtomicWeightDeclaration ;
             ciaaw:significantFiguresUncertainty 1 ] .
 
 ex:AW-Al-standard a ciaaw:StandardAtomicWeightDeclaration ;
-    ciaaw:ofElement ex:Aluminium ;
+    ciaaw:ofElement element:Aluminium ;
     ciaaw:value [ a qudt:QuantityValue ;
             qudt:hasUnit unit:UNITLESS ;
             qudt:numericValue 26.9815384 ;
@@ -1323,7 +1324,7 @@ ex:AW-Al-standard a ciaaw:StandardAtomicWeightDeclaration ;
             ciaaw:significantFiguresUncertainty 1 ] .
 
 ex:AW-Ar-standard a ciaaw:StandardAtomicWeightDeclaration ;
-    ciaaw:ofElement ex:Argon ;
+    ciaaw:ofElement element:Argon ;
     ciaaw:value [ a qudt:QuantityValue ;
             qudt:hasUnit unit:UNITLESS ;
             qudt:lowerBound 39.792 ;
@@ -1332,7 +1333,7 @@ ex:AW-Ar-standard a ciaaw:StandardAtomicWeightDeclaration ;
             ciaaw:significantFiguresUpper 5 ] .
 
 ex:AW-As-standard a ciaaw:StandardAtomicWeightDeclaration ;
-    ciaaw:ofElement ex:Arsenic ;
+    ciaaw:ofElement element:Arsenic ;
     ciaaw:value [ a qudt:QuantityValue ;
             qudt:hasUnit unit:UNITLESS ;
             qudt:numericValue 74.921595 ;
@@ -1341,7 +1342,7 @@ ex:AW-As-standard a ciaaw:StandardAtomicWeightDeclaration ;
             ciaaw:significantFiguresUncertainty 1 ] .
 
 ex:AW-Au-standard a ciaaw:StandardAtomicWeightDeclaration ;
-    ciaaw:ofElement ex:Gold ;
+    ciaaw:ofElement element:Gold ;
     ciaaw:value [ a qudt:QuantityValue ;
             qudt:hasUnit unit:UNITLESS ;
             qudt:numericValue 196.966570 ;
@@ -1351,7 +1352,7 @@ ex:AW-Au-standard a ciaaw:StandardAtomicWeightDeclaration ;
 
 ex:AW-B-standard a ciaaw:StandardAtomicWeightDeclaration ;
     ciaaw:footnote ciaaw:note-m ;
-    ciaaw:ofElement ex:Boron ;
+    ciaaw:ofElement element:Boron ;
     ciaaw:value [ a qudt:QuantityValue ;
             qudt:hasUnit unit:UNITLESS ;
             qudt:lowerBound 10.806 ;
@@ -1360,7 +1361,7 @@ ex:AW-B-standard a ciaaw:StandardAtomicWeightDeclaration ;
             ciaaw:significantFiguresUpper 5 ] .
 
 ex:AW-Ba-standard a ciaaw:StandardAtomicWeightDeclaration ;
-    ciaaw:ofElement ex:Barium ;
+    ciaaw:ofElement element:Barium ;
     ciaaw:value [ a qudt:QuantityValue ;
             qudt:hasUnit unit:UNITLESS ;
             qudt:numericValue 137.327 ;
@@ -1369,7 +1370,7 @@ ex:AW-Ba-standard a ciaaw:StandardAtomicWeightDeclaration ;
             ciaaw:significantFiguresUncertainty 1 ] .
 
 ex:AW-Be-standard a ciaaw:StandardAtomicWeightDeclaration ;
-    ciaaw:ofElement ex:Beryllium ;
+    ciaaw:ofElement element:Beryllium ;
     ciaaw:value [ a qudt:QuantityValue ;
             qudt:hasUnit unit:UNITLESS ;
             qudt:numericValue 9.0121831 ;
@@ -1378,7 +1379,7 @@ ex:AW-Be-standard a ciaaw:StandardAtomicWeightDeclaration ;
             ciaaw:significantFiguresUncertainty 1 ] .
 
 ex:AW-Bi-standard a ciaaw:StandardAtomicWeightDeclaration ;
-    ciaaw:ofElement ex:Bismuth ;
+    ciaaw:ofElement element:Bismuth ;
     ciaaw:value [ a qudt:QuantityValue ;
             qudt:hasUnit unit:UNITLESS ;
             qudt:numericValue 208.98040 ;
@@ -1387,7 +1388,7 @@ ex:AW-Bi-standard a ciaaw:StandardAtomicWeightDeclaration ;
             ciaaw:significantFiguresUncertainty 1 ] .
 
 ex:AW-Br-standard a ciaaw:StandardAtomicWeightDeclaration ;
-    ciaaw:ofElement ex:Bromine ;
+    ciaaw:ofElement element:Bromine ;
     ciaaw:value [ a qudt:QuantityValue ;
             qudt:hasUnit unit:UNITLESS ;
             qudt:lowerBound 79.901 ;
@@ -1396,7 +1397,7 @@ ex:AW-Br-standard a ciaaw:StandardAtomicWeightDeclaration ;
             ciaaw:significantFiguresUpper 5 ] .
 
 ex:AW-C-standard a ciaaw:StandardAtomicWeightDeclaration ;
-    ciaaw:ofElement ex:Carbon ;
+    ciaaw:ofElement element:Carbon ;
     ciaaw:value [ a qudt:QuantityValue ;
             qudt:hasUnit unit:UNITLESS ;
             qudt:lowerBound 12.0096 ;
@@ -1406,7 +1407,7 @@ ex:AW-C-standard a ciaaw:StandardAtomicWeightDeclaration ;
 
 ex:AW-Ca-standard a ciaaw:StandardAtomicWeightDeclaration ;
     ciaaw:footnote ciaaw:note-g ;
-    ciaaw:ofElement ex:Calcium ;
+    ciaaw:ofElement element:Calcium ;
     ciaaw:value [ a qudt:QuantityValue ;
             qudt:hasUnit unit:UNITLESS ;
             qudt:numericValue 40.078 ;
@@ -1416,7 +1417,7 @@ ex:AW-Ca-standard a ciaaw:StandardAtomicWeightDeclaration ;
 
 ex:AW-Cd-standard a ciaaw:StandardAtomicWeightDeclaration ;
     ciaaw:footnote ciaaw:note-g ;
-    ciaaw:ofElement ex:Cadmium ;
+    ciaaw:ofElement element:Cadmium ;
     ciaaw:value [ a qudt:QuantityValue ;
             qudt:hasUnit unit:UNITLESS ;
             qudt:numericValue 112.414 ;
@@ -1426,7 +1427,7 @@ ex:AW-Cd-standard a ciaaw:StandardAtomicWeightDeclaration ;
 
 ex:AW-Ce-standard a ciaaw:StandardAtomicWeightDeclaration ;
     ciaaw:footnote ciaaw:note-g ;
-    ciaaw:ofElement ex:Cerium ;
+    ciaaw:ofElement element:Cerium ;
     ciaaw:value [ a qudt:QuantityValue ;
             qudt:hasUnit unit:UNITLESS ;
             qudt:numericValue 140.116 ;
@@ -1436,7 +1437,7 @@ ex:AW-Ce-standard a ciaaw:StandardAtomicWeightDeclaration ;
 
 ex:AW-Cl-standard a ciaaw:StandardAtomicWeightDeclaration ;
     ciaaw:footnote ciaaw:note-m ;
-    ciaaw:ofElement ex:Chlorine ;
+    ciaaw:ofElement element:Chlorine ;
     ciaaw:value [ a qudt:QuantityValue ;
             qudt:hasUnit unit:UNITLESS ;
             qudt:lowerBound 35.446 ;
@@ -1445,7 +1446,7 @@ ex:AW-Cl-standard a ciaaw:StandardAtomicWeightDeclaration ;
             ciaaw:significantFiguresUpper 5 ] .
 
 ex:AW-Co-standard a ciaaw:StandardAtomicWeightDeclaration ;
-    ciaaw:ofElement ex:Cobalt ;
+    ciaaw:ofElement element:Cobalt ;
     ciaaw:value [ a qudt:QuantityValue ;
             qudt:hasUnit unit:UNITLESS ;
             qudt:numericValue 58.933194 ;
@@ -1454,7 +1455,7 @@ ex:AW-Co-standard a ciaaw:StandardAtomicWeightDeclaration ;
             ciaaw:significantFiguresUncertainty 1 ] .
 
 ex:AW-Cr-standard a ciaaw:StandardAtomicWeightDeclaration ;
-    ciaaw:ofElement ex:Chromium ;
+    ciaaw:ofElement element:Chromium ;
     ciaaw:value [ a qudt:QuantityValue ;
             qudt:hasUnit unit:UNITLESS ;
             qudt:numericValue 51.9961 ;
@@ -1463,7 +1464,7 @@ ex:AW-Cr-standard a ciaaw:StandardAtomicWeightDeclaration ;
             ciaaw:significantFiguresUncertainty 1 ] .
 
 ex:AW-Cs-standard a ciaaw:StandardAtomicWeightDeclaration ;
-    ciaaw:ofElement ex:Caesium ;
+    ciaaw:ofElement element:Caesium ;
     ciaaw:value [ a qudt:QuantityValue ;
             qudt:hasUnit unit:UNITLESS ;
             qudt:numericValue 132.90545196 ;
@@ -1473,7 +1474,7 @@ ex:AW-Cs-standard a ciaaw:StandardAtomicWeightDeclaration ;
 
 ex:AW-Cu-standard a ciaaw:StandardAtomicWeightDeclaration ;
     ciaaw:footnote ciaaw:note-r ;
-    ciaaw:ofElement ex:Copper ;
+    ciaaw:ofElement element:Copper ;
     ciaaw:value [ a qudt:QuantityValue ;
             qudt:hasUnit unit:UNITLESS ;
             qudt:numericValue 63.546 ;
@@ -1483,7 +1484,7 @@ ex:AW-Cu-standard a ciaaw:StandardAtomicWeightDeclaration ;
 
 ex:AW-Dy-standard a ciaaw:StandardAtomicWeightDeclaration ;
     ciaaw:footnote ciaaw:note-g ;
-    ciaaw:ofElement ex:Dysprosium ;
+    ciaaw:ofElement element:Dysprosium ;
     ciaaw:value [ a qudt:QuantityValue ;
             qudt:hasUnit unit:UNITLESS ;
             qudt:numericValue 162.500 ;
@@ -1493,7 +1494,7 @@ ex:AW-Dy-standard a ciaaw:StandardAtomicWeightDeclaration ;
 
 ex:AW-Er-standard a ciaaw:StandardAtomicWeightDeclaration ;
     ciaaw:footnote ciaaw:note-g ;
-    ciaaw:ofElement ex:Erbium ;
+    ciaaw:ofElement element:Erbium ;
     ciaaw:value [ a qudt:QuantityValue ;
             qudt:hasUnit unit:UNITLESS ;
             qudt:numericValue 167.259 ;
@@ -1503,7 +1504,7 @@ ex:AW-Er-standard a ciaaw:StandardAtomicWeightDeclaration ;
 
 ex:AW-Eu-standard a ciaaw:StandardAtomicWeightDeclaration ;
     ciaaw:footnote ciaaw:note-g ;
-    ciaaw:ofElement ex:Europium ;
+    ciaaw:ofElement element:Europium ;
     ciaaw:value [ a qudt:QuantityValue ;
             qudt:hasUnit unit:UNITLESS ;
             qudt:numericValue 151.964 ;
@@ -1512,7 +1513,7 @@ ex:AW-Eu-standard a ciaaw:StandardAtomicWeightDeclaration ;
             ciaaw:significantFiguresUncertainty 1 ] .
 
 ex:AW-F-standard a ciaaw:StandardAtomicWeightDeclaration ;
-    ciaaw:ofElement ex:Fluorine ;
+    ciaaw:ofElement element:Fluorine ;
     ciaaw:value [ a qudt:QuantityValue ;
             qudt:hasUnit unit:UNITLESS ;
             qudt:numericValue 18.998403162 ;
@@ -1521,7 +1522,7 @@ ex:AW-F-standard a ciaaw:StandardAtomicWeightDeclaration ;
             ciaaw:significantFiguresUncertainty 1 ] .
 
 ex:AW-Fe-standard a ciaaw:StandardAtomicWeightDeclaration ;
-    ciaaw:ofElement ex:Iron ;
+    ciaaw:ofElement element:Iron ;
     ciaaw:value [ a qudt:QuantityValue ;
             qudt:hasUnit unit:UNITLESS ;
             qudt:numericValue 55.845 ;
@@ -1530,7 +1531,7 @@ ex:AW-Fe-standard a ciaaw:StandardAtomicWeightDeclaration ;
             ciaaw:significantFiguresUncertainty 1 ] .
 
 ex:AW-Ga-standard a ciaaw:StandardAtomicWeightDeclaration ;
-    ciaaw:ofElement ex:Gallium ;
+    ciaaw:ofElement element:Gallium ;
     ciaaw:value [ a qudt:QuantityValue ;
             qudt:hasUnit unit:UNITLESS ;
             qudt:numericValue 69.723 ;
@@ -1540,7 +1541,7 @@ ex:AW-Ga-standard a ciaaw:StandardAtomicWeightDeclaration ;
 
 ex:AW-Gd-standard a ciaaw:StandardAtomicWeightDeclaration ;
     ciaaw:footnote ciaaw:note-g ;
-    ciaaw:ofElement ex:Gadolinium ;
+    ciaaw:ofElement element:Gadolinium ;
     ciaaw:value [ a qudt:QuantityValue ;
             qudt:hasUnit unit:UNITLESS ;
             qudt:numericValue 157.249 ;
@@ -1549,7 +1550,7 @@ ex:AW-Gd-standard a ciaaw:StandardAtomicWeightDeclaration ;
             ciaaw:significantFiguresUncertainty 1 ] .
 
 ex:AW-Ge-standard a ciaaw:StandardAtomicWeightDeclaration ;
-    ciaaw:ofElement ex:Germanium ;
+    ciaaw:ofElement element:Germanium ;
     ciaaw:value [ a qudt:QuantityValue ;
             qudt:hasUnit unit:UNITLESS ;
             qudt:numericValue 72.630 ;
@@ -1560,7 +1561,7 @@ ex:AW-Ge-standard a ciaaw:StandardAtomicWeightDeclaration ;
 ex:AW-H-standard-2009 a ciaaw:StandardAtomicWeightDeclaration ;
     dcterms:issued "2009"^^xsd:gYear ;
     ciaaw:footnote ciaaw:note-m ;
-    ciaaw:ofElement ex:Hydrogen ;
+    ciaaw:ofElement element:Hydrogen ;
     ciaaw:value [ a qudt:QuantityValue ;
             qudt:hasUnit unit:UNITLESS ;
             qudt:lowerBound 1.00784 ;
@@ -1571,7 +1572,7 @@ ex:AW-H-standard-2009 a ciaaw:StandardAtomicWeightDeclaration ;
 ex:AW-He-standard a ciaaw:StandardAtomicWeightDeclaration ;
     ciaaw:footnote ciaaw:note-g,
         ciaaw:note-r ;
-    ciaaw:ofElement ex:Helium ;
+    ciaaw:ofElement element:Helium ;
     ciaaw:value [ a qudt:QuantityValue ;
             qudt:hasUnit unit:UNITLESS ;
             qudt:numericValue 4.002602 ;
@@ -1581,7 +1582,7 @@ ex:AW-He-standard a ciaaw:StandardAtomicWeightDeclaration ;
 
 ex:AW-Hf-standard a ciaaw:StandardAtomicWeightDeclaration ;
     ciaaw:footnote ciaaw:note-g ;
-    ciaaw:ofElement ex:Hafnium ;
+    ciaaw:ofElement element:Hafnium ;
     ciaaw:value [ a qudt:QuantityValue ;
             qudt:hasUnit unit:UNITLESS ;
             qudt:numericValue 178.486 ;
@@ -1590,7 +1591,7 @@ ex:AW-Hf-standard a ciaaw:StandardAtomicWeightDeclaration ;
             ciaaw:significantFiguresUncertainty 1 ] .
 
 ex:AW-Hg-standard a ciaaw:StandardAtomicWeightDeclaration ;
-    ciaaw:ofElement ex:Mercury ;
+    ciaaw:ofElement element:Mercury ;
     ciaaw:value [ a qudt:QuantityValue ;
             qudt:hasUnit unit:UNITLESS ;
             qudt:numericValue 200.592 ;
@@ -1599,7 +1600,7 @@ ex:AW-Hg-standard a ciaaw:StandardAtomicWeightDeclaration ;
             ciaaw:significantFiguresUncertainty 1 ] .
 
 ex:AW-Ho-standard a ciaaw:StandardAtomicWeightDeclaration ;
-    ciaaw:ofElement ex:Holmium ;
+    ciaaw:ofElement element:Holmium ;
     ciaaw:value [ a qudt:QuantityValue ;
             qudt:hasUnit unit:UNITLESS ;
             qudt:numericValue 164.930329 ;
@@ -1608,7 +1609,7 @@ ex:AW-Ho-standard a ciaaw:StandardAtomicWeightDeclaration ;
             ciaaw:significantFiguresUncertainty 1 ] .
 
 ex:AW-I-standard a ciaaw:StandardAtomicWeightDeclaration ;
-    ciaaw:ofElement ex:Iodine ;
+    ciaaw:ofElement element:Iodine ;
     ciaaw:value [ a qudt:QuantityValue ;
             qudt:hasUnit unit:UNITLESS ;
             qudt:numericValue 126.90447 ;
@@ -1617,7 +1618,7 @@ ex:AW-I-standard a ciaaw:StandardAtomicWeightDeclaration ;
             ciaaw:significantFiguresUncertainty 1 ] .
 
 ex:AW-In-standard a ciaaw:StandardAtomicWeightDeclaration ;
-    ciaaw:ofElement ex:Indium ;
+    ciaaw:ofElement element:Indium ;
     ciaaw:value [ a qudt:QuantityValue ;
             qudt:hasUnit unit:UNITLESS ;
             qudt:numericValue 114.818 ;
@@ -1626,7 +1627,7 @@ ex:AW-In-standard a ciaaw:StandardAtomicWeightDeclaration ;
             ciaaw:significantFiguresUncertainty 1 ] .
 
 ex:AW-Ir-standard a ciaaw:StandardAtomicWeightDeclaration ;
-    ciaaw:ofElement ex:Iridium ;
+    ciaaw:ofElement element:Iridium ;
     ciaaw:value [ a qudt:QuantityValue ;
             qudt:hasUnit unit:UNITLESS ;
             qudt:numericValue 192.217 ;
@@ -1635,7 +1636,7 @@ ex:AW-Ir-standard a ciaaw:StandardAtomicWeightDeclaration ;
             ciaaw:significantFiguresUncertainty 1 ] .
 
 ex:AW-K-standard a ciaaw:StandardAtomicWeightDeclaration ;
-    ciaaw:ofElement ex:Potassium ;
+    ciaaw:ofElement element:Potassium ;
     ciaaw:value [ a qudt:QuantityValue ;
             qudt:hasUnit unit:UNITLESS ;
             qudt:numericValue 39.0983 ;
@@ -1646,7 +1647,7 @@ ex:AW-K-standard a ciaaw:StandardAtomicWeightDeclaration ;
 ex:AW-Kr-standard a ciaaw:StandardAtomicWeightDeclaration ;
     ciaaw:footnote ciaaw:note-g,
         ciaaw:note-m ;
-    ciaaw:ofElement ex:Krypton ;
+    ciaaw:ofElement element:Krypton ;
     ciaaw:value [ a qudt:QuantityValue ;
             qudt:hasUnit unit:UNITLESS ;
             qudt:numericValue 83.798 ;
@@ -1656,7 +1657,7 @@ ex:AW-Kr-standard a ciaaw:StandardAtomicWeightDeclaration ;
 
 ex:AW-La-standard a ciaaw:StandardAtomicWeightDeclaration ;
     ciaaw:footnote ciaaw:note-g ;
-    ciaaw:ofElement ex:Lanthanum ;
+    ciaaw:ofElement element:Lanthanum ;
     ciaaw:value [ a qudt:QuantityValue ;
             qudt:hasUnit unit:UNITLESS ;
             qudt:numericValue 138.90547 ;
@@ -1666,7 +1667,7 @@ ex:AW-La-standard a ciaaw:StandardAtomicWeightDeclaration ;
 
 ex:AW-Li-standard a ciaaw:StandardAtomicWeightDeclaration ;
     ciaaw:footnote ciaaw:note-m ;
-    ciaaw:ofElement ex:Lithium ;
+    ciaaw:ofElement element:Lithium ;
     ciaaw:value [ a qudt:QuantityValue ;
             qudt:hasUnit unit:UNITLESS ;
             qudt:lowerBound 6.938 ;
@@ -1676,7 +1677,7 @@ ex:AW-Li-standard a ciaaw:StandardAtomicWeightDeclaration ;
 
 ex:AW-Lu-standard a ciaaw:StandardAtomicWeightDeclaration ;
     ciaaw:footnote ciaaw:note-g ;
-    ciaaw:ofElement ex:Lutetium ;
+    ciaaw:ofElement element:Lutetium ;
     ciaaw:value [ a qudt:QuantityValue ;
             qudt:hasUnit unit:UNITLESS ;
             qudt:numericValue 174.96669 ;
@@ -1685,7 +1686,7 @@ ex:AW-Lu-standard a ciaaw:StandardAtomicWeightDeclaration ;
             ciaaw:significantFiguresUncertainty 1 ] .
 
 ex:AW-Mg-standard a ciaaw:StandardAtomicWeightDeclaration ;
-    ciaaw:ofElement ex:Magnesium ;
+    ciaaw:ofElement element:Magnesium ;
     ciaaw:value [ a qudt:QuantityValue ;
             qudt:hasUnit unit:UNITLESS ;
             qudt:lowerBound 24.304 ;
@@ -1694,7 +1695,7 @@ ex:AW-Mg-standard a ciaaw:StandardAtomicWeightDeclaration ;
             ciaaw:significantFiguresUpper 5 ] .
 
 ex:AW-Mn-standard a ciaaw:StandardAtomicWeightDeclaration ;
-    ciaaw:ofElement ex:Manganese ;
+    ciaaw:ofElement element:Manganese ;
     ciaaw:value [ a qudt:QuantityValue ;
             qudt:hasUnit unit:UNITLESS ;
             qudt:numericValue 54.938043 ;
@@ -1704,7 +1705,7 @@ ex:AW-Mn-standard a ciaaw:StandardAtomicWeightDeclaration ;
 
 ex:AW-Mo-standard a ciaaw:StandardAtomicWeightDeclaration ;
     ciaaw:footnote ciaaw:note-g ;
-    ciaaw:ofElement ex:Molybdenum ;
+    ciaaw:ofElement element:Molybdenum ;
     ciaaw:value [ a qudt:QuantityValue ;
             qudt:hasUnit unit:UNITLESS ;
             qudt:numericValue 95.95 ;
@@ -1714,7 +1715,7 @@ ex:AW-Mo-standard a ciaaw:StandardAtomicWeightDeclaration ;
 
 ex:AW-N-standard a ciaaw:StandardAtomicWeightDeclaration ;
     ciaaw:footnote ciaaw:note-m ;
-    ciaaw:ofElement ex:Nitrogen ;
+    ciaaw:ofElement element:Nitrogen ;
     ciaaw:value [ a qudt:QuantityValue ;
             qudt:hasUnit unit:UNITLESS ;
             qudt:lowerBound 14.00643 ;
@@ -1723,7 +1724,7 @@ ex:AW-N-standard a ciaaw:StandardAtomicWeightDeclaration ;
             ciaaw:significantFiguresUpper 7 ] .
 
 ex:AW-Na-standard a ciaaw:StandardAtomicWeightDeclaration ;
-    ciaaw:ofElement ex:Sodium ;
+    ciaaw:ofElement element:Sodium ;
     ciaaw:value [ a qudt:QuantityValue ;
             qudt:hasUnit unit:UNITLESS ;
             qudt:numericValue 22.98976928 ;
@@ -1732,7 +1733,7 @@ ex:AW-Na-standard a ciaaw:StandardAtomicWeightDeclaration ;
             ciaaw:significantFiguresUncertainty 1 ] .
 
 ex:AW-Nb-standard a ciaaw:StandardAtomicWeightDeclaration ;
-    ciaaw:ofElement ex:Niobium ;
+    ciaaw:ofElement element:Niobium ;
     ciaaw:value [ a qudt:QuantityValue ;
             qudt:hasUnit unit:UNITLESS ;
             qudt:numericValue 92.90637 ;
@@ -1742,7 +1743,7 @@ ex:AW-Nb-standard a ciaaw:StandardAtomicWeightDeclaration ;
 
 ex:AW-Nd-standard a ciaaw:StandardAtomicWeightDeclaration ;
     ciaaw:footnote ciaaw:note-g ;
-    ciaaw:ofElement ex:Neodymium ;
+    ciaaw:ofElement element:Neodymium ;
     ciaaw:value [ a qudt:QuantityValue ;
             qudt:hasUnit unit:UNITLESS ;
             qudt:numericValue 144.242 ;
@@ -1753,7 +1754,7 @@ ex:AW-Nd-standard a ciaaw:StandardAtomicWeightDeclaration ;
 ex:AW-Ne-standard a ciaaw:StandardAtomicWeightDeclaration ;
     ciaaw:footnote ciaaw:note-g,
         ciaaw:note-m ;
-    ciaaw:ofElement ex:Neon ;
+    ciaaw:ofElement element:Neon ;
     ciaaw:value [ a qudt:QuantityValue ;
             qudt:hasUnit unit:UNITLESS ;
             qudt:numericValue 20.1797 ;
@@ -1763,7 +1764,7 @@ ex:AW-Ne-standard a ciaaw:StandardAtomicWeightDeclaration ;
 
 ex:AW-Ni-standard a ciaaw:StandardAtomicWeightDeclaration ;
     ciaaw:footnote ciaaw:note-r ;
-    ciaaw:ofElement ex:Nickel ;
+    ciaaw:ofElement element:Nickel ;
     ciaaw:value [ a qudt:QuantityValue ;
             qudt:hasUnit unit:UNITLESS ;
             qudt:numericValue 58.6934 ;
@@ -1773,7 +1774,7 @@ ex:AW-Ni-standard a ciaaw:StandardAtomicWeightDeclaration ;
 
 ex:AW-O-standard a ciaaw:StandardAtomicWeightDeclaration ;
     ciaaw:footnote ciaaw:note-m ;
-    ciaaw:ofElement ex:Oxygen ;
+    ciaaw:ofElement element:Oxygen ;
     ciaaw:value [ a qudt:QuantityValue ;
             qudt:hasUnit unit:UNITLESS ;
             qudt:lowerBound 15.99903 ;
@@ -1783,7 +1784,7 @@ ex:AW-O-standard a ciaaw:StandardAtomicWeightDeclaration ;
 
 ex:AW-Os-standard a ciaaw:StandardAtomicWeightDeclaration ;
     ciaaw:footnote ciaaw:note-g ;
-    ciaaw:ofElement ex:Osmium ;
+    ciaaw:ofElement element:Osmium ;
     ciaaw:value [ a qudt:QuantityValue ;
             qudt:hasUnit unit:UNITLESS ;
             qudt:numericValue 190.23 ;
@@ -1792,7 +1793,7 @@ ex:AW-Os-standard a ciaaw:StandardAtomicWeightDeclaration ;
             ciaaw:significantFiguresUncertainty 1 ] .
 
 ex:AW-P-standard a ciaaw:StandardAtomicWeightDeclaration ;
-    ciaaw:ofElement ex:Phosphorus ;
+    ciaaw:ofElement element:Phosphorus ;
     ciaaw:value [ a qudt:QuantityValue ;
             qudt:hasUnit unit:UNITLESS ;
             qudt:numericValue 30.973761998 ;
@@ -1801,7 +1802,7 @@ ex:AW-P-standard a ciaaw:StandardAtomicWeightDeclaration ;
             ciaaw:significantFiguresUncertainty 1 ] .
 
 ex:AW-Pa-standard a ciaaw:StandardAtomicWeightDeclaration ;
-    ciaaw:ofElement ex:Protactinium ;
+    ciaaw:ofElement element:Protactinium ;
     ciaaw:value [ a qudt:QuantityValue ;
             qudt:hasUnit unit:UNITLESS ;
             qudt:numericValue 231.03588 ;
@@ -1810,7 +1811,7 @@ ex:AW-Pa-standard a ciaaw:StandardAtomicWeightDeclaration ;
             ciaaw:significantFiguresUncertainty 1 ] .
 
 ex:AW-Pb-standard a ciaaw:StandardAtomicWeightDeclaration ;
-    ciaaw:ofElement ex:Lead ;
+    ciaaw:ofElement element:Lead ;
     ciaaw:value [ a qudt:QuantityValue ;
             qudt:hasUnit unit:UNITLESS ;
             qudt:lowerBound 206.14 ;
@@ -1820,7 +1821,7 @@ ex:AW-Pb-standard a ciaaw:StandardAtomicWeightDeclaration ;
 
 ex:AW-Pd-standard a ciaaw:StandardAtomicWeightDeclaration ;
     ciaaw:footnote ciaaw:note-g ;
-    ciaaw:ofElement ex:Palladium ;
+    ciaaw:ofElement element:Palladium ;
     ciaaw:value [ a qudt:QuantityValue ;
             qudt:hasUnit unit:UNITLESS ;
             qudt:numericValue 106.42 ;
@@ -1829,7 +1830,7 @@ ex:AW-Pd-standard a ciaaw:StandardAtomicWeightDeclaration ;
             ciaaw:significantFiguresUncertainty 1 ] .
 
 ex:AW-Pr-standard a ciaaw:StandardAtomicWeightDeclaration ;
-    ciaaw:ofElement ex:Praseodymium ;
+    ciaaw:ofElement element:Praseodymium ;
     ciaaw:value [ a qudt:QuantityValue ;
             qudt:hasUnit unit:UNITLESS ;
             qudt:numericValue 140.90766 ;
@@ -1838,7 +1839,7 @@ ex:AW-Pr-standard a ciaaw:StandardAtomicWeightDeclaration ;
             ciaaw:significantFiguresUncertainty 1 ] .
 
 ex:AW-Pt-standard a ciaaw:StandardAtomicWeightDeclaration ;
-    ciaaw:ofElement ex:Platinum ;
+    ciaaw:ofElement element:Platinum ;
     ciaaw:value [ a qudt:QuantityValue ;
             qudt:hasUnit unit:UNITLESS ;
             qudt:numericValue 195.084 ;
@@ -1848,7 +1849,7 @@ ex:AW-Pt-standard a ciaaw:StandardAtomicWeightDeclaration ;
 
 ex:AW-Rb-standard a ciaaw:StandardAtomicWeightDeclaration ;
     ciaaw:footnote ciaaw:note-g ;
-    ciaaw:ofElement ex:Rubidium ;
+    ciaaw:ofElement element:Rubidium ;
     ciaaw:value [ a qudt:QuantityValue ;
             qudt:hasUnit unit:UNITLESS ;
             qudt:numericValue 85.4678 ;
@@ -1857,7 +1858,7 @@ ex:AW-Rb-standard a ciaaw:StandardAtomicWeightDeclaration ;
             ciaaw:significantFiguresUncertainty 1 ] .
 
 ex:AW-Re-standard a ciaaw:StandardAtomicWeightDeclaration ;
-    ciaaw:ofElement ex:Rhenium ;
+    ciaaw:ofElement element:Rhenium ;
     ciaaw:value [ a qudt:QuantityValue ;
             qudt:hasUnit unit:UNITLESS ;
             qudt:numericValue 186.207 ;
@@ -1866,7 +1867,7 @@ ex:AW-Re-standard a ciaaw:StandardAtomicWeightDeclaration ;
             ciaaw:significantFiguresUncertainty 1 ] .
 
 ex:AW-Rh-standard a ciaaw:StandardAtomicWeightDeclaration ;
-    ciaaw:ofElement ex:Rhodium ;
+    ciaaw:ofElement element:Rhodium ;
     ciaaw:value [ a qudt:QuantityValue ;
             qudt:hasUnit unit:UNITLESS ;
             qudt:numericValue 102.90549 ;
@@ -1876,7 +1877,7 @@ ex:AW-Rh-standard a ciaaw:StandardAtomicWeightDeclaration ;
 
 ex:AW-Ru-standard a ciaaw:StandardAtomicWeightDeclaration ;
     ciaaw:footnote ciaaw:note-g ;
-    ciaaw:ofElement ex:Ruthenium ;
+    ciaaw:ofElement element:Ruthenium ;
     ciaaw:value [ a qudt:QuantityValue ;
             qudt:hasUnit unit:UNITLESS ;
             qudt:numericValue 101.07 ;
@@ -1885,7 +1886,7 @@ ex:AW-Ru-standard a ciaaw:StandardAtomicWeightDeclaration ;
             ciaaw:significantFiguresUncertainty 1 ] .
 
 ex:AW-S-standard a ciaaw:StandardAtomicWeightDeclaration ;
-    ciaaw:ofElement ex:Sulfur ;
+    ciaaw:ofElement element:Sulfur ;
     ciaaw:value [ a qudt:QuantityValue ;
             qudt:hasUnit unit:UNITLESS ;
             qudt:lowerBound 32.059 ;
@@ -1895,7 +1896,7 @@ ex:AW-S-standard a ciaaw:StandardAtomicWeightDeclaration ;
 
 ex:AW-Sb-standard a ciaaw:StandardAtomicWeightDeclaration ;
     ciaaw:footnote ciaaw:note-g ;
-    ciaaw:ofElement ex:Antimony ;
+    ciaaw:ofElement element:Antimony ;
     ciaaw:value [ a qudt:QuantityValue ;
             qudt:hasUnit unit:UNITLESS ;
             qudt:numericValue 121.760 ;
@@ -1904,7 +1905,7 @@ ex:AW-Sb-standard a ciaaw:StandardAtomicWeightDeclaration ;
             ciaaw:significantFiguresUncertainty 1 ] .
 
 ex:AW-Sc-standard a ciaaw:StandardAtomicWeightDeclaration ;
-    ciaaw:ofElement ex:Scandium ;
+    ciaaw:ofElement element:Scandium ;
     ciaaw:value [ a qudt:QuantityValue ;
             qudt:hasUnit unit:UNITLESS ;
             qudt:numericValue 44.955907 ;
@@ -1914,7 +1915,7 @@ ex:AW-Sc-standard a ciaaw:StandardAtomicWeightDeclaration ;
 
 ex:AW-Se-standard a ciaaw:StandardAtomicWeightDeclaration ;
     ciaaw:footnote ciaaw:note-r ;
-    ciaaw:ofElement ex:Selenium ;
+    ciaaw:ofElement element:Selenium ;
     ciaaw:value [ a qudt:QuantityValue ;
             qudt:hasUnit unit:UNITLESS ;
             qudt:numericValue 78.971 ;
@@ -1923,7 +1924,7 @@ ex:AW-Se-standard a ciaaw:StandardAtomicWeightDeclaration ;
             ciaaw:significantFiguresUncertainty 1 ] .
 
 ex:AW-Si-standard a ciaaw:StandardAtomicWeightDeclaration ;
-    ciaaw:ofElement ex:Silicon ;
+    ciaaw:ofElement element:Silicon ;
     ciaaw:value [ a qudt:QuantityValue ;
             qudt:hasUnit unit:UNITLESS ;
             qudt:lowerBound 28.084 ;
@@ -1933,7 +1934,7 @@ ex:AW-Si-standard a ciaaw:StandardAtomicWeightDeclaration ;
 
 ex:AW-Sm-standard a ciaaw:StandardAtomicWeightDeclaration ;
     ciaaw:footnote ciaaw:note-g ;
-    ciaaw:ofElement ex:Samarium ;
+    ciaaw:ofElement element:Samarium ;
     ciaaw:value [ a qudt:QuantityValue ;
             qudt:hasUnit unit:UNITLESS ;
             qudt:numericValue 150.36 ;
@@ -1943,7 +1944,7 @@ ex:AW-Sm-standard a ciaaw:StandardAtomicWeightDeclaration ;
 
 ex:AW-Sn-standard a ciaaw:StandardAtomicWeightDeclaration ;
     ciaaw:footnote ciaaw:note-g ;
-    ciaaw:ofElement ex:Tin ;
+    ciaaw:ofElement element:Tin ;
     ciaaw:value [ a qudt:QuantityValue ;
             qudt:hasUnit unit:UNITLESS ;
             qudt:numericValue 118.710 ;
@@ -1954,7 +1955,7 @@ ex:AW-Sn-standard a ciaaw:StandardAtomicWeightDeclaration ;
 ex:AW-Sr-standard a ciaaw:StandardAtomicWeightDeclaration ;
     ciaaw:footnote ciaaw:note-g,
         ciaaw:note-r ;
-    ciaaw:ofElement ex:Strontium ;
+    ciaaw:ofElement element:Strontium ;
     ciaaw:value [ a qudt:QuantityValue ;
             qudt:hasUnit unit:UNITLESS ;
             qudt:numericValue 87.62 ;
@@ -1963,7 +1964,7 @@ ex:AW-Sr-standard a ciaaw:StandardAtomicWeightDeclaration ;
             ciaaw:significantFiguresUncertainty 1 ] .
 
 ex:AW-Ta-standard a ciaaw:StandardAtomicWeightDeclaration ;
-    ciaaw:ofElement ex:Tantalum ;
+    ciaaw:ofElement element:Tantalum ;
     ciaaw:value [ a qudt:QuantityValue ;
             qudt:hasUnit unit:UNITLESS ;
             qudt:numericValue 180.94788 ;
@@ -1972,7 +1973,7 @@ ex:AW-Ta-standard a ciaaw:StandardAtomicWeightDeclaration ;
             ciaaw:significantFiguresUncertainty 1 ] .
 
 ex:AW-Tb-standard a ciaaw:StandardAtomicWeightDeclaration ;
-    ciaaw:ofElement ex:Terbium ;
+    ciaaw:ofElement element:Terbium ;
     ciaaw:value [ a qudt:QuantityValue ;
             qudt:hasUnit unit:UNITLESS ;
             qudt:numericValue 158.925354 ;
@@ -1982,7 +1983,7 @@ ex:AW-Tb-standard a ciaaw:StandardAtomicWeightDeclaration ;
 
 ex:AW-Te-standard a ciaaw:StandardAtomicWeightDeclaration ;
     ciaaw:footnote ciaaw:note-g ;
-    ciaaw:ofElement ex:Tellurium ;
+    ciaaw:ofElement element:Tellurium ;
     ciaaw:value [ a qudt:QuantityValue ;
             qudt:hasUnit unit:UNITLESS ;
             qudt:numericValue 127.60 ;
@@ -1992,7 +1993,7 @@ ex:AW-Te-standard a ciaaw:StandardAtomicWeightDeclaration ;
 
 ex:AW-Th-standard a ciaaw:StandardAtomicWeightDeclaration ;
     ciaaw:footnote ciaaw:note-g ;
-    ciaaw:ofElement ex:Thorium ;
+    ciaaw:ofElement element:Thorium ;
     ciaaw:value [ a qudt:QuantityValue ;
             qudt:hasUnit unit:UNITLESS ;
             qudt:numericValue 232.0377 ;
@@ -2001,7 +2002,7 @@ ex:AW-Th-standard a ciaaw:StandardAtomicWeightDeclaration ;
             ciaaw:significantFiguresUncertainty 1 ] .
 
 ex:AW-Ti-standard a ciaaw:StandardAtomicWeightDeclaration ;
-    ciaaw:ofElement ex:Titanium ;
+    ciaaw:ofElement element:Titanium ;
     ciaaw:value [ a qudt:QuantityValue ;
             qudt:hasUnit unit:UNITLESS ;
             qudt:numericValue 47.867 ;
@@ -2010,7 +2011,7 @@ ex:AW-Ti-standard a ciaaw:StandardAtomicWeightDeclaration ;
             ciaaw:significantFiguresUncertainty 1 ] .
 
 ex:AW-Tl-standard a ciaaw:StandardAtomicWeightDeclaration ;
-    ciaaw:ofElement ex:Thallium ;
+    ciaaw:ofElement element:Thallium ;
     ciaaw:value [ a qudt:QuantityValue ;
             qudt:hasUnit unit:UNITLESS ;
             qudt:lowerBound 204.382 ;
@@ -2019,7 +2020,7 @@ ex:AW-Tl-standard a ciaaw:StandardAtomicWeightDeclaration ;
             ciaaw:significantFiguresUpper 6 ] .
 
 ex:AW-Tm-standard a ciaaw:StandardAtomicWeightDeclaration ;
-    ciaaw:ofElement ex:Thulium ;
+    ciaaw:ofElement element:Thulium ;
     ciaaw:value [ a qudt:QuantityValue ;
             qudt:hasUnit unit:UNITLESS ;
             qudt:numericValue 168.934219 ;
@@ -2030,7 +2031,7 @@ ex:AW-Tm-standard a ciaaw:StandardAtomicWeightDeclaration ;
 ex:AW-U-standard a ciaaw:StandardAtomicWeightDeclaration ;
     ciaaw:footnote ciaaw:note-g,
         ciaaw:note-m ;
-    ciaaw:ofElement ex:Uranium ;
+    ciaaw:ofElement element:Uranium ;
     ciaaw:value [ a qudt:QuantityValue ;
             qudt:hasUnit unit:UNITLESS ;
             qudt:numericValue 238.02891 ;
@@ -2039,7 +2040,7 @@ ex:AW-U-standard a ciaaw:StandardAtomicWeightDeclaration ;
             ciaaw:significantFiguresUncertainty 1 ] .
 
 ex:AW-V-standard a ciaaw:StandardAtomicWeightDeclaration ;
-    ciaaw:ofElement ex:Vanadium ;
+    ciaaw:ofElement element:Vanadium ;
     ciaaw:value [ a qudt:QuantityValue ;
             qudt:hasUnit unit:UNITLESS ;
             qudt:numericValue 50.9415 ;
@@ -2048,7 +2049,7 @@ ex:AW-V-standard a ciaaw:StandardAtomicWeightDeclaration ;
             ciaaw:significantFiguresUncertainty 1 ] .
 
 ex:AW-W-standard a ciaaw:StandardAtomicWeightDeclaration ;
-    ciaaw:ofElement ex:Tungsten ;
+    ciaaw:ofElement element:Tungsten ;
     ciaaw:value [ a qudt:QuantityValue ;
             qudt:hasUnit unit:UNITLESS ;
             qudt:numericValue 183.84 ;
@@ -2059,7 +2060,7 @@ ex:AW-W-standard a ciaaw:StandardAtomicWeightDeclaration ;
 ex:AW-Xe-standard a ciaaw:StandardAtomicWeightDeclaration ;
     ciaaw:footnote ciaaw:note-g,
         ciaaw:note-m ;
-    ciaaw:ofElement ex:Xenon ;
+    ciaaw:ofElement element:Xenon ;
     ciaaw:value [ a qudt:QuantityValue ;
             qudt:hasUnit unit:UNITLESS ;
             qudt:numericValue 131.293 ;
@@ -2068,7 +2069,7 @@ ex:AW-Xe-standard a ciaaw:StandardAtomicWeightDeclaration ;
             ciaaw:significantFiguresUncertainty 1 ] .
 
 ex:AW-Y-standard a ciaaw:StandardAtomicWeightDeclaration ;
-    ciaaw:ofElement ex:Yttrium ;
+    ciaaw:ofElement element:Yttrium ;
     ciaaw:value [ a qudt:QuantityValue ;
             qudt:hasUnit unit:UNITLESS ;
             qudt:numericValue 88.905838 ;
@@ -2078,7 +2079,7 @@ ex:AW-Y-standard a ciaaw:StandardAtomicWeightDeclaration ;
 
 ex:AW-Yb-standard a ciaaw:StandardAtomicWeightDeclaration ;
     ciaaw:footnote ciaaw:note-g ;
-    ciaaw:ofElement ex:Ytterbium ;
+    ciaaw:ofElement element:Ytterbium ;
     ciaaw:value [ a qudt:QuantityValue ;
             qudt:hasUnit unit:UNITLESS ;
             qudt:numericValue 173.045 ;
@@ -2088,7 +2089,7 @@ ex:AW-Yb-standard a ciaaw:StandardAtomicWeightDeclaration ;
 
 ex:AW-Zn-standard a ciaaw:StandardAtomicWeightDeclaration ;
     ciaaw:footnote ciaaw:note-r ;
-    ciaaw:ofElement ex:Zinc ;
+    ciaaw:ofElement element:Zinc ;
     ciaaw:value [ a qudt:QuantityValue ;
             qudt:hasUnit unit:UNITLESS ;
             qudt:numericValue 65.38 ;
@@ -2098,7 +2099,7 @@ ex:AW-Zn-standard a ciaaw:StandardAtomicWeightDeclaration ;
 
 ex:AW-Zr-standard a ciaaw:StandardAtomicWeightDeclaration ;
     ciaaw:footnote ciaaw:note-g ;
-    ciaaw:ofElement ex:Zirconium ;
+    ciaaw:ofElement element:Zirconium ;
     ciaaw:value [ a qudt:QuantityValue ;
             qudt:hasUnit unit:UNITLESS ;
             qudt:numericValue 91.222 ;

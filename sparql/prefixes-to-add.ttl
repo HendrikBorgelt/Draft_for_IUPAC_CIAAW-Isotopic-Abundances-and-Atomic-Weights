@@ -11,6 +11,9 @@ _:prefix_chebi sh:namespace "http://purl.obolibrary.org/obo/CHEBI_"^^xsd:anyURI;
 _:prefix_ex sh:namespace "https://example.org/data/"^^xsd:anyURI;
   sh:prefix "ex" .
 
+_:prefix_element sh:namespace "https://hendrikborgelt.github.io/Draft_for_IUPAC_CIAAW-Isotopic-Abundances-and-Atomic-Weights/elements/"^^xsd:anyURI;
+  sh:prefix "element" .
+
 _:prefix_rdf sh:namespace "http://www.w3.org/1999/02/22-rdf-syntax-ns#"^^xsd:anyURI;
   sh:prefix "rdf" .
 

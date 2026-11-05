@@ -40,6 +40,7 @@ CC0 = "https://creativecommons.org/publicdomain/zero/1.0/"
 
 CURIE_MAP = {
     "ex": "https://example.org/data/",
+    "element": "https://hendrikborgelt.github.io/Draft_for_IUPAC_CIAAW-Isotopic-Abundances-and-Atomic-Weights/elements/",
     "ciaaw": str(CIAAW),
     "chemrof": str(CHEMROF),
     "wd": "http://www.wikidata.org/entity/",

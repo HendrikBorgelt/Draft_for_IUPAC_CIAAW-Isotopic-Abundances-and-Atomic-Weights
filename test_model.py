@@ -21,6 +21,7 @@ HERE = Path(__file__).parent
 FIX = HERE / "fixtures"
 CIAAW = Namespace(c.DEFAULT_VOCAB_NS)
 EX = Namespace(c.DEFAULT_DATA_NS)
+ELEMENT = Namespace(c.DEFAULT_ELEMENT_NS)
 QUDT, CHEMROF = c.QUDT, c.CHEMROF
 SH = t.SH
 
@@ -158,7 +159,7 @@ def test_data_without_the_vocabulary_block_conforms(shapes):
 def test_planned_declaration_types_conform(data, shapes):
     conventional, mass = EX["AW-H-conventional"], EX["Mass-H1"]
     for decl, kind, subject, about, pointer, unit in (
-            (conventional, CIAAW.ConventionalAtomicWeightDeclaration, EX["Hydrogen"], CIAAW.ofElement,
+            (conventional, CIAAW.ConventionalAtomicWeightDeclaration, ELEMENT["Hydrogen"], CIAAW.ofElement,
              CIAAW.currentConventionalAtomicWeight, c.UNIT.UNITLESS),
             (mass, CIAAW.AtomicMassDeclaration, EX["H-1"], CIAAW.ofIsotope, CIAAW.currentAtomicMass, c.UNIT.DA)):
         q = BNode()
@@ -180,23 +181,23 @@ def test_planned_declaration_types_conform(data, shapes):
 
 # --- broken data: every rule must fire ----------------------------------------------------
 def missing_symbol(g):
-    g.remove((EX["Hydrogen"], CHEMROF.symbol, None))
+    g.remove((ELEMENT["Hydrogen"], CHEMROF.symbol, None))
 
 
 def two_symbols(g):
-    g.add((EX["Hydrogen"], CHEMROF.symbol, Literal("Hy")))
+    g.add((ELEMENT["Hydrogen"], CHEMROF.symbol, Literal("Hy")))
 
 
 def bad_symbol(g):
-    replace(g, EX["Hydrogen"], CHEMROF.symbol, Literal("hydrogen"))
+    replace(g, ELEMENT["Hydrogen"], CHEMROF.symbol, Literal("hydrogen"))
 
 
 def zero_atomic_number(g):
-    replace(g, EX["Hydrogen"], CHEMROF.atomic_number, Literal(0))
+    replace(g, ELEMENT["Hydrogen"], CHEMROF.atomic_number, Literal(0))
 
 
 def wrong_chebi_namespace(g):
-    g.add((EX["Hydrogen"], SKOS.closeMatch, EX["somewhere-else"]))
+    g.add((ELEMENT["Hydrogen"], SKOS.closeMatch, EX["somewhere-else"]))
 
 
 def isotope_without_abundance(g):
@@ -204,7 +205,7 @@ def isotope_without_abundance(g):
 
 
 def wrong_kind_of_declaration(g):
-    replace(g, EX["Hydrogen"], CIAAW.currentStandardAtomicWeight, EX["Abundance-H1"])
+    replace(g, ELEMENT["Hydrogen"], CIAAW.currentStandardAtomicWeight, EX["Abundance-H1"])
 
 
 def declaration_without_value(g):
@@ -273,19 +274,19 @@ def isotope_without_element(g):
 
 
 def isotope_in_two_elements(g):
-    g.add((EX["Helium"], CIAAW.hasIsotope, EX["H-1"]))
+    g.add((ELEMENT["Helium"], CIAAW.hasIsotope, EX["H-1"]))
 
 
 def current_not_in_history(g):
-    g.remove((EX["Hydrogen"], CIAAW.hasDeclaration, EX["AW-H-standard-2009"]))
+    g.remove((ELEMENT["Hydrogen"], CIAAW.hasDeclaration, EX["AW-H-standard-2009"]))
 
 
 def declaration_points_elsewhere(g):
-    replace(g, EX["AW-He-standard"], CIAAW.ofElement, EX["Hydrogen"])
+    replace(g, EX["AW-He-standard"], CIAAW.ofElement, ELEMENT["Hydrogen"])
 
 
 def shortcut_differs(g):
-    replace(g, EX["Hydrogen"], CIAAW.standardAtomicWeightLower, Literal("1.5", datatype=XSD.decimal))
+    replace(g, ELEMENT["Hydrogen"], CIAAW.standardAtomicWeightLower, Literal("1.5", datatype=XSD.decimal))
 
 
 @pytest.mark.parametrize("break_it, expected", [
@@ -327,7 +328,7 @@ OLD, NEW = EX["AW-H-standard-2009"], EX["AW-H-standard-2027"]
 
 
 def pointer_to_deprecated(g):
-    replace(g, EX["Hydrogen"], CIAAW.currentStandardAtomicWeight, OLD)
+    replace(g, ELEMENT["Hydrogen"], CIAAW.currentStandardAtomicWeight, OLD)
 
 
 def deprecated_without_replacement(g):
@@ -343,7 +344,7 @@ def replacement_one_way(g):
 
 
 def replaced_by_a_non_declaration(g):
-    replace(g, OLD, DCTERMS.isReplacedBy, EX["Hydrogen"])
+    replace(g, OLD, DCTERMS.isReplacedBy, ELEMENT["Hydrogen"])
 
 
 @pytest.mark.parametrize("break_it, expected", [

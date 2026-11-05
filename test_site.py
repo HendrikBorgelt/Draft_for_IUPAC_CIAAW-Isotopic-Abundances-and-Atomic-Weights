@@ -64,7 +64,7 @@ def test_abundance_table_uses_ciaaw_notation(site):
 
 def test_elements_missing_from_the_abundance_table_get_no_row():
     """The CIAAW table stops at uranium, so elements 93 to 118 should not appear as empty rows."""
-    empty = b.Element(b.URIRef("https://example.org/data/Neptunium"), "neptunium", "Np", 93, None, [], [], None, [])
+    empty = b.Element(b.URIRef("https://hendrikborgelt.github.io/Draft_for_IUPAC_CIAAW-Isotopic-Abundances-and-Atomic-Weights/elements/Neptunium"), "neptunium", "Np", 93, None, [], [], None, [])
     assert "neptunium" not in b.page_isotopic_abundances([empty], {})
 
 

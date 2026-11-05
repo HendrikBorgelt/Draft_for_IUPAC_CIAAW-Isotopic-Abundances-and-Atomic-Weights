@@ -20,6 +20,7 @@ HERE = Path(__file__).parent
 FIX = HERE / "fixtures"
 CIAAW = Namespace(c.DEFAULT_VOCAB_NS)
 EX = Namespace(c.DEFAULT_DATA_NS)
+ELEMENT = Namespace(c.DEFAULT_ELEMENT_NS)
 QUDT = c.QUDT
 
 
@@ -112,7 +113,7 @@ def test_rows_without_an_opening_tr_are_read():
 
 def test_hydrogen_matches_the_draft_model():
     g, _, _ = build()
-    h = EX["Hydrogen"]
+    h = ELEMENT["Hydrogen"]
     assert (h, c.CHEMROF.atomic_number, Literal(1)) in g
     assert g.value(h, CIAAW.standardAtomicWeightLower) == Literal("1.00784", datatype=XSD.decimal)
     assert g.value(h, CIAAW.standardAtomicWeightUpper) == Literal("1.00811", datatype=XSD.decimal)
@@ -129,12 +130,12 @@ def test_hydrogen_matches_the_draft_model():
         q = value_node(g, ab)
         assert (g.value(q, QUDT.lowerBound), g.value(q, QUDT.upperBound)) == (
             Literal(lo, datatype=XSD.decimal), Literal(hi, datatype=XSD.decimal))
-    assert (EX["Hydrogen"], CIAAW.hasIsotope, EX["H-1"]) in g
+    assert (ELEMENT["Hydrogen"], CIAAW.hasIsotope, EX["H-1"]) in g
 
 
 def test_value_with_uncertainty_is_stored_exactly():
     g, _, _ = build()
-    q = value_node(g, decl_of(g, EX["Dysprosium"], CIAAW.currentStandardAtomicWeight))
+    q = value_node(g, decl_of(g, ELEMENT["Dysprosium"], CIAAW.currentStandardAtomicWeight))
     assert g.value(q, QUDT.numericValue) == Literal("162.500", datatype=XSD.decimal)
     assert str(g.value(q, QUDT.numericValue)) == "162.500"          # lexical form keeps the zeros
     assert g.value(q, QUDT.standardUncertainty) == Literal("0.001", datatype=XSD.decimal)
@@ -149,7 +150,7 @@ def test_exact_values_and_elements_without_stable_isotopes():
     be = value_node(g, decl_of(g, EX["Be-9"], CIAAW.currentAbundance))
     assert g.value(be, QUDT.numericValue) == Literal("1", datatype=XSD.decimal)
     assert g.value(be, QUDT.standardUncertainty) is None
-    tc = EX["Technetium"]
+    tc = ELEMENT["Technetium"]
     assert g.value(tc, CIAAW.currentStandardAtomicWeight) is None   # "—" in the table: no declaration
     assert g.value(tc, CIAAW.longestLivedMassNumber) == Literal(97)
     assert g.value(tc, CIAAW.hasIsotope) is None
@@ -171,7 +172,7 @@ def test_abundances_sum_to_one_where_values_are_given():
     g, _, _ = build()
     for symbol, name in (("Ne", "Neon"), ("Ca", "Calcium"), ("Dy", "Dysprosium"), ("He", "Helium")):
         total = Decimal(0)
-        for iso in g.objects(EX[name], CIAAW.hasIsotope):
+        for iso in g.objects(ELEMENT[name], CIAAW.hasIsotope):
             q = value_node(g, decl_of(g, iso, CIAAW.currentAbundance))
             total += Decimal(str(g.value(q, QUDT.numericValue)))
         assert abs(total - 1) <= Decimal("0.0005"), symbol
@@ -193,8 +194,8 @@ def test_exactly_one_current_pointer_and_it_is_in_the_history():
 def test_hash_iri_style_depends_on_value_only():
     g1, _, _ = build(supplement=False, iri_style="hash")
     g2, _, _ = build(supplement=True, iri_style="hash")
-    d1 = g1.value(EX["Hydrogen"], CIAAW.currentStandardAtomicWeight)
-    d2 = g2.value(EX["Hydrogen"], CIAAW.currentStandardAtomicWeight)
+    d1 = g1.value(ELEMENT["Hydrogen"], CIAAW.currentStandardAtomicWeight)
+    d2 = g2.value(ELEMENT["Hydrogen"], CIAAW.currentStandardAtomicWeight)
     assert d1 == d2                                                 # supplement does not change the IRI
     assert str(d1).endswith(c.short_hash("AW-H-standard", "[1.00784,1.00811]"))
     assert not str(d1).endswith(c.short_hash("AW-H-standard", "[1.00784,1.00812]"))
@@ -203,19 +204,19 @@ def test_hash_iri_style_depends_on_value_only():
 # --- alignment with the draft in issue 20 -------------------------------------------------
 def test_readable_iris_follow_the_draft():
     g, _, _ = build()
-    assert g.value(EX["Hydrogen"], CIAAW.currentStandardAtomicWeight) == EX["AW-H-standard-2009"]
+    assert g.value(ELEMENT["Hydrogen"], CIAAW.currentStandardAtomicWeight) == EX["AW-H-standard-2009"]
     assert g.value(EX["H-1"], CIAAW.currentAbundance) == EX["Abundance-H1"]      # no year known
     assert g.value(EX["H-2"], CIAAW.currentAbundance) == EX["Abundance-H2-2016"]  # year from supplement
-    assert g.value(EX["Calcium"], CIAAW.currentStandardAtomicWeight) == EX["AW-Ca-standard"]
+    assert g.value(ELEMENT["Calcium"], CIAAW.currentStandardAtomicWeight) == EX["AW-Ca-standard"]
 
 
 def test_chebi_matches_come_from_the_supplement():
     g, _, _ = build()
     chebi = Namespace("http://purl.obolibrary.org/obo/CHEBI_")
-    assert (EX["Hydrogen"], c.SKOS.closeMatch, chebi["49637"]) in g
+    assert (ELEMENT["Hydrogen"], c.SKOS.closeMatch, chebi["49637"]) in g
     assert (EX["H-1"], c.SKOS.closeMatch, chebi["29236"]) in g
     assert (EX["H-2"], c.SKOS.closeMatch, chebi["29237"]) in g
-    assert g.value(EX["Helium"], c.SKOS.closeMatch) is None               # nothing invented
+    assert g.value(ELEMENT["Helium"], c.SKOS.closeMatch) is None               # nothing invented
 
 
 def test_vocabulary_block_and_publication_nodes_follow_the_draft():
@@ -234,7 +235,7 @@ def test_changed_value_deprecates_the_old_declaration():
     prev = roundtrip(first)
     sup = {**c.load_supplement(str(FIX / "supplement.csv")), ("H", "standard"): {"year": "2027", "doi": "", "chebi": ""}}
     g, _, _ = build(weights_html=changed_weights_html(), sup=sup, previous=prev)
-    h, old, new = EX["Hydrogen"], EX["AW-H-standard-2009"], EX["AW-H-standard-2027"]
+    h, old, new = ELEMENT["Hydrogen"], EX["AW-H-standard-2009"], EX["AW-H-standard-2027"]
     assert g.value(h, CIAAW.currentStandardAtomicWeight) == new
     assert set(g.objects(h, CIAAW.hasDeclaration)) == {old, new}
     assert (old, c.OWL.deprecated, c.Literal(True)) in g
@@ -257,7 +258,7 @@ def test_unchanged_values_are_not_deprecated():
     g, _, _ = build(weights_html=changed_weights_html(), previous=roundtrip(first))
     deprecated = set(g.subjects(c.OWL.deprecated, Literal(True)))
     assert deprecated == {EX["AW-H-standard-2009"]}                       # only hydrogen changed
-    assert len(set(g.objects(EX["Helium"], CIAAW.hasDeclaration))) == 1
+    assert len(set(g.objects(ELEMENT["Helium"], CIAAW.hasDeclaration))) == 1
     assert len(set(g.objects(EX["H-1"], CIAAW.hasDeclaration))) == 1
 
 
@@ -276,7 +277,7 @@ def test_exact_values_survive_the_turtle_roundtrip_without_false_deprecation():
 def test_same_name_new_value_gets_a_hash_suffix():
     first, _, _ = build()                                                   # supplement keeps year 2009
     g, _, _ = build(weights_html=changed_weights_html(), previous=roundtrip(first))
-    new = g.value(EX["Hydrogen"], CIAAW.currentStandardAtomicWeight)
+    new = g.value(ELEMENT["Hydrogen"], CIAAW.currentStandardAtomicWeight)
     assert new != EX["AW-H-standard-2009"] and str(new).startswith(str(EX["AW-H-standard-2009-"]))
     assert (EX["AW-H-standard-2009"], c.DCTERMS.isReplacedBy, new) in g
 
@@ -284,8 +285,8 @@ def test_same_name_new_value_gets_a_hash_suffix():
 def test_year_added_later_is_not_a_new_declaration():
     first, _, _ = build(supplement=False)                                   # IRI without year
     g, _, _ = build(previous=roundtrip(first))                              # same values, year 2009 now known
-    assert g.value(EX["Hydrogen"], CIAAW.currentStandardAtomicWeight) == EX["AW-H-standard-2009"]
-    assert set(g.objects(EX["Hydrogen"], CIAAW.hasDeclaration)) == {EX["AW-H-standard-2009"]}
+    assert g.value(ELEMENT["Hydrogen"], CIAAW.currentStandardAtomicWeight) == EX["AW-H-standard-2009"]
+    assert set(g.objects(ELEMENT["Hydrogen"], CIAAW.hasDeclaration)) == {EX["AW-H-standard-2009"]}
     assert list(g.subjects(c.OWL.deprecated, None)) == []
 
 
@@ -299,8 +300,8 @@ def test_history_survives_several_generations():
     g2, _, _ = build(weights_html=html2, sup=with_year("2027"), previous=roundtrip(g1))
     g3, _, _ = build(weights_html=html3, sup=with_year("2029"), previous=roundtrip(g2))
     d09, d27, d29 = (EX[f"AW-H-standard-{y}"] for y in ("2009", "2027", "2029"))
-    assert set(g3.objects(EX["Hydrogen"], CIAAW.hasDeclaration)) == {d09, d27, d29}
-    assert g3.value(EX["Hydrogen"], CIAAW.currentStandardAtomicWeight) == d29
+    assert set(g3.objects(ELEMENT["Hydrogen"], CIAAW.hasDeclaration)) == {d09, d27, d29}
+    assert g3.value(ELEMENT["Hydrogen"], CIAAW.currentStandardAtomicWeight) == d29
     assert (d09, c.DCTERMS.isReplacedBy, d27) in g3                        # first link kept
     assert (d27, c.DCTERMS.isReplacedBy, d29) in g3                        # new link added
     assert set(g3.subjects(c.OWL.deprecated, Literal(True))) == {d09, d27}

@@ -27,6 +27,7 @@ SH = Namespace("http://www.w3.org/ns/shacl#")
 ENDPOINT = "https://another-endpoint.example/sparql"
 PREFIXES = """PREFIX ciaaw: <https://example.org/ciaaw-draft#>
 PREFIX ex: <https://example.org/data/>
+PREFIX element: <https://hendrikborgelt.github.io/Draft_for_IUPAC_CIAAW-Isotopic-Abundances-and-Atomic-Weights/elements/>
 PREFIX qudt: <http://qudt.org/schema/qudt/>
 """
 
@@ -91,7 +92,7 @@ def test_oxigraph_version_matches_the_worker_lockfile():
 def test_oxigraph_normalises_decimals_but_significant_figures_survive(store):
     """Why the SPARQL page warns about trailing zeros, and why significantFigures is in the model."""
     query = PREFIXES + """SELECT ?value ?figures WHERE {
-        ex:Dysprosium ciaaw:currentStandardAtomicWeight/ciaaw:value ?q .
+        element:Dysprosium ciaaw:currentStandardAtomicWeight/ciaaw:value ?q .
         ?q qudt:numericValue ?value ; ciaaw:significantFigures ?figures }"""
     row = next(iter(store.query(query)))
     assert row["value"].value == "162.5"

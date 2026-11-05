@@ -3,7 +3,7 @@
   "source": "ciaaw.ttl",
   "local_isotopes": 289,
   "resource_items": 3171,
-  "resource_version": "BODR release 10",
+  "resource_version": "Debian package bodr 10-3",
   "counts": {
     "DIFFERENT": 133,
     "NO-VALUE": 1
