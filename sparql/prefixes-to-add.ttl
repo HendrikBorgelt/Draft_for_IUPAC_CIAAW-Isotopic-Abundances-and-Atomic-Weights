@@ -1,0 +1,23 @@
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# Prefixes used by the data that sparql/examples/prefixes.ttl does not declare yet. They are added to the same
+# sparql_examples_prefixes node, so the examples can use them too. combine_sparql_examples.py joins this file after
+# prefixes.ttl, because the Turtle blank nodes are only shared within one file.
+
+_:prefix_chebi sh:namespace "http://purl.obolibrary.org/obo/CHEBI_"^^xsd:anyURI;
+  sh:prefix "chebi" .
+
+_:prefix_ex sh:namespace "https://example.org/data/"^^xsd:anyURI;
+  sh:prefix "ex" .
+
+_:prefix_rdf sh:namespace "http://www.w3.org/1999/02/22-rdf-syntax-ns#"^^xsd:anyURI;
+  sh:prefix "rdf" .
+
+_:prefix_unit sh:namespace "http://qudt.org/vocab/unit/"^^xsd:anyURI;
+  sh:prefix "unit" .
+
+_:prefix_xsd sh:namespace "http://www.w3.org/2001/XMLSchema#"^^xsd:anyURI;
+  sh:prefix "xsd" .
+
+_:sparql_examples_prefixes sh:declare _:prefix_chebi, _:prefix_ex, _:prefix_rdf, _:prefix_unit, _:prefix_xsd .

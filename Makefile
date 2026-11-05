@@ -143,6 +143,7 @@ sparql-examples: $(SPARQL_EXAMPLES_JAR) $(wildcard sparql/queries/*.rq)
 site:
 	$(PYTHON) build_site.py --data $(SITE_DATA) --revision $(SITE_REVISION) --out $(SITE_DIR) \
 		$(if $(SPARQL_ENDPOINT),--sparql-endpoint "$(SPARQL_ENDPOINT)")
+	$(PYTHON) combine_sparql_examples.py --data $(SITE_DATA) -o $(SITE_DIR)/data/combined.ttl
 
 serve: site
 	$(PYTHON) -m http.server 8000 --directory $(SITE_DIR)
