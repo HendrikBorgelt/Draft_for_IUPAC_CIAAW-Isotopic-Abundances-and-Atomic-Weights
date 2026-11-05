@@ -2,23 +2,31 @@
 """Build the static prototype site for GitHub Pages.
 
   python build_site.py [--data example-output.ttl] [--revision example-output-next.ttl] [--out _site]
+                       [--sparql-endpoint URL]
 
 Every page is written as Markdown first. The HTML page is rendered from that same Markdown and wrapped
 in site/template.html, so both versions always say the same thing. The Turtle is published unchanged,
 and the other RDF formats are translated from it.
+
+The SPARQL page shows the queries in sparql/queries with their results, computed with Oxigraph because
+that is the engine behind the endpoint. A live query form appears once an endpoint URL is given, through
+--sparql-endpoint or the SPARQL_ENDPOINT environment variable.
 """
 from __future__ import annotations
 
 import argparse
+import os
 import re
 import shutil
 import string
 import sys
 from dataclasses import dataclass, field
 from decimal import Decimal
+from html import escape
 from pathlib import Path
 
 import markdown
+import pyoxigraph as ox
 from rdflib import Graph, RDF, RDFS, URIRef
 from rdflib.namespace import DCTERMS, OWL, SKOS
 
@@ -47,7 +55,20 @@ FORMATS = [
 
 NAV = [("index", "Home"), ("atomic-weights", "Atomic Weights"), ("isotopic-abundances", "Isotopic Abundances"),
        ("model", "Data Model"), ("downloads", "Downloads"), ("about", "About")]
-SUBNAV = {"model": [("model", "Data Model"), ("revision-example", "Revision Example")]}
+SUBNAV = {"model": [("model", "Data Model"), ("revision-example", "Revision Example")],
+          "downloads": [("downloads", "Downloads"), ("sparql", "SPARQL")]}
+
+QUERIES = HERE / "sparql" / "queries"
+WORKER_URL = "https://github.com/JervenBolleman/oxigraph-cloudflare-webworker"
+SHORT_NAMES = {c.DEFAULT_DATA_NS: "ex:", str(c.CHEBI): "chebi:"}
+SPARQL_FORM_MARK = "<!-- sparql-form -->"
+SPARQL_FORM = """<form id="sparql-form" data-endpoint="{endpoint}">
+<label for="sparql-query">Query</label>
+<textarea id="sparql-query" rows="12" spellcheck="false"></textarea>
+<button type="submit">Run query</button>
+<p id="sparql-status" role="status"></p>
+<div id="sparql-results"></div>
+</form>"""
 
 MD_NOTICE = ("> **PROTOTYPE:** a suggestion, not an official CIAAW or IUPAC page. "
              "Official values are at [ciaaw.org](https://ciaaw.org).\n\n")
@@ -364,7 +385,77 @@ def page_downloads(out: Path, elements: list[Element]) -> str:
         "## Model\n",
         "The [DCTAP profile](model/model_dctap.csv) with its [configuration](model/dctap.yaml), "
         "and the generated SHACL shapes:\n", format_table(out, "model/model_shacl") + "\n",
-        "The diagrams are also available as [Markdown](model/diagrams.md).\n"])
+        "The diagrams are also available as [Markdown](model/diagrams.md).\n",
+        "## Querying the data\n",
+        "See the [SPARQL page](sparql.md) for example queries.\n"])
+
+
+@dataclass
+class Example:
+    title: str
+    description: str
+    query: str
+    columns: list[str]
+    rows: list[list[str]]
+
+
+def short_term(term) -> str:
+    if term is None:
+        return ""
+    for namespace, prefix in SHORT_NAMES.items():
+        if term.value.startswith(namespace):
+            return prefix + term.value[len(namespace):]
+    return term.value
+
+
+def read_examples(turtle: Path) -> list[Example]:
+    """Run the example queries on Oxigraph, so the page shows what the endpoint would return."""
+    store = ox.Store()
+    store.load(turtle.read_bytes(), format=ox.RdfFormat.TURTLE)
+    examples = []
+    for path in sorted(QUERIES.glob("*.rq")):
+        query = path.read_text(encoding="utf-8")
+        title, description = (line.removeprefix("# ") for line in query.splitlines()[:2])
+        solutions = store.query(query)
+        columns = [variable.value for variable in solutions.variables]
+        rows = [[short_term(row[name]) for name in columns] for row in solutions]
+        examples.append(Example(title, description, query, columns, rows))
+    return examples
+
+
+def result_table(example: Example) -> str:
+    lines = ["| " + " | ".join(example.columns) + " |", "| " + " | ".join("---" for _ in example.columns) + " |"]
+    lines += ["| " + " | ".join(row) + " |" for row in example.rows]
+    return "\n".join(lines)
+
+
+def page_sparql(examples: list[Example], endpoint: str) -> str:
+    if endpoint:
+        status = [f"The prototype endpoint is at `{endpoint}`. It may change or disappear without notice.\n",
+                  "## Try it\n", f"{SPARQL_FORM_MARK}\n",
+                  "From the command line:\n",
+                  f'```bash\ncurl --data-urlencode "query=ASK {{ ?s ?p ?o }}" {endpoint}\n```\n',
+                  "For `CONSTRUCT` and `DESCRIBE`, ask for an RDF format, for example with "
+                  "`-H \"Accept: text/turtle\"`.\n"]
+    else:
+        status = [f"> **The live endpoint is not running yet.** See [issue 1]({ISSUES_URL}/1). "
+                  "The queries below can already be run on the [downloaded data](downloads.md).\n"]
+    parts = ["# SPARQL\n", *status,
+             "## What the endpoint holds\n",
+             f"It serves the [current data](data/ciaaw.ttl) read-only, using [Oxigraph](https://github.com/oxigraph/oxigraph) "
+             f"inside a Cloudflare Worker ([oxigraph-cloudflare-webworker]({WORKER_URL})). The "
+             "[revision example](revision-example.md) is not loaded, so its invented value cannot appear in results.\n",
+             "## Decimals and trailing zeros\n",
+             "Oxigraph stores decimals as numbers, so `162.500` comes back as `162.5` and `0.0000` as `0`. The value is "
+             "the same, but the printed digits are not. Use `ciaaw:significantFigures` to restore them, or the "
+             "[Turtle file](data/ciaaw.ttl), which keeps the original digits. Zero bounds have no significant "
+             "figures recorded, so their printed form is only available in the Turtle file.\n",
+             "## Example queries\n",
+             "The results below were computed with Oxigraph when this site was built.\n"]
+    for example in examples:
+        parts += [f"### {example.title}\n", f"{example.description}\n", f"```sparql\n{example.query}```\n",
+                  result_table(example) + "\n"]
+    return "\n".join(parts)
 
 
 # ---------------------------------------------------------------------------
@@ -381,6 +472,7 @@ def render_body(text: str) -> str:
 @dataclass
 class Site:
     out: Path
+    sparql_endpoint: str = ""
     template: string.Template = field(default_factory=lambda: string.Template(
         (SITE_SRC / "template.html").read_text(encoding="utf-8")))
 
@@ -403,11 +495,15 @@ class Site:
         page = path.rsplit("/", 1)[-1]
         target = self.out / f"{path}.md"
         target.parent.mkdir(parents=True, exist_ok=True)
-        target.write_text(MD_NOTICE + text, encoding="utf-8", newline="\n")
+        target.write_text(MD_NOTICE + text.replace(SPARQL_FORM_MARK + "\n", ""), encoding="utf-8", newline="\n")
+        body = render_body(text)
+        scripts = MERMAID_SCRIPT if "```mermaid" in text else ""
+        if SPARQL_FORM_MARK in body:
+            body = body.replace(SPARQL_FORM_MARK, SPARQL_FORM.format(endpoint=escape(self.sparql_endpoint, quote=True)))
+            scripts += f'<script src="{root}static/sparql.js" defer></script>'
         html = self.template.substitute(
             title=title, root=root, page=page, nav=self.nav(section, root), subnav=self.subnav(page, section, root),
-            body=render_body(text), issues=ISSUES_URL, repo=REPO_URL, markdown=f"{page}.md",
-            scripts=MERMAID_SCRIPT if "```mermaid" in text else "")
+            body=body, issues=ISSUES_URL, repo=REPO_URL, markdown=f"{page}.md", scripts=scripts)
         (self.out / f"{path}.html").write_text(html, encoding="utf-8", newline="\n")
 
 
@@ -431,7 +527,7 @@ def hand_written(name: str, elements: list[Element]) -> str:
             .replace("{{repo}}", REPO_URL))
 
 
-def build(data_path: Path, revision_path: Path, out: Path) -> dict[str, bool]:
+def build(data_path: Path, revision_path: Path, out: Path, sparql_endpoint: str = "") -> dict[str, bool]:
     if out.exists():
         shutil.rmtree(out)
     out.mkdir(parents=True)
@@ -453,7 +549,7 @@ def build(data_path: Path, revision_path: Path, out: Path) -> dict[str, bool]:
 
     elements = read_elements(data)
     notes = footnotes(data)
-    site = Site(out)
+    site = Site(out, sparql_endpoint)
     site.add("index", "Home", hand_written("index", elements), "index")
     site.add("about", "About", hand_written("about", elements), "about")
     site.add("atomic-weights", "Standard Atomic Weights", page_atomic_weights(elements, notes), "atomic-weights")
@@ -463,6 +559,7 @@ def build(data_path: Path, revision_path: Path, out: Path) -> dict[str, bool]:
     site.add("model", "Data Model", page_model(tap, reports), "model")
     site.add("revision-example", "Revision Example", page_revision(revision), "model")
     site.add("downloads", "Downloads", page_downloads(out, elements), "downloads")
+    site.add("sparql", "SPARQL", page_sparql(read_examples(data_path), sparql_endpoint), "downloads")
     return reports
 
 
@@ -472,8 +569,10 @@ def main(argv=None) -> int:
     ap.add_argument("--revision", type=Path, default=HERE / "example-output-next.ttl",
                     help="Turtle for the revision example")
     ap.add_argument("--out", type=Path, default=HERE / "_site")
+    ap.add_argument("--sparql-endpoint", default=os.environ.get("SPARQL_ENDPOINT", ""),
+                    help="URL of the live SPARQL endpoint; without it the query form is left out")
     args = ap.parse_args(argv)
-    reports = build(args.data, args.revision, args.out)
+    reports = build(args.data, args.revision, args.out, args.sparql_endpoint)
     for name, ok in reports.items():
         print(f"{name}: {'conforms' if ok else 'DOES NOT CONFORM'}", file=sys.stderr)
     print(f"site written to {args.out}", file=sys.stderr)

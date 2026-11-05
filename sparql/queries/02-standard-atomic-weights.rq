@@ -1,0 +1,14 @@
+# Standard atomic weights
+# The current declaration of each element, which is either an interval or a value with an uncertainty. Elements without a standard atomic weight are left out.
+PREFIX chemrof: <https://w3id.org/chemrof/>
+PREFIX ciaaw: <https://example.org/ciaaw-draft#>
+PREFIX qudt: <http://qudt.org/schema/qudt/>
+
+SELECT ?symbol ?lower ?upper ?value ?uncertainty WHERE {
+  ?element chemrof:symbol ?symbol ;
+    chemrof:atomic_number ?z ;
+    ciaaw:currentStandardAtomicWeight/ciaaw:value ?quantity .
+  OPTIONAL { ?quantity qudt:lowerBound ?lower ; qudt:upperBound ?upper }
+  OPTIONAL { ?quantity qudt:numericValue ?value ; qudt:standardUncertainty ?uncertainty }
+}
+ORDER BY ?z

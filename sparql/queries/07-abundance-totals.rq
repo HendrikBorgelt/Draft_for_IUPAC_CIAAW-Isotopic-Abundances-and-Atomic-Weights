@@ -1,0 +1,15 @@
+# Total abundance per element
+# Adds up the isotopes of each element. Elements given as intervals are left out, because intervals have no meaningful sum.
+PREFIX chemrof: <https://w3id.org/chemrof/>
+PREFIX ciaaw: <https://example.org/ciaaw-draft#>
+PREFIX qudt: <http://qudt.org/schema/qudt/>
+
+SELECT ?symbol (SUM(?amount) AS ?total) WHERE {
+  ?element chemrof:symbol ?symbol ;
+    ciaaw:hasIsotope/ciaaw:currentAbundance/ciaaw:value/qudt:numericValue ?amount .
+  FILTER NOT EXISTS {
+    ?element ciaaw:hasIsotope/ciaaw:currentAbundance/ciaaw:value/qudt:lowerBound ?bound .
+  }
+}
+GROUP BY ?symbol
+ORDER BY ?symbol

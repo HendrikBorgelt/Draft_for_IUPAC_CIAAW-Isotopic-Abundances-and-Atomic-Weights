@@ -1,0 +1,8 @@
+# Matches to ChEBI
+# Elements and isotopes that are linked to a ChEBI entry.
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+
+SELECT ?subject ?chebi WHERE {
+  ?subject skos:closeMatch ?chebi .
+}
+ORDER BY ?subject

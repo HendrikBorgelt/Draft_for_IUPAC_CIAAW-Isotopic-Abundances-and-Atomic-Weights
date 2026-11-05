@@ -1,0 +1,9 @@
+# Declarations and their sources
+# Every declaration that cites a report, with the year when it is known.
+PREFIX dcterms: <http://purl.org/dc/terms/>
+
+SELECT ?declaration ?year ?source WHERE {
+  ?declaration dcterms:source ?source .
+  OPTIONAL { ?declaration dcterms:issued ?year }
+}
+ORDER BY ?declaration

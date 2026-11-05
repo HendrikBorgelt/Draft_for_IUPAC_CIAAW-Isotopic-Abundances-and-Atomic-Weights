@@ -1,0 +1,14 @@
+# Elements with footnote g
+# Elements whose current standard atomic weight carries note g, for materials outside the limits for normal material.
+PREFIX chemrof: <https://w3id.org/chemrof/>
+PREFIX ciaaw: <https://example.org/ciaaw-draft#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+
+SELECT ?symbol ?name WHERE {
+  ?element chemrof:symbol ?symbol ;
+    chemrof:atomic_number ?z ;
+    rdfs:label ?name ;
+    ciaaw:currentStandardAtomicWeight/ciaaw:footnote/skos:notation "g" .
+}
+ORDER BY ?z

@@ -31,10 +31,12 @@ We want to develop this together with the Commission. Decisions about the conten
 |---|---|
 | `ciaaw2ttl.py` | CIAAW HTML tables → Turtle |
 | `supplement.csv` | What the tables lack: report year, DOI, ChEBI matches |
-| `ttl2quickstatements.py` | Turtle → QuickStatements CSV for Wikidata (isotope abundances only). **Not in this repository yet** |
+| `ttl2quickstatements.py` | Turtle → QuickStatements CSV for Wikidata (isotope abundances only) |
+| `check_wikidata.py` | Compares the abundances in the Turtle with Wikidata |
 | `tap2model.py` | DCTAP → SHACL shapes and UML diagrams |
 | `model/` | The data model, see [below](#the-data-model) |
 | `build_site.py`, `site/` | Static site for GitHub Pages |
+| `sparql/queries/` | Example SPARQL queries, shown on the site |
 | `test_*.py`, `fixtures/` | Tests and their small hand-built input tables |
 | `example-output*.ttl` | Example results |
 | `Makefile` | Runs the steps below |
@@ -96,9 +98,6 @@ are described by `python3 ciaaw2ttl.py --help`. Call the script directly to use 
 import with [QuickStatements](https://quickstatements.toolforge.org/). Atomic weights are not
 exported yet.
 
-Note: `ttl2quickstatements.py` is not in this repository yet, so this target fails until the
-script is added.
-
 ## Comparing with Wikidata
 
 `make check-wikidata` queries Wikidata with SPARQL (items with atomic number P1086 and number of
@@ -127,6 +126,7 @@ make test
 | `test_ciaaw2ttl.py` | Reading the tables, number handling, the deprecation chain |
 | `test_model.py` | The DCTAP, and that each SHACL rule rejects data broken on purpose |
 | `test_site.py` | The pages, the watermark, links, and that every RDF format holds the same triples |
+| `test_sparql.py` | The example queries on Oxigraph, the SPARQL page and the deployment setup |
 
 ## The site
 
@@ -136,6 +136,49 @@ it. To show your own data, use `make site SITE_DATA=build/ciaaw.ttl`.
 Each push to `main` runs the tests and publishes the site through
 [pages.yml](.github/workflows/pages.yml). Pull requests run the tests and build the site
 without publishing it.
+
+## The SPARQL endpoint
+
+**Status: not deployed yet.** It needs a Cloudflare account. See
+[issue 1](https://github.com/HendrikBorgelt/Draft_for_IUPAC_CIAAW-Isotopic-Abundances-and-Atomic-Weights/issues/1).
+Until then, the SPARQL page on the site shows the example queries with results computed with
+Oxigraph, the same engine.
+
+The endpoint uses
+[oxigraph-cloudflare-webworker](https://github.com/JervenBolleman/oxigraph-cloudflare-webworker),
+a Cloudflare Worker that loads `data/ciaaw.ttl` from the published site into an in-memory
+Oxigraph store. Its code is not copied here: `make` checks out the commit pinned in `WORKER_REF`.
+You need Node.js for the two targets below.
+
+To run it on your own machine, without a Cloudflare account:
+
+```
+make sparql-dev
+```
+
+Then query <http://localhost:8787/sparql>. To try the query form as well, build the site with
+`make site SPARQL_ENDPOINT=http://localhost:8787/sparql`.
+
+To publish it:
+
+1. Create a Cloudflare API token with only **Account → Workers Scripts → Edit**.
+2. In the repository settings, add it as the secret `CLOUDFLARE_API_TOKEN`. Add
+   `CLOUDFLARE_ACCOUNT_ID` too if the token can reach more than one account.
+3. Set the repository variable `SPARQL_ENDPOINT` to
+   `https://ciaaw-sparql-prototype.<your-subdomain>.workers.dev/sparql`.
+4. Run the workflow again. From then on, each push to `main` publishes the site and then
+   redeploys the worker, which makes it load the new data.
+
+Things to know:
+
+- **Decimals are normalised.** Oxigraph returns `162.500` as `162.5` and `0.0000` as `0`. Use
+  `ciaaw:significantFigures` or the Turtle file when the printed digits matter. Zero bounds have
+  no significant figures, so their printed form is only in the Turtle file.
+- **The free Cloudflare plan allows 10 ms of CPU per request.** The current 8 elements load in
+  about 1 ms. A file the size of all 118 elements took about 14 ms in native Oxigraph, and the
+  worker's WebAssembly build will be slower, so the full dataset may need a paid plan.
+- **Only the current data is loaded.** The revision example is left out, so its invented value
+  cannot appear in results.
 
 ## Without make
 
@@ -181,4 +224,4 @@ The table adds four columns to the 12 DCTAP elements, all declared in `dctap.yam
 - **Atomic masses and abridged values are modelled but not generated**, because the two source tables do not contain them.
 - **The ADMS status IRI has not been confirmed yet.** See the note in `ciaaw2ttl.py`.
 - **No licence has been chosen yet** for the code or the data.
-- **A SPARQL endpoint is planned.** See [issue 1](https://github.com/HendrikBorgelt/Draft_for_IUPAC_CIAAW-Isotopic-Abundances-and-Atomic-Weights/issues/1).
+- **The SPARQL endpoint is set up but not deployed.** See [above](#the-sparql-endpoint).

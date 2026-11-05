@@ -25,7 +25,16 @@ SITE_REVISION ?= example-output-next.ttl
 WEIGHTS_URL    ?= https://ciaaw.org/atomic-weights.htm
 ABUNDANCES_URL ?= https://ciaaw.org/isotopic-abundances.htm
 
-.PHONY: help install download ttl example quickstatements check-wikidata test model validate site serve clean
+# SPARQL endpoint: oxigraph-cloudflare-webworker, run from a pinned commit (see README.md).
+# SPARQL_ENDPOINT is the public URL. Without it the site leaves out the live query form.
+WORKER_REPO ?= https://github.com/JervenBolleman/oxigraph-cloudflare-webworker.git
+WORKER_REF  ?= 406eef7a49cfc497787ca03e0772d309d21d14ca
+WORKER_DIR  ?= $(BUILD_DIR)/sparql-worker
+WORKER_NAME ?= ciaaw-sparql-prototype
+SPARQL_DATA ?= https://hendrikborgelt.github.io/Draft_for_IUPAC_CIAAW-Isotopic-Abundances-and-Atomic-Weights/data/ciaaw.ttl
+SPARQL_ENDPOINT ?=
+
+.PHONY: help install download ttl example quickstatements check-wikidata test model validate site serve sparql-dev sparql-deploy clean
 
 help:
 	@echo "make install         install the Python dependencies"
@@ -39,6 +48,8 @@ help:
 	@echo "make validate        check the site data against the SHACL shapes"
 	@echo "make site            build the static site into $(SITE_DIR)"
 	@echo "make serve           build the site and serve it on http://localhost:8000"
+	@echo "make sparql-dev      run the SPARQL worker locally on http://localhost:8787/sparql"
+	@echo "make sparql-deploy   deploy the SPARQL worker to Cloudflare"
 	@echo "make clean           remove $(BUILD_DIR) and $(SITE_DIR)"
 
 install:
@@ -82,10 +93,24 @@ validate:
 	$(PYTHON) tap2model.py --validate $(SITE_DATA) $(SITE_REVISION)
 
 site:
-	$(PYTHON) build_site.py --data $(SITE_DATA) --revision $(SITE_REVISION) --out $(SITE_DIR)
+	$(PYTHON) build_site.py --data $(SITE_DATA) --revision $(SITE_REVISION) --out $(SITE_DIR) \
+		--sparql-endpoint "$(SPARQL_ENDPOINT)"
 
 serve: site
 	$(PYTHON) -m http.server 8000 --directory $(SITE_DIR)
+
+$(WORKER_DIR)/.installed-$(WORKER_REF):
+	rm -rf $(WORKER_DIR)
+	git clone $(WORKER_REPO) $(WORKER_DIR)
+	git -C $(WORKER_DIR) checkout --detach $(WORKER_REF)
+	cd $(WORKER_DIR) && npm ci
+	touch $@
+
+sparql-dev: $(WORKER_DIR)/.installed-$(WORKER_REF)
+	cd $(WORKER_DIR) && npx wrangler dev --name $(WORKER_NAME) --var TURTLE_URL:$(SPARQL_DATA)
+
+sparql-deploy: $(WORKER_DIR)/.installed-$(WORKER_REF)
+	cd $(WORKER_DIR) && npx wrangler deploy --name $(WORKER_NAME) --var TURTLE_URL:$(SPARQL_DATA)
 
 clean:
 	rm -rf $(BUILD_DIR) $(SITE_DIR) .pytest_cache __pycache__

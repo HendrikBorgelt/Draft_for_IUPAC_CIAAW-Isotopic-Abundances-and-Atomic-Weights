@@ -26,6 +26,8 @@ jobs:
       - run: make install PYTHON=python
       - run: make test PYTHON=python
       - run: make site PYTHON=python
+        env:
+          SPARQL_ENDPOINT: ${{ vars.SPARQL_ENDPOINT }}
       - uses: actions/upload-pages-artifact@v5
         with:
           path: _site
@@ -43,3 +45,19 @@ jobs:
     steps:
       - id: deployment
         uses: actions/deploy-pages@v5
+
+  # Skipped until the SPARQL_ENDPOINT repository variable is set. See "The SPARQL endpoint" in README.md.
+  # It runs after the site, because a new deployment is what makes the worker load the new data.
+  deploy-sparql:
+    if: vars.SPARQL_ENDPOINT != '' && github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+      - run: make sparql-deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

@@ -1,0 +1,12 @@
+# Elements
+# Every element with its atomic number and symbol.
+PREFIX chemrof: <https://w3id.org/chemrof/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?z ?symbol ?name WHERE {
+  ?element a chemrof:ChemicalElement ;
+    rdfs:label ?name ;
+    chemrof:symbol ?symbol ;
+    chemrof:atomic_number ?z .
+}
+ORDER BY ?z

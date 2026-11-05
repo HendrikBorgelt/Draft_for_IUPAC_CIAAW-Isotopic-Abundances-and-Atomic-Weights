@@ -1,0 +1,16 @@
+# Isotopic composition of calcium
+# The current abundance of each isotope, with the number of significant figures printed in the table.
+PREFIX ciaaw: <https://example.org/ciaaw-draft#>
+PREFIX qudt: <http://qudt.org/schema/qudt/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?massNumber ?abundance ?uncertainty ?significantFigures WHERE {
+  ?element rdfs:label "calcium"@en ;
+    ciaaw:hasIsotope ?isotope .
+  ?isotope ciaaw:massNumber ?massNumber ;
+    ciaaw:currentAbundance/ciaaw:value ?quantity .
+  ?quantity qudt:numericValue ?abundance ;
+    qudt:standardUncertainty ?uncertainty ;
+    ciaaw:significantFigures ?significantFigures .
+}
+ORDER BY ?massNumber
