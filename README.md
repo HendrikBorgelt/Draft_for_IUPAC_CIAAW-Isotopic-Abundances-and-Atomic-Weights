@@ -134,9 +134,9 @@ one row per mapping). `ttl2sssom.py` writes:
 
 Each row has the labels and categories of both sides. The header has the required `mapping_set_id` and `license`,
 the `curie_map`, and the ORCIDs of the [AUTHORS](AUTHORS) as `creator_id`. The license is CC0 for the mappings
-only, not for the CIAAW values; change it with `--license`. The `mapping_set_id` is the address where the file
-would be published on the site, which does not exist yet. Other options are `--mapping-set-version` and
-`--wikidata`.
+only, not for the CIAAW values; change it with `--license`. The `mapping_set_id` is the address where the site
+publishes the file, `data/ciaaw.sssom.tsv`: `make site` writes it from the site data, and the Downloads page links
+to it. Other options are `--mapping-set-version` and `--wikidata`.
 
 ## Comparing with Wikidata
 

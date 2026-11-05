@@ -34,6 +34,7 @@ from rdflib import Graph, RDF, RDFS, URIRef
 from rdflib.namespace import DCTERMS, OWL, SKOS
 
 import ciaaw2ttl as c
+import ttl2sssom
 import tap2model as t
 
 HERE = Path(__file__).parent
@@ -515,6 +516,12 @@ def page_downloads(out: Path, elements: list[Element]) -> str:
         "Every format holds the same triples. The Turtle is the converter's output, and the others are translated "
         "from it. All IRIs under `example.org` are placeholders.\n",
         "## Current data\n", format_table(out, "data/ciaaw") + "\n",
+        "## Mappings\n",
+        "[ciaaw.sssom.tsv](data/ciaaw.sssom.tsv) maps the elements and isotopes of the current data to their "
+        "[Wikidata](https://www.wikidata.org) items (`skos:exactMatch`, matched on atomic number and number of "
+        "neutrons) and to ChEBI (`skos:closeMatch`). It is an [SSSOM](https://mapping-commons.github.io/sssom/) "
+        "mapping set in the TSV serialisation: a YAML header in comment lines, then one mapping per row. The "
+        "license (CC0) covers the mappings only, not the CIAAW values.\n",
         "## Revision example\n",
         "A small sample after an invented revision of hydrogen. See the [revision example](revision-example.md).\n",
         format_table(out, "data/ciaaw-revision-example") + "\n",
@@ -696,6 +703,8 @@ def build(data_path: Path, revision_path: Path, out: Path, sparql_endpoint: str 
     tap = t.load_tap()
 
     translate(data, data_path, out / "data" / "ciaaw")
+    with (out / "data" / "ciaaw.sssom.tsv").open("w", newline="", encoding="utf-8") as f:
+        ttl2sssom.write(data_path, f)
     translate(revision, revision_path, out / "data" / "ciaaw-revision-example")
     translate(t.load_shapes(), t.SHACL_OUT, out / "model" / "model_shacl")
 

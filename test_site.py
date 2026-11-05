@@ -286,3 +286,16 @@ def test_about_page_lists_the_authors_with_their_orcid(site):
     for line in (HERE / "AUTHORS").read_text(encoding="utf-8").splitlines():
         name, orcid = line.rsplit(" <", 1)
         assert name in html and f'href="{orcid.rstrip(">")}"' in html
+
+
+# --- SSSOM ----------------------------------------------------------------------------------
+def test_sssom_is_published_where_its_mapping_set_id_says(site):
+    text = text_of(site / "data" / "ciaaw.sssom.tsv")
+    set_id = re.search(r"^# mapping_set_id: (\S+)$", text, re.M).group(1)
+    assert set_id.endswith("/data/ciaaw.sssom.tsv")
+    assert "\nsubject_id\tsubject_label" in text and "skos:exactMatch\twd:Q556" in text
+
+
+def test_downloads_page_links_to_the_sssom_file(site):
+    html = text_of(site / "downloads.html")
+    assert 'href="data/ciaaw.sssom.tsv"' in html and "SSSOM" in html
