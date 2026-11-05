@@ -9,9 +9,10 @@ if (editor) {
   const examples = JSON.parse(editor.dataset.examples);
   const yasgui = editor.yasgui;
   for (const example of examples) {
-    const tab = yasgui.getTab(example.id);
-    if (tab) {
-      tab.getYasqe().setValue(example.query);
+    if (yasgui.getTab(example.id)) {
+      // A tab restored from storage has no editor until it is drawn, and only selecting it draws it.
+      yasgui.selectTabId(example.id);
+      yasgui.getTab(example.id).setQuery(example.query);
     } else {
       yasgui.addTab(false, { id: example.id, name: example.name, yasqe: { value: example.query } });
     }
