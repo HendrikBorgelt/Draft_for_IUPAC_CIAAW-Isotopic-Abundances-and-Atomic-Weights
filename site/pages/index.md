@@ -15,7 +15,7 @@ It is **not** an official CIAAW or IUPAC site. For values you intend to use, go 
 - A [data model](model.md) with diagrams for each aspect, written as a DCTAP profile and enforced with SHACL shapes
 - A [revision example](revision-example.md) that shows what happens to the data when a value changes
 - [Downloads](downloads.md) in Turtle, RDF/XML, JSON-LD, N-Triples and N3
-- [SPARQL](sparql.md) example queries for asking the data questions directly
+- A live [SPARQL endpoint](sparql.md) with example queries, for asking the data questions directly
 
 ## Why publish it this way
 

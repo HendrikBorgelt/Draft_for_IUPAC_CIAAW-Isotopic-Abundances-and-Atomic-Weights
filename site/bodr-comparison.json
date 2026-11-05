@@ -1,0 +1,1085 @@
+{
+  "generated": "2026-11-05",
+  "source": "ciaaw.ttl",
+  "local_isotopes": 289,
+  "resource_items": 3171,
+  "resource_version": "BODR release 10",
+  "counts": {
+    "DIFFERENT": 133,
+    "NO-VALUE": 1
+  },
+  "differences": [
+    {
+      "kind": "DIFFERENT",
+      "name": "barium-130",
+      "qid": "Ba130",
+      "local": "0.11~0.01",
+      "wikidata": "0.106",
+      "text": "local 0.11~0.01  Ba130 bodr 0.106"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "barium-132",
+      "qid": "Ba132",
+      "local": "0.10~0.01",
+      "wikidata": "0.101",
+      "text": "local 0.10~0.01  Ba132 bodr 0.101"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "barium-134",
+      "qid": "Ba134",
+      "local": "2.42~0.15",
+      "wikidata": "2.417",
+      "text": "local 2.42~0.15  Ba134 bodr 2.417"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "barium-135",
+      "qid": "Ba135",
+      "local": "6.59~0.10",
+      "wikidata": "6.592",
+      "text": "local 6.59~0.10  Ba135 bodr 6.592"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "barium-136",
+      "qid": "Ba136",
+      "local": "7.85~0.24",
+      "wikidata": "7.854",
+      "text": "local 7.85~0.24  Ba136 bodr 7.854"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "barium-137",
+      "qid": "Ba137",
+      "local": "11.23~0.23",
+      "wikidata": "11.232",
+      "text": "local 11.23~0.23  Ba137 bodr 11.232"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "barium-138",
+      "qid": "Ba138",
+      "local": "71.70~0.29",
+      "wikidata": "71.698",
+      "text": "local 71.70~0.29  Ba138 bodr 71.698"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "cadmium-106",
+      "qid": "Cd106",
+      "local": "1.245~0.022",
+      "wikidata": "1.25",
+      "text": "local 1.245~0.022  Cd106 bodr 1.25"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "cadmium-108",
+      "qid": "Cd108",
+      "local": "0.888~0.011",
+      "wikidata": "0.89",
+      "text": "local 0.888~0.011  Cd108 bodr 0.89"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "cadmium-110",
+      "qid": "Cd110",
+      "local": "12.470~0.061",
+      "wikidata": "12.49",
+      "text": "local 12.470~0.061  Cd110 bodr 12.49"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "cadmium-111",
+      "qid": "Cd111",
+      "local": "12.795~0.012",
+      "wikidata": "12.80",
+      "text": "local 12.795~0.012  Cd111 bodr 12.80"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "cadmium-112",
+      "qid": "Cd112",
+      "local": "24.109~0.007",
+      "wikidata": "24.13",
+      "text": "local 24.109~0.007  Cd112 bodr 24.13"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "cadmium-113",
+      "qid": "Cd113",
+      "local": "12.227~0.007",
+      "wikidata": "12.22",
+      "text": "local 12.227~0.007  Cd113 bodr 12.22"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "cadmium-114",
+      "qid": "Cd114",
+      "local": "28.754~0.081",
+      "wikidata": "28.73",
+      "text": "local 28.754~0.081  Cd114 bodr 28.73"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "cadmium-116",
+      "qid": "Cd116",
+      "local": "7.512~0.054",
+      "wikidata": "7.49",
+      "text": "local 7.512~0.054  Cd116 bodr 7.49"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "copper-63",
+      "qid": "Cu63",
+      "local": "69.15~0.15",
+      "wikidata": "69.17",
+      "text": "local 69.15~0.15  Cu63 bodr 69.17"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "copper-65",
+      "qid": "Cu65",
+      "local": "30.85~0.15",
+      "wikidata": "30.83",
+      "text": "local 30.85~0.15  Cu65 bodr 30.83"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "dysprosium-156",
+      "qid": "Dy156",
+      "local": "0.056~0.003",
+      "wikidata": "0.06",
+      "text": "local 0.056~0.003  Dy156 bodr 0.06"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "dysprosium-158",
+      "qid": "Dy158",
+      "local": "0.095~0.003",
+      "wikidata": "0.10",
+      "text": "local 0.095~0.003  Dy158 bodr 0.10"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "dysprosium-160",
+      "qid": "Dy160",
+      "local": "2.329~0.018",
+      "wikidata": "2.34",
+      "text": "local 2.329~0.018  Dy160 bodr 2.34"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "dysprosium-161",
+      "qid": "Dy161",
+      "local": "18.889~0.042",
+      "wikidata": "18.91",
+      "text": "local 18.889~0.042  Dy161 bodr 18.91"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "dysprosium-162",
+      "qid": "Dy162",
+      "local": "25.475~0.036",
+      "wikidata": "25.51",
+      "text": "local 25.475~0.036  Dy162 bodr 25.51"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "dysprosium-163",
+      "qid": "Dy163",
+      "local": "24.896~0.042",
+      "wikidata": "24.90",
+      "text": "local 24.896~0.042  Dy163 bodr 24.90"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "dysprosium-164",
+      "qid": "Dy164",
+      "local": "28.260~0.054",
+      "wikidata": "28.18",
+      "text": "local 28.260~0.054  Dy164 bodr 28.18"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "erbium-162",
+      "qid": "Er162",
+      "local": "0.139~0.005",
+      "wikidata": "0.14",
+      "text": "local 0.139~0.005  Er162 bodr 0.14"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "erbium-164",
+      "qid": "Er164",
+      "local": "1.601~0.003",
+      "wikidata": "1.61",
+      "text": "local 1.601~0.003  Er164 bodr 1.61"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "erbium-166",
+      "qid": "Er166",
+      "local": "33.503~0.036",
+      "wikidata": "33.61",
+      "text": "local 33.503~0.036  Er166 bodr 33.61"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "erbium-167",
+      "qid": "Er167",
+      "local": "22.869~0.009",
+      "wikidata": "22.93",
+      "text": "local 22.869~0.009  Er167 bodr 22.93"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "erbium-168",
+      "qid": "Er168",
+      "local": "26.978~0.018",
+      "wikidata": "26.78",
+      "text": "local 26.978~0.018  Er168 bodr 26.78"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "erbium-170",
+      "qid": "Er170",
+      "local": "14.910~0.036",
+      "wikidata": "14.93",
+      "text": "local 14.910~0.036  Er170 bodr 14.93"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "gadolinium-152",
+      "qid": "Gd152",
+      "local": "0.204~0.002",
+      "wikidata": "0.20",
+      "text": "local 0.204~0.002  Gd152 bodr 0.20"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "gadolinium-154",
+      "qid": "Gd154",
+      "local": "2.187~0.009",
+      "wikidata": "2.18",
+      "text": "local 2.187~0.009  Gd154 bodr 2.18"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "gadolinium-155",
+      "qid": "Gd155",
+      "local": "14.828~0.060",
+      "wikidata": "14.80",
+      "text": "local 14.828~0.060  Gd155 bodr 14.80"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "gadolinium-156",
+      "qid": "Gd156",
+      "local": "20.493~0.022",
+      "wikidata": "20.47",
+      "text": "local 20.493~0.022  Gd156 bodr 20.47"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "gadolinium-157",
+      "qid": "Gd157",
+      "local": "15.657~0.017",
+      "wikidata": "15.65",
+      "text": "local 15.657~0.017  Gd157 bodr 15.65"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "gadolinium-158",
+      "qid": "Gd158",
+      "local": "24.820~0.020",
+      "wikidata": "24.84",
+      "text": "local 24.820~0.020  Gd158 bodr 24.84"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "gadolinium-160",
+      "qid": "Gd160",
+      "local": "21.811~0.028",
+      "wikidata": "21.86",
+      "text": "local 21.811~0.028  Gd160 bodr 21.86"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "germanium-70",
+      "qid": "Ge70",
+      "local": "20.52~0.19",
+      "wikidata": "20.84",
+      "text": "local 20.52~0.19  Ge70 bodr 20.84"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "germanium-72",
+      "qid": "Ge72",
+      "local": "27.45~0.15",
+      "wikidata": "27.54",
+      "text": "local 27.45~0.15  Ge72 bodr 27.54"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "germanium-73",
+      "qid": "Ge73",
+      "local": "7.76~0.08",
+      "wikidata": "7.73",
+      "text": "local 7.76~0.08  Ge73 bodr 7.73"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "germanium-74",
+      "qid": "Ge74",
+      "local": "36.52~0.12",
+      "wikidata": "36.28",
+      "text": "local 36.52~0.12  Ge74 bodr 36.28"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "germanium-76",
+      "qid": "Ge76",
+      "local": "7.75~0.12",
+      "wikidata": "7.61",
+      "text": "local 7.75~0.12  Ge76 bodr 7.61"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "helium-3",
+      "qid": "He3",
+      "local": "0.0002~0.0002",
+      "wikidata": "0.000137",
+      "text": "local 0.0002~0.0002  He3 bodr 0.000137"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "helium-4",
+      "qid": "He4",
+      "local": "99.9998~0.0002",
+      "wikidata": "99.999863",
+      "text": "local 99.9998~0.0002  He4 bodr 99.999863"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "hafnium-174",
+      "qid": "Hf174",
+      "local": "0.161~0.002",
+      "wikidata": "0.16",
+      "text": "local 0.161~0.002  Hf174 bodr 0.16"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "hafnium-176",
+      "qid": "Hf176",
+      "local": "5.24~0.14",
+      "wikidata": "5.26",
+      "text": "local 5.24~0.14  Hf176 bodr 5.26"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "hafnium-177",
+      "qid": "Hf177",
+      "local": "18.58~0.09",
+      "wikidata": "18.60",
+      "text": "local 18.58~0.09  Hf177 bodr 18.60"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "hafnium-179",
+      "qid": "Hf179",
+      "local": "13.63~0.03",
+      "wikidata": "13.62",
+      "text": "local 13.63~0.03  Hf179 bodr 13.62"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "hafnium-180",
+      "qid": "Hf180",
+      "local": "35.12~0.16",
+      "wikidata": "35.08",
+      "text": "local 35.12~0.16  Hf180 bodr 35.08"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "mercury-198",
+      "qid": "Hg198",
+      "local": "10.04~0.03",
+      "wikidata": "9.97",
+      "text": "local 10.04~0.03  Hg198 bodr 9.97"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "mercury-199",
+      "qid": "Hg199",
+      "local": "16.94~0.12",
+      "wikidata": "16.87",
+      "text": "local 16.94~0.12  Hg199 bodr 16.87"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "mercury-200",
+      "qid": "Hg200",
+      "local": "23.14~0.09",
+      "wikidata": "23.10",
+      "text": "local 23.14~0.09  Hg200 bodr 23.10"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "mercury-201",
+      "qid": "Hg201",
+      "local": "13.17~0.09",
+      "wikidata": "13.18",
+      "text": "local 13.17~0.09  Hg201 bodr 13.18"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "mercury-202",
+      "qid": "Hg202",
+      "local": "29.74~0.13",
+      "wikidata": "29.86",
+      "text": "local 29.74~0.13  Hg202 bodr 29.86"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "mercury-204",
+      "qid": "Hg204",
+      "local": "6.82~0.04",
+      "wikidata": "6.87",
+      "text": "local 6.82~0.04  Hg204 bodr 6.87"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "indium-113",
+      "qid": "In113",
+      "local": "4.281~0.052",
+      "wikidata": "4.29",
+      "text": "local 4.281~0.052  In113 bodr 4.29"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "indium-115",
+      "qid": "In115",
+      "local": "95.719~0.052",
+      "wikidata": "95.71",
+      "text": "local 95.719~0.052  In115 bodr 95.71"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "iridium-191",
+      "qid": "Ir191",
+      "local": "37.23~0.09",
+      "wikidata": "37.3",
+      "text": "local 37.23~0.09  Ir191 bodr 37.3"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "iridium-193",
+      "qid": "Ir193",
+      "local": "62.77~0.09",
+      "wikidata": "62.7",
+      "text": "local 62.77~0.09  Ir193 bodr 62.7"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "krypton-78",
+      "qid": "Kr78",
+      "local": "0.355~0.003",
+      "wikidata": "0.35",
+      "text": "local 0.355~0.003  Kr78 bodr 0.35"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "krypton-80",
+      "qid": "Kr80",
+      "local": "2.286~0.010",
+      "wikidata": "2.28",
+      "text": "local 2.286~0.010  Kr80 bodr 2.28"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "krypton-82",
+      "qid": "Kr82",
+      "local": "11.593~0.031",
+      "wikidata": "11.58",
+      "text": "local 11.593~0.031  Kr82 bodr 11.58"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "krypton-83",
+      "qid": "Kr83",
+      "local": "11.500~0.019",
+      "wikidata": "11.49",
+      "text": "local 11.500~0.019  Kr83 bodr 11.49"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "krypton-84",
+      "qid": "Kr84",
+      "local": "56.987~0.015",
+      "wikidata": "57.00",
+      "text": "local 56.987~0.015  Kr84 bodr 57.00"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "krypton-86",
+      "qid": "Kr86",
+      "local": "17.279~0.041",
+      "wikidata": "17.30",
+      "text": "local 17.279~0.041  Kr86 bodr 17.30"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "lanthanum-138",
+      "qid": "La138",
+      "local": "0.08881~0.00071",
+      "wikidata": "0.090",
+      "text": "local 0.08881~0.00071  La138 bodr 0.090"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "lanthanum-139",
+      "qid": "La139",
+      "local": "99.91119~0.00071",
+      "wikidata": "99.910",
+      "text": "local 99.91119~0.00071  La139 bodr 99.910"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "lutetium-175",
+      "qid": "Lu175",
+      "local": "97.414~0.005",
+      "wikidata": "97.41",
+      "text": "local 97.414~0.005  Lu175 bodr 97.41"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "lutetium-176",
+      "qid": "Lu176",
+      "local": "2.586~0.005",
+      "wikidata": "2.59",
+      "text": "local 2.586~0.005  Lu176 bodr 2.59"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "molybdenum-100",
+      "qid": "Mo100",
+      "local": "9.744~0.065",
+      "wikidata": "9.63",
+      "text": "local 9.744~0.065  Mo100 bodr 9.63"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "molybdenum-92",
+      "qid": "Mo92",
+      "local": "14.649~0.106",
+      "wikidata": "14.84",
+      "text": "local 14.649~0.106  Mo92 bodr 14.84"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "molybdenum-94",
+      "qid": "Mo94",
+      "local": "9.187~0.033",
+      "wikidata": "9.25",
+      "text": "local 9.187~0.033  Mo94 bodr 9.25"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "molybdenum-95",
+      "qid": "Mo95",
+      "local": "15.873~0.030",
+      "wikidata": "15.92",
+      "text": "local 15.873~0.030  Mo95 bodr 15.92"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "molybdenum-96",
+      "qid": "Mo96",
+      "local": "16.673~0.008",
+      "wikidata": "16.68",
+      "text": "local 16.673~0.008  Mo96 bodr 16.68"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "molybdenum-97",
+      "qid": "Mo97",
+      "local": "9.582~0.015",
+      "wikidata": "9.55",
+      "text": "local 9.582~0.015  Mo97 bodr 9.55"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "molybdenum-98",
+      "qid": "Mo98",
+      "local": "24.292~0.080",
+      "wikidata": "24.13",
+      "text": "local 24.292~0.080  Mo98 bodr 24.13"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "neodymium-142",
+      "qid": "Nd142",
+      "local": "27.152~0.040",
+      "wikidata": "27.2",
+      "text": "local 27.152~0.040  Nd142 bodr 27.2"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "neodymium-143",
+      "qid": "Nd143",
+      "local": "12.174~0.026",
+      "wikidata": "12.2",
+      "text": "local 12.174~0.026  Nd143 bodr 12.2"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "neodymium-144",
+      "qid": "Nd144",
+      "local": "23.798~0.019",
+      "wikidata": "23.8",
+      "text": "local 23.798~0.019  Nd144 bodr 23.8"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "neodymium-145",
+      "qid": "Nd145",
+      "local": "8.293~0.012",
+      "wikidata": "8.3",
+      "text": "local 8.293~0.012  Nd145 bodr 8.3"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "neodymium-146",
+      "qid": "Nd146",
+      "local": "17.189~0.032",
+      "wikidata": "17.2",
+      "text": "local 17.189~0.032  Nd146 bodr 17.2"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "neodymium-148",
+      "qid": "Nd148",
+      "local": "5.756~0.021",
+      "wikidata": "5.7",
+      "text": "local 5.756~0.021  Nd148 bodr 5.7"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "neodymium-150",
+      "qid": "Nd150",
+      "local": "5.638~0.028",
+      "wikidata": "5.6",
+      "text": "local 5.638~0.028  Nd150 bodr 5.6"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "platinum-190",
+      "qid": "Pt190",
+      "local": "0.012~0.002",
+      "wikidata": "0.014",
+      "text": "local 0.012~0.002  Pt190 bodr 0.014"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "platinum-194",
+      "qid": "Pt194",
+      "local": "32.864~0.410",
+      "wikidata": "32.967",
+      "text": "local 32.864~0.410  Pt194 bodr 32.967"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "platinum-195",
+      "qid": "Pt195",
+      "local": "33.775~0.240",
+      "wikidata": "33.832",
+      "text": "local 33.775~0.240  Pt195 bodr 33.832"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "platinum-196",
+      "qid": "Pt196",
+      "local": "25.211~0.340",
+      "wikidata": "25.242",
+      "text": "local 25.211~0.340  Pt196 bodr 25.242"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "platinum-198",
+      "qid": "Pt198",
+      "local": "7.356~0.130",
+      "wikidata": "7.163",
+      "text": "local 7.356~0.130  Pt198 bodr 7.163"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "sulfur-36",
+      "qid": "S36",
+      "local": "[0.0129, 0.0187]",
+      "wikidata": "0.02",
+      "text": "local [0.0129, 0.0187]  S36 bodr 0.02"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "selenium-74",
+      "qid": "Se74",
+      "local": "0.86~0.03",
+      "wikidata": "0.89",
+      "text": "local 0.86~0.03  Se74 bodr 0.89"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "selenium-76",
+      "qid": "Se76",
+      "local": "9.23~0.07",
+      "wikidata": "9.37",
+      "text": "local 9.23~0.07  Se76 bodr 9.37"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "selenium-77",
+      "qid": "Se77",
+      "local": "7.60~0.07",
+      "wikidata": "7.63",
+      "text": "local 7.60~0.07  Se77 bodr 7.63"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "selenium-78",
+      "qid": "Se78",
+      "local": "23.69~0.22",
+      "wikidata": "23.77",
+      "text": "local 23.69~0.22  Se78 bodr 23.77"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "selenium-80",
+      "qid": "Se80",
+      "local": "49.80~0.36",
+      "wikidata": "49.61",
+      "text": "local 49.80~0.36  Se80 bodr 49.61"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "selenium-82",
+      "qid": "Se82",
+      "local": "8.82~0.15",
+      "wikidata": "8.73",
+      "text": "local 8.82~0.15  Se82 bodr 8.73"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "samarium-144",
+      "qid": "Sm144",
+      "local": "3.08~0.04",
+      "wikidata": "3.07",
+      "text": "local 3.08~0.04  Sm144 bodr 3.07"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "samarium-147",
+      "qid": "Sm147",
+      "local": "15.00~0.14",
+      "wikidata": "14.99",
+      "text": "local 15.00~0.14  Sm147 bodr 14.99"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "samarium-148",
+      "qid": "Sm148",
+      "local": "11.25~0.09",
+      "wikidata": "11.24",
+      "text": "local 11.25~0.09  Sm148 bodr 11.24"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "samarium-150",
+      "qid": "Sm150",
+      "local": "7.37~0.09",
+      "wikidata": "7.38",
+      "text": "local 7.37~0.09  Sm150 bodr 7.38"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "samarium-152",
+      "qid": "Sm152",
+      "local": "26.74~0.09",
+      "wikidata": "26.75",
+      "text": "local 26.74~0.09  Sm152 bodr 26.75"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "samarium-154",
+      "qid": "Sm154",
+      "local": "22.74~0.14",
+      "wikidata": "22.75",
+      "text": "local 22.74~0.14  Sm154 bodr 22.75"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "tantalum-180",
+      "qid": "Ta180",
+      "local": "0.01176~0.00023",
+      "wikidata": "0.012",
+      "text": "local 0.01176~0.00023  Ta180 bodr 0.012"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "tantalum-181",
+      "qid": "Ta181",
+      "local": "99.98824~0.00023",
+      "wikidata": "99.988",
+      "text": "local 99.98824~0.00023  Ta181 bodr 99.988"
+    },
+    {
+      "kind": "NO-VALUE",
+      "name": "thorium-230",
+      "qid": "Th230",
+      "local": "0.02~0.02",
+      "wikidata": "",
+      "text": "local 0.02~0.02  Th230 has no abundance"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "thorium-232",
+      "qid": "Th232",
+      "local": "99.98~0.02",
+      "wikidata": "100",
+      "text": "local 99.98~0.02  Th232 bodr 100"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "uranium-234",
+      "qid": "U234",
+      "local": "0.0054~0.0005",
+      "wikidata": "0.0055",
+      "text": "local 0.0054~0.0005  U234 bodr 0.0055"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "uranium-235",
+      "qid": "U235",
+      "local": "0.7204~0.0006",
+      "wikidata": "0.7200",
+      "text": "local 0.7204~0.0006  U235 bodr 0.7200"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "uranium-238",
+      "qid": "U238",
+      "local": "99.2742~0.0010",
+      "wikidata": "99.2745",
+      "text": "local 99.2742~0.0010  U238 bodr 99.2745"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "xenon-124",
+      "qid": "Xe124",
+      "local": "0.095~0.005",
+      "wikidata": "0.09",
+      "text": "local 0.095~0.005  Xe124 bodr 0.09"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "xenon-126",
+      "qid": "Xe126",
+      "local": "0.089~0.003",
+      "wikidata": "0.09",
+      "text": "local 0.089~0.003  Xe126 bodr 0.09"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "xenon-128",
+      "qid": "Xe128",
+      "local": "1.910~0.013",
+      "wikidata": "1.92",
+      "text": "local 1.910~0.013  Xe128 bodr 1.92"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "xenon-129",
+      "qid": "Xe129",
+      "local": "26.401~0.138",
+      "wikidata": "26.44",
+      "text": "local 26.401~0.138  Xe129 bodr 26.44"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "xenon-130",
+      "qid": "Xe130",
+      "local": "4.071~0.022",
+      "wikidata": "4.08",
+      "text": "local 4.071~0.022  Xe130 bodr 4.08"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "xenon-131",
+      "qid": "Xe131",
+      "local": "21.232~0.051",
+      "wikidata": "21.18",
+      "text": "local 21.232~0.051  Xe131 bodr 21.18"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "xenon-132",
+      "qid": "Xe132",
+      "local": "26.909~0.055",
+      "wikidata": "26.89",
+      "text": "local 26.909~0.055  Xe132 bodr 26.89"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "xenon-134",
+      "qid": "Xe134",
+      "local": "10.436~0.035",
+      "wikidata": "10.44",
+      "text": "local 10.436~0.035  Xe134 bodr 10.44"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "xenon-136",
+      "qid": "Xe136",
+      "local": "8.857~0.072",
+      "wikidata": "8.87",
+      "text": "local 8.857~0.072  Xe136 bodr 8.87"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "ytterbium-168",
+      "qid": "Yb168",
+      "local": "0.126~0.001",
+      "wikidata": "0.13",
+      "text": "local 0.126~0.001  Yb168 bodr 0.13"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "ytterbium-170",
+      "qid": "Yb170",
+      "local": "3.023~0.002",
+      "wikidata": "3.04",
+      "text": "local 3.023~0.002  Yb170 bodr 3.04"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "ytterbium-171",
+      "qid": "Yb171",
+      "local": "14.216~0.007",
+      "wikidata": "14.28",
+      "text": "local 14.216~0.007  Yb171 bodr 14.28"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "ytterbium-172",
+      "qid": "Yb172",
+      "local": "21.754~0.010",
+      "wikidata": "21.83",
+      "text": "local 21.754~0.010  Yb172 bodr 21.83"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "ytterbium-173",
+      "qid": "Yb173",
+      "local": "16.098~0.009",
+      "wikidata": "16.13",
+      "text": "local 16.098~0.009  Yb173 bodr 16.13"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "ytterbium-174",
+      "qid": "Yb174",
+      "local": "31.896~0.026",
+      "wikidata": "31.83",
+      "text": "local 31.896~0.026  Yb174 bodr 31.83"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "ytterbium-176",
+      "qid": "Yb176",
+      "local": "12.887~0.030",
+      "wikidata": "12.76",
+      "text": "local 12.887~0.030  Yb176 bodr 12.76"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "zinc-64",
+      "qid": "Zn64",
+      "local": "49.17~0.75",
+      "wikidata": "48.63",
+      "text": "local 49.17~0.75  Zn64 bodr 48.63"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "zinc-66",
+      "qid": "Zn66",
+      "local": "27.73~0.98",
+      "wikidata": "27.90",
+      "text": "local 27.73~0.98  Zn66 bodr 27.90"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "zinc-67",
+      "qid": "Zn67",
+      "local": "4.04~0.16",
+      "wikidata": "4.10",
+      "text": "local 4.04~0.16  Zn67 bodr 4.10"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "zinc-68",
+      "qid": "Zn68",
+      "local": "18.45~0.63",
+      "wikidata": "18.75",
+      "text": "local 18.45~0.63  Zn68 bodr 18.75"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "zinc-70",
+      "qid": "Zn70",
+      "local": "0.61~0.10",
+      "wikidata": "0.62",
+      "text": "local 0.61~0.10  Zn70 bodr 0.62"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "zirconium-90",
+      "qid": "Zr90",
+      "local": "51.47~0.06",
+      "wikidata": "51.45",
+      "text": "local 51.47~0.06  Zr90 bodr 51.45"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "zirconium-91",
+      "qid": "Zr91",
+      "local": "11.23~0.06",
+      "wikidata": "11.22",
+      "text": "local 11.23~0.06  Zr91 bodr 11.22"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "zirconium-92",
+      "qid": "Zr92",
+      "local": "17.16~0.04",
+      "wikidata": "17.15",
+      "text": "local 17.16~0.04  Zr92 bodr 17.15"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "zirconium-94",
+      "qid": "Zr94",
+      "local": "17.36~0.07",
+      "wikidata": "17.38",
+      "text": "local 17.36~0.07  Zr94 bodr 17.38"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "zirconium-96",
+      "qid": "Zr96",
+      "local": "2.78~0.04",
+      "wikidata": "2.80",
+      "text": "local 2.78~0.04  Zr96 bodr 2.80"
+    }
+  ]
+}

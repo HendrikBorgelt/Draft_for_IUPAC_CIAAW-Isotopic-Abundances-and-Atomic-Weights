@@ -40,8 +40,6 @@ jobs:
       - name: The committed sparql-examples Turtle matches the queries
         run: git diff --exit-code -- sparql/examples
       - run: make site PYTHON=python
-        env:
-          SPARQL_ENDPOINT: ${{ vars.SPARQL_ENDPOINT }}
       - uses: actions/upload-pages-artifact@v5
         with:
           path: _site
@@ -60,10 +58,11 @@ jobs:
       - id: deployment
         uses: actions/deploy-pages@v5
 
-  # Skipped until the SPARQL_ENDPOINT repository variable is set. See "The SPARQL endpoint" in README.md.
+  # Off by default, because the endpoint is deployed from another Cloudflare account. It runs when the
+  # SPARQL_DEPLOY repository variable is "true". See "The SPARQL endpoint" in README.md.
   # It runs after the site, because a new deployment is what makes the worker load the new data.
   deploy-sparql:
-    if: vars.SPARQL_ENDPOINT != '' && github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    if: vars.SPARQL_DEPLOY == 'true' && github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
     needs: deploy
     runs-on: ubuntu-latest
     steps:

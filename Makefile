@@ -15,23 +15,24 @@ SUPPLEMENT  ?= supplement.csv
 # e.g. make ttl PREVIOUS=example-output.ttl
 PREVIOUS    ?=
 
-TTL         ?= $(BUILD_DIR)/ciaaw.ttl
+# The full data. It is committed, so that the site can be built without downloading anything.
+TTL         ?= ciaaw.ttl
 QS          ?= $(BUILD_DIR)/quickstatements.csv
 
-# Data shown on the site. Use SITE_DATA=build/ciaaw.ttl after `make ttl`.
-SITE_DATA     ?= example-output.ttl
+# Data shown on the site. The revision example is a small sample with an invented value.
+SITE_DATA     ?= $(TTL)
 SITE_REVISION ?= example-output-next.ttl
 
 WEIGHTS_URL    ?= https://ciaaw.org/atomic-weights.htm
 ABUNDANCES_URL ?= https://ciaaw.org/isotopic-abundances.htm
 
 # SPARQL endpoint: oxigraph-cloudflare-webworker, run from a pinned commit (see README.md).
-# SPARQL_ENDPOINT is the public URL. Without it the site leaves out the live query form.
+# Set SPARQL_ENDPOINT to point the site at another endpoint than the default in build_site.py.
 WORKER_REPO ?= https://github.com/JervenBolleman/oxigraph-cloudflare-webworker.git
 WORKER_REF  ?= 406eef7a49cfc497787ca03e0772d309d21d14ca
 WORKER_DIR  ?= $(BUILD_DIR)/sparql-worker
-WORKER_NAME ?= ciaaw-sparql-prototype
-SPARQL_DATA ?= https://hendrikborgelt.github.io/Draft_for_IUPAC_CIAAW-Isotopic-Abundances-and-Atomic-Weights/data/ciaaw.ttl
+WORKER_NAME ?= ciaaw-draft
+SPARQL_DATA ?= https://hendrikborgelt.github.io/Draft_for_IUPAC_CIAAW-Isotopic-Abundances-and-Atomic-Weights/data/combined.ttl
 SPARQL_ENDPOINT ?=
 
 # The queries in sparql/queries as sparql-examples Turtle in sparql/examples, made by sparql-examples-utils
@@ -42,7 +43,7 @@ SPARQL_EXAMPLES_JAR  ?= $(BUILD_DIR)/sparql-examples-utils-$(SPARQL_EXAMPLES_UTI
 SPARQL_EXAMPLES_URL  ?= https://github.com/sib-swiss/sparql-examples-utils/releases/download/v$(SPARQL_EXAMPLES_UTILS_VERSION)/sparql-examples-utils-$(SPARQL_EXAMPLES_UTILS_VERSION)-uber.jar
 SPARQL_EXAMPLES_BASE ?= https://hendrikborgelt.github.io/Draft_for_IUPAC_CIAAW-Isotopic-Abundances-and-Atomic-Weights/sparql/queries/
 
-.PHONY: help install download ttl example quickstatements check-wikidata wikidata-links wikidata-comparison references test model validate sparql-examples print-sparql-examples-version site serve sparql-dev sparql-deploy clean
+.PHONY: help install download ttl example quickstatements check-wikidata wikidata-links wikidata-comparison bodr-comparison references test model validate sparql-examples print-sparql-examples-version site serve sparql-dev sparql-deploy clean
 
 help:
 	@echo "make install         install the Python dependencies"
@@ -53,6 +54,7 @@ help:
 	@echo "make check-wikidata compare the abundances in $(TTL) with Wikidata"
 	@echo "make wikidata-links refresh site/wikidata.csv, the Wikidata items linked from the element pages"
 	@echo "make wikidata-comparison compare $(SITE_DATA) with Wikidata, for the site (site/wikidata-comparison.json)"
+	@echo "make bodr-comparison compare $(SITE_DATA) with the bodr package, for the site (site/bodr-comparison.json)"
 	@echo "make references refresh site/references.json, the formatted sources for the Bibliography"
 	@echo "make test            run all tests"
 	@echo "make model           regenerate the SHACL shapes and diagrams from the DCTAP"
@@ -72,12 +74,10 @@ download:
 	curl -fsSL -o $(WEIGHTS) $(WEIGHTS_URL)
 	curl -fsSL -o $(ABUNDANCES) $(ABUNDANCES_URL)
 
-ttl: $(TTL)
-
-$(TTL): ciaaw2ttl.py $(WEIGHTS) $(ABUNDANCES) $(SUPPLEMENT) $(PREVIOUS)
-	@mkdir -p $(dir $@)
+ttl: $(WEIGHTS) $(ABUNDANCES)
+	@mkdir -p $(dir $(TTL))
 	$(PYTHON) ciaaw2ttl.py --weights $(WEIGHTS) --abundances $(ABUNDANCES) \
-		--supplement $(SUPPLEMENT) $(if $(PREVIOUS),--previous $(PREVIOUS)) -o $@
+		--supplement $(SUPPLEMENT) $(if $(PREVIOUS),--previous $(PREVIOUS)) -o $(TTL)
 
 example:
 	@mkdir -p $(BUILD_DIR)
@@ -90,6 +90,7 @@ example:
 quickstatements: $(QS)
 
 $(QS): ttl2quickstatements.py $(TTL)
+	@mkdir -p $(dir $@)
 	$(PYTHON) ttl2quickstatements.py $(TTL) -o $@
 
 check-wikidata: $(TTL)
@@ -98,14 +99,20 @@ check-wikidata: $(TTL)
 wikidata-comparison:
 	$(PYTHON) check_wikidata.py $(SITE_DATA) --json site/wikidata-comparison.json > /dev/null
 
+bodr-comparison:
+	$(PYTHON) check_bodr.py $(SITE_DATA) --json site/bodr-comparison.json > /dev/null
+
 wikidata-links:
 	$(PYTHON) wikidata_links.py
 
 # override if the system npm does not work, e.g. make references NPM="node ~/opt/npm10/bin/npm-cli.js"
 NPM ?= npm
 
+# articles cited on the comparison pages: BODR
+RESOURCE_DOIS ?= 10.1186/1758-2946-3-37
+
 references: node_modules
-	node update_references.js $(SITE_DATA) $(SITE_REVISION)
+	node update_references.js $(SITE_DATA) $(SITE_REVISION) $(RESOURCE_DOIS)
 
 node_modules: package.json
 	$(NPM) install
@@ -135,7 +142,7 @@ sparql-examples: $(SPARQL_EXAMPLES_JAR) $(wildcard sparql/queries/*.rq)
 
 site:
 	$(PYTHON) build_site.py --data $(SITE_DATA) --revision $(SITE_REVISION) --out $(SITE_DIR) \
-		--sparql-endpoint "$(SPARQL_ENDPOINT)"
+		$(if $(SPARQL_ENDPOINT),--sparql-endpoint "$(SPARQL_ENDPOINT)")
 	$(PYTHON) combine_sparql_examples.py --data $(SITE_DATA) -o $(SITE_DIR)/data/combined.ttl
 
 serve: site

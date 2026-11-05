@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Join the data, the shared sparql-examples prefixes and every example into one Turtle file.
 
-  python combine_sparql_examples.py [--data example-output.ttl] [--examples sparql/examples] -o _site/data/combined.ttl
+  python combine_sparql_examples.py [--data ciaaw.ttl] [--examples sparql/examples] -o _site/data/combined.ttl
 
 Each part declares its own prefixes, and sparql/examples/prefixes.ttl holds the node that the examples refer to
 (sh:prefixes). The parts are therefore joined as text, the way sparql-examples-utils joins its files: a
@@ -27,7 +27,7 @@ def combined_turtle(data_path: Path, examples: Path = HERE / "sparql" / "example
 
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--data", type=Path, default=HERE / "example-output.ttl", help="Turtle of the current data")
+    ap.add_argument("--data", type=Path, default=HERE / "ciaaw.ttl", help="Turtle of the current data")
     ap.add_argument("--examples", type=Path, default=HERE / "sparql" / "examples",
                     help="directory with the sparql-examples Turtle and prefixes.ttl")
     ap.add_argument("-o", "--out", type=Path, required=True)

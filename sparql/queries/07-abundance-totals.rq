@@ -11,7 +11,7 @@ PREFIX qudt: <http://qudt.org/schema/qudt/>
 SELECT ?symbol (SUM(?amount) AS ?total) WHERE {
   ?element chemrof:symbol ?symbol ;
     ciaaw:hasIsotope/ciaaw:currentAbundance/ciaaw:value/qudt:numericValue ?amount .
-  FILTER NOT EXISTS {
+  MINUS {
     ?element ciaaw:hasIsotope/ciaaw:currentAbundance/ciaaw:value/qudt:lowerBound ?bound .
   }
 }

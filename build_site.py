@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Build the static prototype site for GitHub Pages.
 
-  python build_site.py [--data example-output.ttl] [--revision example-output-next.ttl] [--out _site]
+  python build_site.py [--data ciaaw.ttl] [--revision example-output-next.ttl] [--out _site]
                        [--sparql-endpoint URL] [--wikidata site/wikidata.csv]
 
 Every page is written as Markdown first. The HTML page is rendered from that same Markdown and wrapped
@@ -10,8 +10,8 @@ and the other RDF formats are translated from it.
 
 The SPARQL page shows the queries in sparql/queries with their results, computed with Oxigraph because
 that is the engine behind the endpoint. The queries are published as .rq files, and as sparql-examples Turtle
-from sparql/examples. A query editor runs against the endpoint once an endpoint URL is given, through
---sparql-endpoint or the SPARQL_ENDPOINT environment variable.
+from sparql/examples. A query editor runs against SPARQL_ENDPOINT below. Use --sparql-endpoint or the
+SPARQL_ENDPOINT environment variable for another endpoint, and --sparql-endpoint "" to leave the editor out.
 """
 from __future__ import annotations
 
@@ -67,6 +67,7 @@ SUBNAV = {"model": [("model", "Data Model"), ("revision-example", "Revision Exam
 QUERIES = HERE / "sparql" / "queries"
 EXAMPLES = HERE / "sparql" / "examples"
 WORKER_URL = "https://github.com/JervenBolleman/oxigraph-cloudflare-webworker"
+SPARQL_ENDPOINT = "https://ciaaw-draft.jerven-bolleman.workers.dev/sparql"
 SHORT_NAMES = {c.DEFAULT_DATA_NS: "ex:", str(c.CHEBI): "chebi:"}
 EDITOR_URL = "https://cdn.jsdelivr.net/npm/@sib-swiss/sparql-editor@0.2.14/dist/sparql-editor.js"
 SPARQL_EDITOR_MARK = "<!-- sparql-editor -->"
@@ -259,6 +260,7 @@ class Resource:
     command: str        # make target that writes the JSON
     description: str
     item_url: str = ""  # prefix of the identifiers in the "Item" column; without it they are not linked
+    doi: str = ""       # article to cite for the resource, formatted from references.json
 
 
 RESOURCES = [
@@ -267,6 +269,13 @@ RESOURCES = [
              "Isotopic abundances in this data compared with the natural abundance (P2374) of the isotopes in "
              "[Wikidata](https://www.wikidata.org), matched on atomic number and number of neutrons. Values are in "
              "percent. The comparison is made by `check_wikidata.py`.", WIKIDATA_ENTITY),
+    Resource("bodr-comparison", "BODR", "https://github.com/egonw/bodr", SITE_SRC / "bodr-comparison.json",
+             "bodr-comparison",
+             "Isotopic abundances in this data compared with the relative abundances in the isotopes file of the "
+             "[Blue Obelisk Data Repository](https://github.com/egonw/bodr) (BODR), matched on atomic number and mass "
+             "number. Values are in percent. BODR gives no uncertainty: a local value must equal the BODR value, and "
+             "for a local interval the BODR value must fall within it. The comparison is made by `check_bodr.py`.",
+             doi="10.1186/1758-2946-3-37"),
 ]
 
 SUBNAV["comparison"] = [("comparison", "Overview"), *((r.key, r.name) for r in RESOURCES)]
@@ -277,7 +286,7 @@ COMPARISON_KINDS = [
     ("NO-VALUE", "No value", "The isotope is in {name}, but without a natural abundance."),
     ("NOT-FOUND", "Not found", "{name} has no item for this isotope."),
     ("UNIT", "Unexpected unit", "The abundance in {name} is not a percentage or a plain number."),
-    ("ONLY-WIKIDATA", "Only in the resource", "{name} has an abundance, the local data has no such isotope."),
+    ("ONLY-RESOURCE", "Only in the resource", "{name} has an abundance, the local data has no such isotope."),
 ]
 
 
@@ -290,7 +299,7 @@ def read_comparison(resource: Resource) -> dict | None:
     return json.loads(resource.json.read_text(encoding="utf-8")) if resource.json.exists() else None
 
 
-def page_comparison(resources: list[Resource]) -> str:
+def page_comparison(resources: list[Resource], sample: bool = False) -> str:
     """The overview: one row per resource, with the counts of what differs."""
     rows = []
     for r in resources:
@@ -305,22 +314,27 @@ def page_comparison(resources: list[Resource]) -> str:
         "which one is right.\n",
         "| Resource | Compared on | Different values | No value | Not found |", "| --- | --- | --- | --- | --- |",
         *rows, "",
-        "Only a sample of the elements is on this site, so the results are only a demonstration. Each comparison "
-        "is a script that writes JSON, which the pages are built from, see the [README]({{repo}}#readme).\n"]).replace(
-        "{{repo}}", REPO_URL)
+        ("Only a sample of the elements is on this site, so the results are only a demonstration. " if sample else "")
+        + "Each comparison is a script that writes JSON, which the pages are built from, see the "
+        "[README]({{repo}}#readme).\n"]).replace("{{repo}}", REPO_URL)
 
 
-def page_resource_comparison(resource: Resource) -> str:
+def page_resource_comparison(resource: Resource, sample: bool = False) -> str:
     """The differences between the local abundances and one resource, from the JSON of its script."""
     intro = f"# Comparison with {resource.name}\n\n{resource.description}\n"
+    if resource.doi:
+        cited = read_references(REFERENCES_JSON).get(resource.doi.upper(), resource.doi)
+        intro += (f'\n<div class="csl-bib-body">\n<div class="csl-entry">{cited} '
+                  f'<a href="https://doi.org/{resource.doi}">CrossRef</a></div>\n</div>\n')
     result = read_comparison(resource)
     if result is None:
         return intro + f"\n> The comparison has not been generated yet. Run `make {resource.command}`.\n"
     counts = result["counts"]
     parts = [intro,
              f"Compared on {result['generated']}: {result['local_isotopes']} isotopes in `{result['source']}`, "
-             f"{result.get('resource_items', result.get('wikidata_items'))} items in {resource.name}. Only a sample of the elements is on this site, "
-             "so many isotopes are only in the resource.\n",
+             f"{result.get('resource_items', result.get('wikidata_items'))} items in {resource.name}"
+             f"{' (' + result['resource_version'] + ')' if result.get('resource_version') else ''}."
+             f"{' Only a sample of the elements is on this site, so many isotopes are only in the resource.' if sample else ''}\n",
              "| Result | Count |", "| --- | --- |",
              *(f"| {title} | {counts.get(kind, 0)} |" for kind, title, _ in COMPARISON_KINDS)]
     for kind, title, text in COMPARISON_KINDS:
@@ -552,22 +566,23 @@ def result_table(example: Example) -> str:
     return "\n".join(lines)
 
 
-def page_sparql(examples: list[Example], endpoint: str) -> str:
+def page_sparql(examples: list[Example], endpoint: str, coverage: str = "") -> str:
     if endpoint:
-        status = [f"The prototype endpoint is at `{endpoint}`. It may change or disappear without notice.\n"]
-        command_line = ["From the command line:\n",
-                        f'```bash\ncurl --data-urlencode "query=ASK {{ ?s ?p ?o }}" {endpoint}\n```\n',
-                        "For `CONSTRUCT` and `DESCRIBE`, ask for an RDF format, for example with "
-                        "`-H \"Accept: text/turtle\"`.\n"]
+        construct = "query=CONSTRUCT { ?s a ?o } WHERE { ?s a ?o }"
+        status = [f"A prototype endpoint is running at `{endpoint}`. It may change or disappear without notice. "
+                  "It only answers SPARQL requests, so opening the address in a browser shows an error.\n",
+                  "## Try it\n", f"{SPARQL_EDITOR_MARK}\n",
+                  "From the command line:\n",
+                  f'```bash\ncurl --data-urlencode "query=ASK {{ ?s ?p ?o }}" {endpoint}\n```\n',
+                  f'```bash\ncurl -H "Accept: text/turtle" --data-urlencode "{construct}" {endpoint}\n```\n',
+                  "`CONSTRUCT` and `DESCRIBE` need an RDF format in the `Accept` header, as in the second example. "
+                  "Without one, the endpoint answers with error 400.\n"]
     else:
-        status = [f"> **The live endpoint is not running yet.** See [issue 1]({ISSUES_URL}/1). "
-                  "The query editor appears here once it is, with each example in its own tab. Until then, the queries "
-                  "below can already be run on the [downloaded data](downloads.md).\n"]
-        command_line = []
-    parts = ["# SPARQL\n", *status,
-             "## Try it\n", f"{SPARQL_EDITOR_MARK}\n", *command_line,
+        status = ["> This build of the site has no live endpoint, so it has no query editor. "
+                  "The queries below can be run on the [downloaded data](downloads.md).\n"]
+    parts = ["# SPARQL\n", coverage, *status,
              "## What the endpoint holds\n",
-             f"It serves the [current data](data/ciaaw.ttl) read-only, using [Oxigraph](https://github.com/oxigraph/oxigraph) "
+             f"It serves the [current data](data/ciaaw.ttl) and the example queries read-only, using [Oxigraph](https://github.com/oxigraph/oxigraph) "
              f"inside a Cloudflare Worker ([oxigraph-cloudflare-webworker]({WORKER_URL})). The "
              "[revision example](revision-example.md) is not loaded, so its invented value cannot appear in results.\n",
              "## Decimals and trailing zeros\n",
@@ -705,23 +720,24 @@ def build(data_path: Path, revision_path: Path, out: Path, sparql_endpoint: str 
     site.add("revision-example", "Revision Example", page_revision(revision), "model")
     site.add("downloads", "Downloads", page_downloads(out, elements), "downloads")
     resources = RESOURCES if resources is None else resources
-    site.add("comparison", "Comparison", page_comparison(resources), "comparison")
+    sample = len(elements) < ELEMENT_COUNT
+    site.add("comparison", "Comparison", page_comparison(resources, sample), "comparison")
     for resource in resources:
-        site.add(resource.key, f"Comparison with {resource.name}", page_resource_comparison(resource), "comparison")
+        site.add(resource.key, f"Comparison with {resource.name}", page_resource_comparison(resource, sample), "comparison")
     examples = read_examples(data_path)
-    site.add("sparql", "SPARQL", page_sparql(examples, sparql_endpoint), "sparql",
+    site.add("sparql", "SPARQL", page_sparql(examples, sparql_endpoint, coverage_note(elements)), "sparql",
              editor=sparql_editor(sparql_endpoint, examples))
     return reports
 
 
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--data", type=Path, default=HERE / "example-output.ttl", help="Turtle shown as the current data")
+    ap.add_argument("--data", type=Path, default=HERE / "ciaaw.ttl", help="Turtle shown as the current data")
     ap.add_argument("--revision", type=Path, default=HERE / "example-output-next.ttl",
                     help="Turtle for the revision example")
     ap.add_argument("--out", type=Path, default=HERE / "_site")
-    ap.add_argument("--sparql-endpoint", default=os.environ.get("SPARQL_ENDPOINT", ""),
-                    help="URL of the live SPARQL endpoint; without it the query form is left out")
+    ap.add_argument("--sparql-endpoint", default=os.environ.get("SPARQL_ENDPOINT") or SPARQL_ENDPOINT,
+                    help='URL of the live SPARQL endpoint; "" leaves the query editor out')
     ap.add_argument("--wikidata", type=Path, default=WIKIDATA_CSV,
                     help="CSV with the Wikidata items, see wikidata_links.py (missing file: no Wikidata links)")
     args = ap.parse_args(argv)

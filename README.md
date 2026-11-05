@@ -40,9 +40,11 @@ We want to develop this together with the Commission. Decisions about the conten
 | `sparql/examples/` | The same queries as sparql-examples Turtle, made by `make sparql-examples` |
 | `update_references.js`, `site/references.json` | The formatted sources for the Bibliography |
 | `check_wikidata.py`, `site/wikidata-comparison.json` | The comparison with Wikidata, shown in the Comparison section of the site |
+| `check_bodr.py`, `site/bodr-comparison.json` | The comparison with BODR, shown in the Comparison section |
 | `wikidata_links.py`, `site/wikidata.csv` | The Wikidata items linked from the element pages |
 | `test_*.py`, `fixtures/` | Tests and their small hand-built input tables |
-| `example-output*.ttl` | Example results |
+| `ciaaw.ttl` | The full data, published on the site and loaded by the SPARQL endpoint |
+| `example-output*.ttl` | Small example results, used by the tests and the revision example |
 | `Makefile` | Runs the steps below |
 | `AUTHORS` | The people who worked on the hackathon, with their ORCID |
 
@@ -72,7 +74,7 @@ flowchart LR
 3. **Check `supplement.csv`** (`subject,role,year,doi,chebi`). Roles are `standard`,
    `abundance` and `match` (a `skos:closeMatch` to ChEBI). An element symbol with role
    `abundance` applies to all its isotopes.
-4. **Run `make ttl`**. The result is `build/ciaaw.ttl`. The script reports unparsable cells as
+4. **Run `make ttl`**. The result is `ciaaw.ttl`. The script reports unparsable cells as
    `ERROR` lines and exits non-zero; use `--lenient` when calling it directly to ignore that.
    Expect 118 elements, 289 isotopes, and 26 warnings for elements 93 to 118, which the abundance
    table does not list. Check any other warning: a wrong sum means that isotopes went missing,
@@ -89,7 +91,7 @@ the test fixtures.
 To keep the history of changed values, pass the Turtle of the earlier release:
 
 ```
-make ttl PREVIOUS=ciaaw-2022.ttl
+make ttl PREVIOUS=ciaaw.ttl
 ```
 
 Declarations whose value changed are kept, flagged `owl:deprecated`, and linked with
@@ -109,7 +111,7 @@ exported yet.
 ## Comparing with Wikidata
 
 `make check-wikidata` queries Wikidata with SPARQL (items with atomic number P1086 and number of
-neutrons P1148, with natural abundance P2374) and compares the current abundances in `build/ciaaw.ttl` with them, in
+neutrons P1148, with natural abundance P2374) and compares the current abundances in `ciaaw.ttl` with them, in
 percent. Isotopes are matched by atomic number Z and neutron number N (mass number = Z + N). Differences go
 to STDOUT, a summary to STDERR:
 
@@ -117,7 +119,7 @@ to STDOUT, a summary to STDERR:
 DIFFERENT     hydrogen-2      local [0.001, 0.028]  Q2 wikidata 0.0115
 NO-VALUE      helium-3        local 0.0002~0.0002  Q3 has no abundance
 NOT-FOUND     argon-36        local ...  no Wikidata item
-ONLY-WIKIDATA ...             Wikidata has an abundance, the local data has not
+ONLY-RESOURCE ...             Wikidata has an abundance, the local data has not
 ```
 
 Call `python3 check_wikidata.py --help` for `--strict` (exit 1 on differences) and
@@ -127,6 +129,15 @@ Call `python3 check_wikidata.py --help` for `--strict` (exit 1 on differences) a
 `make wikidata-comparison` writes that JSON for the site data to `site/wikidata-comparison.json`. It
 is committed, so the build and the tests work offline, and `make serve` shows it on the
 "Comparison" section of the site. Refresh it with `make wikidata-comparison`.
+
+## Comparing with BODR
+
+`make bodr-comparison` compares the abundances with the [Blue Obelisk Data Repository](https://github.com/egonw/bodr)
+([doi:10.1186/1758-2946-3-37](https://doi.org/10.1186/1758-2946-3-37)), using `isotopes.xml` of the Debian
+package `bodr` (`sudo apt install bodr`, or give the file with `--bodr`). BODR gives no uncertainty, so a
+local value must equal the BODR value, and for a local interval the BODR value must fall within it. The result
+is written to STDOUT in the same format as for Wikidata, and the JSON to `site/bodr-comparison.json` for the
+Comparison section of the site. `check_bodr.py` has `--strict` and `--json` as well.
 
 ## Tests
 
@@ -138,13 +149,15 @@ make test
 |---|---|
 | `test_ciaaw2ttl.py` | Reading the tables, number handling, the deprecation chain |
 | `test_model.py` | The DCTAP, and that each SHACL rule rejects data broken on purpose |
+| `test_check_bodr.py` | The comparison with BODR, on a small isotopes file |
 | `test_site.py` | The pages, the watermark, links, and that every RDF format holds the same triples |
 | `test_sparql.py` | The example queries on Oxigraph, the SPARQL page and the deployment setup |
+| `test_published_data.py` | `ciaaw.ttl` and the site built from it, including that nothing is out of date |
 
 ## The site
 
 `make serve` builds `_site/` and serves it on <http://localhost:8000>. `make site` only builds
-it. To show your own data, use `make site SITE_DATA=build/ciaaw.ttl`.
+it. To show other data, use for example `make site SITE_DATA=example-output.ttl`.
 
 The element pages link to Wikidata, for the element and for each isotope. The Q-numbers are in
 `site/wikidata.csv`, which is committed so that the build and the tests work offline. Refresh it
@@ -165,20 +178,28 @@ without publishing it.
 
 ## The SPARQL endpoint
 
-**Status: not deployed yet.** It needs a Cloudflare account. See
-[issue 1](https://github.com/HendrikBorgelt/Draft_for_IUPAC_CIAAW-Isotopic-Abundances-and-Atomic-Weights/issues/1).
-Until then, the SPARQL tab on the site shows the example queries with results computed with
-Oxigraph, the same engine. Each example opens in its own tab of the query editor. The queries are also published as `.rq` files.
+The endpoint is running at <https://ciaaw-draft.jerven-bolleman.workers.dev/sparql>, hosted by
+Jerven Bolleman. The SPARQL tab on the site has a query editor, where each example opens in its
+own tab, and shows the example queries with results computed with Oxigraph, the same engine.
+The queries are also published as `.rq` files. From the command line:
+
+```
+curl -H 'Accept: text/turtle' --data-urlencode 'query=CONSTRUCT { ?s a ?o } WHERE { ?s a ?o }' https://ciaaw-draft.jerven-bolleman.workers.dev/sparql
+```
+
+It uses
+[oxigraph-cloudflare-webworker](https://github.com/JervenBolleman/oxigraph-cloudflare-webworker),
+a Cloudflare Worker that loads `data/combined.ttl` from the published site into an in-memory
+Oxigraph store. That file holds the data and the example queries, and `make site` writes it. If
+it is missing, every query fails with error 502. The site finds the endpoint through
+`SPARQL_ENDPOINT` in `build_site.py`.
 
 The Turtle in `sparql/examples` comes from the `.rq` files with
 [sparql-examples-utils](https://github.com/sib-swiss/sparql-examples-utils). Run `make sparql-examples`
 after changing a query. It needs the jar of that project, see `SPARQL_EXAMPLES_JAR` in the Makefile.
 
-The endpoint uses
-[oxigraph-cloudflare-webworker](https://github.com/JervenBolleman/oxigraph-cloudflare-webworker),
-a Cloudflare Worker that loads `data/ciaaw.ttl` from the published site into an in-memory
-Oxigraph store. Its code is not copied here: `make` checks out the commit pinned in `WORKER_REF`.
-You need Node.js for the two targets below.
+The worker's code is not copied here: `make` checks out the commit pinned in `WORKER_REF`. You
+need Node.js for the two targets below.
 
 To run it on your own machine, without a Cloudflare account:
 
@@ -189,26 +210,33 @@ make sparql-dev
 Then query <http://localhost:8787/sparql>. To try the query editor on the SPARQL tab as well, build the site with
 `make site SPARQL_ENDPOINT=http://localhost:8787/sparql`.
 
-To publish it:
+The running endpoint is deployed separately from this repository. To deploy from here instead:
 
 1. Create a Cloudflare API token with only **Account → Workers Scripts → Edit**.
 2. In the repository settings, add it as the secret `CLOUDFLARE_API_TOKEN`. Add
    `CLOUDFLARE_ACCOUNT_ID` too if the token can reach more than one account.
-3. Set the repository variable `SPARQL_ENDPOINT` to
-   `https://ciaaw-sparql-prototype.<your-subdomain>.workers.dev/sparql`.
+3. Set the repository variable `SPARQL_DEPLOY` to `true`.
 4. Run the workflow again. From then on, each push to `main` publishes the site and then
    redeploys the worker, which makes it load the new data.
+
+A token for another Cloudflare account creates a separate worker at a different address, so
+`SPARQL_ENDPOINT` in `build_site.py` then has to change too.
 
 Things to know:
 
 - **Decimals are normalised.** Oxigraph returns `162.500` as `162.5` and `0.0000` as `0`. Use
   `ciaaw:significantFigures` or the Turtle file when the printed digits matter. Zero bounds have
   no significant figures, so their printed form is only in the Turtle file.
-- **The free Cloudflare plan allows 10 ms of CPU per request.** The current 8 elements load in
-  about 1 ms. The real 118-element file took about 10 ms in native Oxigraph, and the worker's
-  WebAssembly build will be slower, so the full dataset will probably need a paid plan.
-- **Only the current data is loaded.** The revision example is left out, so its invented value
-  cannot appear in results.
+- **`CONSTRUCT` and `DESCRIBE` need an RDF format in the `Accept` header**, for example
+  `text/turtle`. Without one, the endpoint answers with error 400.
+- **New data is not picked up straight away.** The worker loads the Turtle once per instance, so
+  it can keep serving older data after the site changes, until it restarts or is redeployed.
+- **CPU limits have not been a problem so far.** The free Cloudflare plan allows 10 ms of CPU per
+  request, but the running worker has answered queries that used about 460 ms. Loading the full
+  data takes roughly 15 ms, only when a worker starts. The plan of the running worker is not
+  known, so keep example queries cheap: `test_published_data.py` checks this.
+- **Only the current data and the example queries are loaded.** The revision example is left
+  out, so its invented value cannot appear in results.
 
 ## Without make
 
@@ -220,8 +248,8 @@ Things to know:
 | `make ttl` | `python ciaaw2ttl.py --weights data/atomic-weights.htm --abundances data/isotopic-abundances.htm --supplement supplement.csv -o ciaaw.ttl` |
 | `make test` | `python -m pytest -q` |
 | `make model` | `python tap2model.py` |
-| `make validate` | `python tap2model.py --validate example-output.ttl example-output-next.ttl` |
-| `make site` | `python build_site.py` |
+| `make validate` | `python tap2model.py --validate ciaaw.ttl example-output-next.ttl` |
+| `make site` | `python build_site.py` and `python combine_sparql_examples.py -o _site/data/combined.ttl` |
 
 For `make download`, save the two pages from your browser as described in step 2 above.
 
@@ -247,11 +275,10 @@ The table adds four columns to the 12 DCTAP elements, all declared in `dctap.yam
 
 ## Current limits
 
-- **The site shows 8 of the 118 elements.** It is built from `example-output.ttl`, which came from a small hand-built copy of the tables. `make ttl` builds the full data locally, but it is not published.
+- **`ciaaw.ttl` is a snapshot.** It was made from the CIAAW pages on 5 November 2026 and does not follow their updates. To refresh it, run `make download` and `make ttl`, then `make wikidata-comparison` and `make bodr-comparison`, because the tests check that those match the data.
 - **Years and DOIs are only known for hydrogen.** All other declarations have no citation yet. Adding a year later also changes the declaration's IRI, so `supplement.csv` should be completed before anyone cites them.
 - **`example-output-next.ttl` contains an invented value.** It demonstrates a revision of hydrogen and is not a CIAAW value.
 - **All IRIs under `example.org` are placeholders** until a persistent home is agreed.
 - **Atomic masses and abridged values are modelled but not generated**, because the two source tables do not contain them.
 - **The ADMS status IRI has not been confirmed yet.** See the note in `ciaaw2ttl.py`.
 - **No licence has been chosen yet** for the code or the data.
-- **The SPARQL endpoint is set up but not deployed.** See [above](#the-sparql-endpoint).

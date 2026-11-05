@@ -12,12 +12,13 @@ import build_site as b
 
 HERE = Path(__file__).parent
 NB = b.NBSP
+SAMPLE = ["--data", str(HERE / "example-output.ttl")]            # small and fast; test_published_data.py has the rest
 
 
 @pytest.fixture(scope="module")
 def site(tmp_path_factory):
     out = tmp_path_factory.mktemp("site") / "_site"
-    assert b.main(["--out", str(out)]) == 0
+    assert b.main([*SAMPLE, "--out", str(out)]) == 0
     return out
 
 
@@ -224,7 +225,7 @@ def test_wikidata_csv_covers_all_elements_and_has_the_isotopes_of_the_site():
 
 def test_site_builds_without_the_wikidata_csv(tmp_path):
     out = tmp_path / "_site"
-    assert b.main(["--out", str(out), "--wikidata", str(tmp_path / "missing.csv")]) == 0
+    assert b.main([*SAMPLE, "--out", str(out), "--wikidata", str(tmp_path / "missing.csv")]) == 0
     assert "wikidata.org" not in text_of(out / "elements" / "Hydrogen.md")
 
 
@@ -259,7 +260,14 @@ def test_comparison_page_for_a_resource_lists_the_differences(site):
     html = text_of(site / "wikidata-comparison.html")
     assert "Comparison with Wikidata" in html and "Different values" in html
     assert "argon-36" in html and 'href="https://www.wikidata.org/wiki/Q2019992"' in html
-    assert [a.get_text() for a in BeautifulSoup(html, "html.parser").select("#breadcrumb a")] == ["Overview", "Wikidata"]
+    assert [a.get_text() for a in BeautifulSoup(html, "html.parser").select("#breadcrumb a")] == ["Overview", "Wikidata", "BODR"]
+
+
+def test_bodr_comparison_page_cites_the_article(site):
+    html = text_of(site / "bodr-comparison.html")
+    assert "Comparison with BODR" in html and "Blue Obelisk" in html
+    assert 'href="https://doi.org/10.1186/1758-2946-3-37"' in html and "dysprosium-156" in html
+    assert [a.get_text() for a in BeautifulSoup(html, "html.parser").select("#breadcrumb a")] == ["Overview", "Wikidata", "BODR"]
 
 
 def test_comparison_page_without_the_json(tmp_path):

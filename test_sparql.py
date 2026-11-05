@@ -20,10 +20,11 @@ import build_site as b
 
 HERE = Path(__file__).parent
 DATA = HERE / "example-output.ttl"
+SAMPLE = ["--data", str(DATA)]
 QUERY_FILES = sorted((HERE / "sparql" / "queries").glob("*.rq"))
 EXAMPLES = HERE / "sparql" / "examples"
 SH = Namespace("http://www.w3.org/ns/shacl#")
-ENDPOINT = "https://ciaaw-sparql-prototype.example.workers.dev/sparql"
+ENDPOINT = "https://another-endpoint.example/sparql"
 PREFIXES = """PREFIX ciaaw: <https://example.org/ciaaw-draft#>
 PREFIX ex: <https://example.org/data/>
 PREFIX qudt: <http://qudt.org/schema/qudt/>
@@ -49,7 +50,7 @@ def examples():
 
 def build(tmp_path_factory, endpoint):
     out = tmp_path_factory.mktemp("site") / "_site"
-    assert b.main(["--out", str(out), "--sparql-endpoint", endpoint]) == 0
+    assert b.main([*SAMPLE, "--out", str(out), "--sparql-endpoint", endpoint]) == 0
     return out
 
 
@@ -138,6 +139,15 @@ def test_sparql_examples_turtle_runs_the_same_query(path, store):
 
 
 @pytest.mark.parametrize("path", QUERY_FILES, ids=lambda p: p.stem)
+def test_sparql_examples_turtle_has_the_text_of_the_query(path):
+    """Two queries can give the same rows, so results alone do not show that the Turtle is up to date."""
+    def lines(query):
+        return [line for line in query.splitlines() if line.strip() and not line.startswith("#")]
+
+    assert lines(sparql_examples_select(path)) == lines(path.read_text(encoding="utf-8"))
+
+
+@pytest.mark.parametrize("path", QUERY_FILES, ids=lambda p: p.stem)
 def test_query_returns_results_and_both_engines_agree(path, store, graph):
     query = path.read_text(encoding="utf-8")
     solutions = store.query(query)
@@ -168,9 +178,8 @@ def test_terms_are_shortened(examples):
 
 
 # --- the page without an endpoint ---------------------------------------------------------
-def test_page_says_the_endpoint_is_not_running(plain_site):
-    text = text_of(plain_site / "sparql.md")
-    assert "not running yet" in text and "/issues/1" in text
+def test_page_says_when_a_build_has_no_endpoint(plain_site):
+    assert "has no live endpoint" in text_of(plain_site / "sparql.md")
 
 
 def test_no_editor_without_an_endpoint(plain_site):
@@ -227,7 +236,34 @@ def test_editor_runs_against_the_endpoint(live_site):
     assert soup.find("script", src=b.EDITOR_URL) is not None
     assert soup.find("script", src="static/sparql-editor.js") is not None
     assert (live_site / "static" / "sparql-editor.js").exists()
-    assert "not running yet" not in soup.get_text()
+    assert "has no live endpoint" not in soup.get_text()
+
+
+def test_page_explains_how_to_call_the_endpoint(live_site):
+    text = text_of(live_site / "sparql.md")
+    assert 'curl -H "Accept: text/turtle" --data-urlencode "query=CONSTRUCT { ?s a ?o } WHERE { ?s a ?o }"' in text
+    assert "need an RDF format in the `Accept` header" in text
+
+
+def test_page_says_the_endpoint_holds_a_sample(live_site):
+    assert "sample of 8 of the 118 elements" in text_of(live_site / "sparql.md")
+
+
+def test_default_build_uses_the_running_endpoint(tmp_path, monkeypatch):
+    monkeypatch.delenv("SPARQL_ENDPOINT", raising=False)
+    out = tmp_path / "_site"
+    assert b.main([*SAMPLE, "--out", str(out)]) == 0
+    editor = BeautifulSoup(text_of(out / "sparql.html"), "html.parser").find("sparql-editor")
+    assert editor["endpoint"] == b.SPARQL_ENDPOINT
+    assert b.SPARQL_ENDPOINT.endswith("/sparql")                  # the root of the worker answers with 404
+
+
+def test_empty_environment_variable_keeps_the_running_endpoint(tmp_path, monkeypatch):
+    """GitHub Actions turns an unset repository variable into an empty value."""
+    monkeypatch.setenv("SPARQL_ENDPOINT", "")
+    out = tmp_path / "_site"
+    assert b.main([*SAMPLE, "--out", str(out)]) == 0
+    assert b.SPARQL_ENDPOINT in text_of(out / "sparql.md")
 
 
 def test_each_example_is_a_tab_of_the_editor(live_site):
@@ -245,7 +281,7 @@ def test_markdown_page_has_no_editor_markup(live_site):
 
 def test_endpoint_url_is_escaped(tmp_path):
     out = tmp_path / "_site"
-    assert b.main(["--out", str(out), "--sparql-endpoint", 'https://x.test/"><script>alert(1)</script>']) == 0
+    assert b.main([*SAMPLE, "--out", str(out), "--sparql-endpoint", 'https://x.test/"><script>alert(1)</script>']) == 0
     editor = BeautifulSoup(text_of(out / "sparql.html"), "html.parser").find("sparql-editor")
     assert editor["endpoint"] == 'https://x.test/"><script>alert(1)</script>'
     assert editor.find("script") is None
@@ -254,7 +290,7 @@ def test_endpoint_url_is_escaped(tmp_path):
 def test_endpoint_can_come_from_the_environment(tmp_path, monkeypatch):
     monkeypatch.setenv("SPARQL_ENDPOINT", ENDPOINT)
     out = tmp_path / "_site"
-    assert b.main(["--out", str(out)]) == 0
+    assert b.main([*SAMPLE, "--out", str(out)]) == 0
     assert ENDPOINT in text_of(out / "sparql.md")
 
 
@@ -267,19 +303,25 @@ def test_worker_is_pinned_to_a_full_commit():
     assert re.fullmatch(r"[0-9a-f]{40}", make_variable("WORKER_REF"))
 
 
-def test_worker_name_says_it_is_a_prototype():
-    assert "prototype" in make_variable("WORKER_NAME")
+def test_worker_name_matches_the_running_endpoint():
+    assert f"//{make_variable('WORKER_NAME')}." in b.SPARQL_ENDPOINT
 
 
-def test_endpoint_loads_the_published_current_data():
-    assert make_variable("SPARQL_DATA").endswith("/data/ciaaw.ttl")
+def test_endpoint_loads_the_published_combined_data():
+    assert make_variable("SPARQL_DATA").endswith("/data/combined.ttl")
+
+
+def test_make_site_publishes_what_the_endpoint_loads():
+    """The running worker depends on this file: without it, every query fails with error 502."""
+    site_recipe = re.search(r"^site:\n((?:\t.*\n)+)", text_of(HERE / "Makefile").replace("\r\n", "\n"), flags=re.M).group(1)
+    assert "combine_sparql_examples.py" in site_recipe and "$(SITE_DIR)/data/combined.ttl" in site_recipe
 
 
 def test_deploy_job_is_optional_and_runs_after_the_site():
     workflow = YAML(typ="safe").load(text_of(HERE / ".github" / "workflows" / "pages.yml"))
     job = workflow["jobs"]["deploy-sparql"]
     assert job["needs"] == "deploy"                               # the worker must load the new data
-    assert "vars.SPARQL_ENDPOINT != ''" in job["if"] and "pull_request" in job["if"]
+    assert "vars.SPARQL_DEPLOY == 'true'" in job["if"] and "pull_request" in job["if"]
     assert job["steps"][-1]["run"] == "make sparql-deploy"
     assert "secrets.CLOUDFLARE_API_TOKEN" in job["steps"][-1]["env"]["CLOUDFLARE_API_TOKEN"]
 
@@ -293,10 +335,11 @@ def test_sparql_examples_utils_is_pinned_and_cached():
     assert any(s.get("run") == "make sparql-examples" for s in steps)
 
 
-def test_site_build_receives_the_endpoint():
+def test_workflow_does_not_override_the_endpoint():
+    """An unset repository variable would reach the build as an empty value."""
     workflow = YAML(typ="safe").load(text_of(HERE / ".github" / "workflows" / "pages.yml"))
     step = next(s for s in workflow["jobs"]["build"]["steps"] if "make site" in s.get("run", ""))
-    assert "vars.SPARQL_ENDPOINT" in step["env"]["SPARQL_ENDPOINT"]
+    assert "SPARQL_ENDPOINT" not in step.get("env", {})
 
 
 if __name__ == "__main__":
