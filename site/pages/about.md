@@ -24,7 +24,7 @@ This prototype was made at a hackathon by:
 
 | Name | Institution | ORCID | GitHub |
 | --- | --- | --- | --- |
-| Evan Bolton | National Center for Biotechnology Information (NCBI) | [0000-0002-5959-6190](https://orcid.org/0000-0002-5959-6190) | — |
+| Evan Bolton | National Center for Biotechnology Information (NCBI) | [0000-0002-5959-6190](https://orcid.org/0000-0002-5959-6190) | [boltonee](https://github.com/boltonee) |
 | Hendrik Borgelt | TU Dortmund University | [0000-0001-5886-7860](https://orcid.org/0000-0001-5886-7860) | [HendrikBorgelt](https://github.com/HendrikBorgelt) |
 | Egon Willighagen | Maastricht University | [0000-0001-7542-0286](https://orcid.org/0000-0001-7542-0286) | [egonw](https://github.com/egonw) |
 | Jerven Bolleman | SIB Swiss Institute of Bioinformatics | [0000-0002-7449-1266](https://orcid.org/0000-0002-7449-1266) | [JervenBolleman](https://github.com/JervenBolleman) |
