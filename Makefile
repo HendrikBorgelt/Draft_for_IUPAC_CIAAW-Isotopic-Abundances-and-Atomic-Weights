@@ -19,6 +19,10 @@ PREVIOUS    ?=
 TTL         ?= ciaaw.ttl
 QS          ?= $(BUILD_DIR)/quickstatements.csv
 
+# Optional: JSON of check_wikidata.py --json, then QuickStatements also adds the abundance to Wikidata items
+# that have none, e.g. make quickstatements QS_COMPARISON=build/wikidata-comparison.json
+QS_COMPARISON ?=
+
 # Data shown on the site. The revision example is a small sample with an invented value.
 SITE_DATA     ?= $(TTL)
 SITE_REVISION ?= example-output-next.ttl
@@ -89,9 +93,9 @@ example:
 
 quickstatements: $(QS)
 
-$(QS): ttl2quickstatements.py $(TTL)
+$(QS): ttl2quickstatements.py site/wikidata.csv $(TTL) $(QS_COMPARISON)
 	@mkdir -p $(dir $@)
-	$(PYTHON) ttl2quickstatements.py $(TTL) -o $@
+	$(PYTHON) ttl2quickstatements.py $(TTL) $(if $(QS_COMPARISON),--comparison $(QS_COMPARISON)) -o $@
 
 check-wikidata: $(TTL)
 	$(PYTHON) check_wikidata.py $(TTL)

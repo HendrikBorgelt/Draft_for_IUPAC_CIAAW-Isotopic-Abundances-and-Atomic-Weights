@@ -104,9 +104,21 @@ are described by `python3 ciaaw2ttl.py --help`. Call the script directly to use 
 
 ## Wikidata (optional)
 
-`make quickstatements` writes `build/quickstatements.csv`, one new item per isotope, for
-import with [QuickStatements](https://quickstatements.toolforge.org/). Atomic weights are not
-exported yet.
+`make quickstatements` writes `build/quickstatements.csv` for import with
+[QuickStatements](https://quickstatements.toolforge.org/). It follows the model: the abundance of the
+current declaration (`ciaaw:currentAbundance`, not the deprecated ones) as a natural abundance (P2374), with
+the year of the declaration as qualifier (P585) and its DOI as reference (S356). The amounts are fractions
+without unit, because that is how Wikidata stores P2374 (0.0107 for carbon-13), not percentages.
+
+- Isotopes that Wikidata already has (`site/wikidata.csv`, see below) are **not created again**.
+- An isotope without an item becomes a new item, with atomic number (P1086) and number of neutrons (P1148),
+  which are the properties Wikidata uses for isotopes.
+- With the JSON of `check_wikidata.py` (see below), `make quickstatements QS_COMPARISON=build/wikidata-comparison.json`
+  also adds the abundance to the existing items that have none. Items where Wikidata has a different value
+  are left alone, they need a person to decide.
+
+Atomic weights and half-lives are not exported: Wikidata has no agreed property for an interval of standard
+atomic weights.
 
 ## Comparing with Wikidata
 
@@ -150,6 +162,7 @@ make test
 | `test_ciaaw2ttl.py` | Reading the tables, number handling, the deprecation chain |
 | `test_model.py` | The DCTAP, and that each SHACL rule rejects data broken on purpose |
 | `test_check_bodr.py` | The comparison with BODR, on a small isotopes file |
+| `test_quickstatements.py` | The QuickStatements export: properties, units, no duplicate items |
 | `test_site.py` | The pages, the watermark, links, and that every RDF format holds the same triples |
 | `test_sparql.py` | The example queries on Oxigraph, the SPARQL page and the deployment setup |
 | `test_published_data.py` | `ciaaw.ttl` and the site built from it, including that nothing is out of date |
@@ -246,6 +259,7 @@ Things to know:
 |---|---|
 | `make install` | `python -m pip install -r requirements.txt` |
 | `make ttl` | `python ciaaw2ttl.py --weights data/atomic-weights.htm --abundances data/isotopic-abundances.htm --supplement supplement.csv -o ciaaw.ttl` |
+| `make quickstatements` | `python ttl2quickstatements.py ciaaw.ttl -o quickstatements.csv` |
 | `make test` | `python -m pytest -q` |
 | `make model` | `python tap2model.py` |
 | `make validate` | `python tap2model.py --validate ciaaw.ttl example-output-next.ttl` |
