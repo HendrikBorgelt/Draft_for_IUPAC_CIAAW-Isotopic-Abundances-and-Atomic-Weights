@@ -5,6 +5,7 @@ Run with:  python -m pytest test_sparql.py
 These tests use Oxigraph, the engine behind the endpoint, at the version in the worker's lockfile.
 They do not run the Cloudflare Worker itself.
 """
+import functools
 import json
 import re
 from decimal import Decimal, InvalidOperation
@@ -63,6 +64,27 @@ def plain_site(tmp_path_factory):
 @pytest.fixture(scope="module")
 def live_site(tmp_path_factory):
     return build(tmp_path_factory, ENDPOINT)
+
+
+# The history is only in the full data, so the queries about it run on that.
+FULL = HERE / "ciaaw.ttl"
+HISTORY_QUERIES = {"08-historical-standard-atomic-weights"}
+
+
+def data_for(path):
+    return FULL if path.stem in HISTORY_QUERIES else DATA
+
+
+@functools.lru_cache(maxsize=None)
+def store_for(data):
+    s = ox.Store()
+    s.load(data.read_bytes(), format=ox.RdfFormat.TURTLE)
+    return s
+
+
+@functools.lru_cache(maxsize=None)
+def graph_for(data):
+    return Graph().parse(data, format="turtle")
 
 
 def comparable(value):
@@ -130,9 +152,9 @@ def sparql_examples_select(path):
 
 
 @pytest.mark.parametrize("path", QUERY_FILES, ids=lambda p: p.stem)
-def test_sparql_examples_turtle_runs_the_same_query(path, store):
+def test_sparql_examples_turtle_runs_the_same_query(path):
     def rows(query):
-        solutions = store.query(query)
+        solutions = store_for(data_for(path)).query(query)
         names = [v.value for v in solutions.variables]
         return names, [[None if row[n] is None else comparable(row[n].value) for n in names] for row in solutions]
 
@@ -149,12 +171,12 @@ def test_sparql_examples_turtle_has_the_text_of_the_query(path):
 
 
 @pytest.mark.parametrize("path", QUERY_FILES, ids=lambda p: p.stem)
-def test_query_returns_results_and_both_engines_agree(path, store, graph):
+def test_query_returns_results_and_both_engines_agree(path):
     query = path.read_text(encoding="utf-8")
-    solutions = store.query(query)
+    solutions = store_for(data_for(path)).query(query)
     names = [v.value for v in solutions.variables]
     oxigraph = [[None if row[n] is None else comparable(row[n].value) for n in names] for row in solutions]
-    rdflib = [[None if value is None else comparable(value) for value in row] for row in graph.query(query)]
+    rdflib = [[None if value is None else comparable(value) for value in row] for row in graph_for(data_for(path)).query(query)]
     assert oxigraph, path.name
     assert oxigraph == rdflib
 
