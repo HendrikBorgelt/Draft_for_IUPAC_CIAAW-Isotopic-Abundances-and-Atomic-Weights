@@ -182,7 +182,9 @@ def parse_notes(text: str) -> list[str]:
 # Table readers
 # ---------------------------------------------------------------------------
 def table_rows(html: str):
-    soup = BeautifulSoup(html, "html.parser")
+    # html5lib repairs broken markup the way browsers do. ciaaw.org leaves out <tr> on many rows,
+    # and html.parser would silently drop those cells.
+    soup = BeautifulSoup(html, "html5lib")
     for tr in soup.find_all("tr"):
         yield [" ".join(td.get_text(" ").split()) for td in tr.find_all(["td", "th"])]
 

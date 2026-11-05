@@ -61,6 +61,12 @@ def test_abundance_table_uses_ciaaw_notation(site):
     assert "1" in cells and "1.0" not in cells             # beryllium is printed as in the table
 
 
+def test_elements_missing_from_the_abundance_table_get_no_row():
+    """The CIAAW table stops at uranium, so elements 93 to 118 should not appear as empty rows."""
+    empty = b.Element(b.URIRef("https://example.org/data/Neptunium"), "neptunium", "Np", 93, None, [], [], None, [])
+    assert "neptunium" not in b.page_isotopic_abundances([empty], {})
+
+
 def test_element_without_standard_atomic_weight(site):
     assert "gives no standard atomic weight" in text_of(site / "elements" / "Technetium.md")
 

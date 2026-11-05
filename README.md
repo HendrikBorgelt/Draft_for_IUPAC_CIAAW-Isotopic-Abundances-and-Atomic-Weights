@@ -69,6 +69,9 @@ flowchart LR
    `abundance` applies to all its isotopes.
 4. **Run `make ttl`**. The result is `build/ciaaw.ttl`. The script reports unparsable cells as
    `ERROR` lines and exits non-zero; use `--lenient` when calling it directly to ignore that.
+   Expect 118 elements, 289 isotopes, and 26 warnings for elements 93 to 118, which the abundance
+   table does not list. Check any other warning: a wrong sum means that isotopes went missing,
+   even if the script exits normally.
 
 Run `make help` to list all targets. If your Python command is `python` instead of `python3`,
 add `PYTHON=python` to each command.
@@ -175,8 +178,8 @@ Things to know:
   `ciaaw:significantFigures` or the Turtle file when the printed digits matter. Zero bounds have
   no significant figures, so their printed form is only in the Turtle file.
 - **The free Cloudflare plan allows 10 ms of CPU per request.** The current 8 elements load in
-  about 1 ms. A file the size of all 118 elements took about 14 ms in native Oxigraph, and the
-  worker's WebAssembly build will be slower, so the full dataset may need a paid plan.
+  about 1 ms. The real 118-element file took about 10 ms in native Oxigraph, and the worker's
+  WebAssembly build will be slower, so the full dataset will probably need a paid plan.
 - **Only the current data is loaded.** The revision example is left out, so its invented value
   cannot appear in results.
 
@@ -217,8 +220,8 @@ The table adds four columns to the 12 DCTAP elements, all declared in `dctap.yam
 
 ## Current limits
 
-- **The site shows 8 of the 118 elements.** It is built from `example-output.ttl`, which came from a small hand-built copy of the tables.
-- **The converter has not been checked against the live CIAAW pages yet.** Run `make download` and `make ttl`, then confirm that it reports 118 elements and no `ERROR` lines.
+- **The site shows 8 of the 118 elements.** It is built from `example-output.ttl`, which came from a small hand-built copy of the tables. `make ttl` builds the full data locally, but it is not published.
+- **Years and DOIs are only known for hydrogen.** All other declarations have no citation yet. Adding a year later also changes the declaration's IRI, so `supplement.csv` should be completed before anyone cites them.
 - **`example-output-next.ttl` contains an invented value.** It demonstrates a revision of hydrogen and is not a CIAAW value.
 - **All IRIs under `example.org` are placeholders** until a persistent home is agreed.
 - **Atomic masses and abridged values are modelled but not generated**, because the two source tables do not contain them.

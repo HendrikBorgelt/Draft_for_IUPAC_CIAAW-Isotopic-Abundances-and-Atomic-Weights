@@ -3,8 +3,10 @@
 The fixtures in ./fixtures are SMALL HAND-BUILT HTML files that mimic the two CIAAW tables
 (rowspan layout, no-break/thin spaces in numbers, footnote links). They were built from the
 table text as rendered by the website, NOT from the raw HTML of ciaaw.org, which could not be
-downloaded in the build environment. Run the script once on the real pages and check that it
-reports 118 elements and no ERROR lines.
+downloaded in the build environment. The real pages also have broken markup that the fixtures
+lack, see test_rows_without_an_opening_tr_are_read. On the real pages the script should report
+118 elements, 289 isotopes, and 26 warnings for elements 93 to 118, which the abundance table
+does not list. Any other warning needs looking at.
 """
 from decimal import Decimal
 from pathlib import Path
@@ -91,6 +93,21 @@ def test_tables_are_read_completely():
     assert len(list(g.subjects(RDF.type, c.CHEMROF.Isotope))) == 24      # Tc has none
     # the only warning is the expected one for a fixture subset
     assert len(warnings) == 1 and "Z = 1..118" in warnings[0]
+
+
+def test_rows_without_an_opening_tr_are_read():
+    # regression: ciaaw.org leaves out <tr> on many rows. Browsers repair that, but html.parser
+    # dropped those cells, which merged each such element into the element before it.
+    html = """<table><tbody>
+<tr><td rowspan="2">22</td><td rowspan="2">Ti</td><td rowspan="2">titanium</td><td>46</td><td>0.0825(3)</td><td rowspan="2"></td></tr>
+<tr><td>47</td><td>0.9175(3)</td></tr>
+<td rowspan="2">23</td><td rowspan="2">V</td><td rowspan="2">vanadium</td><td>50</td><td>0.002 50(10)</td><td rowspan="2"></td></tr>
+<tr><td>51</td><td>0.997 50(10)</td></tr>
+</tbody></table>"""
+    problems = []
+    elements = c.read_abundances(html, problems)
+    assert problems == []
+    assert [(e.symbol, [a for a, _ in e.isotopes]) for e in elements] == [("Ti", [46, 47]), ("V", [50, 51])]
 
 
 def test_hydrogen_matches_the_draft_model():

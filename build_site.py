@@ -242,9 +242,8 @@ def page_isotopic_abundances(elements: list[Element], notes: dict[str, str]) -> 
     rows = []
     for e in elements:
         first = f"| {e.z} | {e.symbol} | [{e.name}](elements/{e.page}.md) |"
-        if not e.isotopes:
-            mass = f"[{e.longest_lived}]" if e.longest_lived else ""
-            rows.append(f"{first} {mass} | — | |")
+        if not e.isotopes and e.longest_lived:
+            rows.append(f"{first} [{e.longest_lived}] | — | |")
         for index, isotope in enumerate(e.isotopes):
             lead = first if index == 0 else "| | | |"
             letters = note_links(e.abundance_notes) if index == 0 else ""
@@ -380,7 +379,7 @@ def page_downloads(out: Path, elements: list[Element]) -> str:
         "from it. All IRIs under `example.org` are placeholders.\n",
         "## Current data\n", format_table(out, "data/ciaaw") + "\n",
         "## Revision example\n",
-        "The same data after an invented revision of hydrogen. See the [revision example](revision-example.md).\n",
+        "A small sample after an invented revision of hydrogen. See the [revision example](revision-example.md).\n",
         format_table(out, "data/ciaaw-revision-example") + "\n",
         "## Model\n",
         "The [DCTAP profile](model/model_dctap.csv) with its [configuration](model/dctap.yaml), "

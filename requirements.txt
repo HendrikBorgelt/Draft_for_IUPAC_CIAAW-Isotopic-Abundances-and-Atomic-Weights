@@ -1,5 +1,6 @@
 beautifulsoup4==4.15.0
 dctap==0.4.5
+html5lib==1.1
 Markdown==3.11.2
 pyoxigraph==0.5.11
 pyshacl==0.40.2
