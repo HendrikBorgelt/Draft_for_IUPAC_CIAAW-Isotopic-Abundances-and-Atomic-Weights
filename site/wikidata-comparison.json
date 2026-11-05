@@ -2,7 +2,7 @@
   "generated": "2026-11-05",
   "source": "example-output.ttl",
   "local_isotopes": 24,
-  "wikidata_items": 4777,
+  "resource_items": 4777,
   "counts": {
     "DIFFERENT": 9,
     "ONLY-WIKIDATA": 263

@@ -43,7 +43,6 @@ MERMAID_URL = "https://cdn.jsdelivr.net/npm/mermaid@12.2.0/dist/mermaid.esm.min.
 ELEMENT_COUNT = 118
 WIKIDATA_CSV = SITE_SRC / "wikidata.csv"
 REFERENCES_JSON = SITE_SRC / "references.json"
-COMPARISON_JSON = SITE_SRC / "wikidata-comparison.json"
 WIKIDATA_ENTITY = "https://www.wikidata.org/wiki/"
 NBSP = " "
 
@@ -60,7 +59,7 @@ FORMATS = [
 ]
 
 NAV = [("index", "Home"), ("atomic-weights", "Atomic Weights"), ("isotopic-abundances", "Isotopic Abundances"),
-       ("wikidata-comparison", "Wikidata Comparison"),
+       ("comparison", "Comparison"),
        ("model", "Data Model"), ("downloads", "Downloads"), ("about", "About")]
 SUBNAV = {"model": [("model", "Data Model"), ("revision-example", "Revision Example")],
           "downloads": [("downloads", "Downloads"), ("sparql", "SPARQL")]}
@@ -255,42 +254,88 @@ def bibliography(e: Element, references: dict[str, str]) -> str:
     return f'## Bibliography\n\n<div class="csl-bib-body">\n{items}\n</div>\n'
 
 
+@dataclass
+class Resource:
+    """An external resource the local data is compared with; the JSON comes from a script, see README.md."""
+    key: str            # page name
+    name: str
+    url: str
+    json: Path
+    command: str        # make target that writes the JSON
+    description: str
+    item_url: str = ""  # prefix of the identifiers in the "Item" column; without it they are not linked
+
+
+RESOURCES = [
+    Resource("wikidata-comparison", "Wikidata", "https://www.wikidata.org", SITE_SRC / "wikidata-comparison.json",
+             "wikidata-comparison",
+             "Isotopic abundances in this data compared with the natural abundance (P2374) of the isotopes in "
+             "[Wikidata](https://www.wikidata.org), matched on atomic number and number of neutrons. Values are in "
+             "percent. The comparison is made by `check_wikidata.py`.", WIKIDATA_ENTITY),
+]
+
+SUBNAV["comparison"] = [("comparison", "Overview"), *((r.key, r.name) for r in RESOURCES)]
+
+# kind in the JSON, title, explanation ({name} is the resource)
 COMPARISON_KINDS = [
-    ("DIFFERENT", "Different values", "Wikidata has an abundance for the isotope, and it differs from the local one."),
-    ("NO-VALUE", "No value in Wikidata", "The isotope is in Wikidata, but without a natural abundance."),
-    ("NOT-FOUND", "Not in Wikidata", "No Wikidata item has this atomic number and number of neutrons."),
-    ("UNIT", "Unexpected unit", "The abundance in Wikidata is not a percentage or a plain number."),
-    ("ONLY-WIKIDATA", "Only in Wikidata", "Wikidata has an abundance, the local data has no such isotope."),
+    ("DIFFERENT", "Different values", "{name} has an abundance for the isotope, and it differs from the local one."),
+    ("NO-VALUE", "No value", "The isotope is in {name}, but without a natural abundance."),
+    ("NOT-FOUND", "Not found", "{name} has no item for this isotope."),
+    ("UNIT", "Unexpected unit", "The abundance in {name} is not a percentage or a plain number."),
+    ("ONLY-WIKIDATA", "Only in the resource", "{name} has an abundance, the local data has no such isotope."),
 ]
 
 
-def qid_links(qids: str) -> str:
-    return " ".join(f"[{q}]({WIKIDATA_ENTITY}{q})" for q in qids.split("/") if q)
+def item_links(resource: Resource, ids: str) -> str:
+    """Links to the items of the resource; several items are joined with a slash."""
+    return " ".join(f"[{i}]({resource.item_url}{i})" if resource.item_url else i for i in ids.split("/") if i)
 
 
-def page_wikidata_comparison(path: Path) -> str:
-    """The differences between the local abundances and Wikidata, from check_wikidata.py --json."""
-    intro = ("# Wikidata Comparison\n\n"
-             "Isotopic abundances in this data compared with the natural abundance (P2374) of the isotopes in "
-             "[Wikidata](https://www.wikidata.org), matched on atomic number and number of neutrons. Values are in "
-             "percent. The comparison is made by `check_wikidata.py` (`make wikidata-comparison`); a difference is "
-             "a reason to look at both sides, not a verdict on which one is right.\n")
-    if not path.exists():
-        return intro + "\n> The comparison has not been generated yet. Run `make wikidata-comparison`.\n"
-    result = json.loads(path.read_text(encoding="utf-8"))
+def read_comparison(resource: Resource) -> dict | None:
+    return json.loads(resource.json.read_text(encoding="utf-8")) if resource.json.exists() else None
+
+
+def page_comparison(resources: list[Resource]) -> str:
+    """The overview: one row per resource, with the counts of what differs."""
+    rows = []
+    for r in resources:
+        result = read_comparison(r)
+        counts = result["counts"] if result else {}
+        cells = " | ".join(str(counts.get(kind, 0)) if result else "—" for kind, _, _ in COMPARISON_KINDS[:3])
+        rows.append(f"| [{r.name}]({r.key}.md) | {result['generated'] if result else 'not generated'} | {cells} |")
+    return "\n".join([
+        "# Comparison\n",
+        "The isotopic abundances in this data are compared with other resources, to find values that differ and "
+        "isotopes that are missing on one side. A difference is a reason to look at both sides, not a verdict on "
+        "which one is right.\n",
+        "| Resource | Compared on | Different values | No value | Not found |", "| --- | --- | --- | --- | --- |",
+        *rows, "",
+        "Only a sample of the elements is on this site, so the results are only a demonstration. Each comparison "
+        "is a script that writes JSON, which the pages are built from, see the [README]({{repo}}#readme).\n"]).replace(
+        "{{repo}}", REPO_URL)
+
+
+def page_resource_comparison(resource: Resource) -> str:
+    """The differences between the local abundances and one resource, from the JSON of its script."""
+    intro = f"# Comparison with {resource.name}\n\n{resource.description}\n"
+    result = read_comparison(resource)
+    if result is None:
+        return intro + f"\n> The comparison has not been generated yet. Run `make {resource.command}`.\n"
     counts = result["counts"]
     parts = [intro,
              f"Compared on {result['generated']}: {result['local_isotopes']} isotopes in `{result['source']}`, "
-             f"{result['wikidata_items']} isotope items in Wikidata. Only a sample of the elements is on this site, "
-             "so many isotopes are only in Wikidata.\n",
+             f"{result.get('resource_items', result.get('wikidata_items'))} items in {resource.name}. Only a sample of the elements is on this site, "
+             "so many isotopes are only in the resource.\n",
              "| Result | Count |", "| --- | --- |",
              *(f"| {title} | {counts.get(kind, 0)} |" for kind, title, _ in COMPARISON_KINDS)]
     for kind, title, text in COMPARISON_KINDS:
         rows = [d for d in result["differences"] if d["kind"] == kind]
         if not rows:
             continue
-        parts += ["", f"## {title}\n", f"{text}\n", "| Isotope | Local | Wikidata | Item |", "| --- | --- | --- | --- |",
-                  *(f"| {d['name']} | {d['local'] or '—'} | {d['wikidata'] or '—'} | {qid_links(d['qid'])} |" for d in rows)]
+        parts += ["", f"## {title}\n", f"{text.format(name=resource.name)}\n",
+                  "| Isotope | Local | Value in resource | Item |", "| --- | --- | --- | --- |",
+                  *(f"| {d['name']} | {d['local'] or '—'} | {d['wikidata'] or '—'} | {item_links(resource, d['qid'])} |"
+                    for d in rows)]
     return "\n".join(parts) + "\n"
 
 
@@ -611,7 +656,7 @@ def hand_written(name: str, elements: list[Element]) -> str:
 
 def build(data_path: Path, revision_path: Path, out: Path, sparql_endpoint: str = "",
           wikidata_path: Path = WIKIDATA_CSV, references_path: Path = REFERENCES_JSON,
-          comparison_path: Path = COMPARISON_JSON) -> dict[str, bool]:
+          resources: list[Resource] | None = None) -> dict[str, bool]:
     if out.exists():
         shutil.rmtree(out)
     out.mkdir(parents=True)
@@ -645,8 +690,10 @@ def build(data_path: Path, revision_path: Path, out: Path, sparql_endpoint: str 
     site.add("model", "Data Model", page_model(tap, reports), "model")
     site.add("revision-example", "Revision Example", page_revision(revision), "model")
     site.add("downloads", "Downloads", page_downloads(out, elements), "downloads")
-    site.add("wikidata-comparison", "Wikidata Comparison", page_wikidata_comparison(comparison_path),
-             "wikidata-comparison")
+    resources = RESOURCES if resources is None else resources
+    site.add("comparison", "Comparison", page_comparison(resources), "comparison")
+    for resource in resources:
+        site.add(resource.key, f"Comparison with {resource.name}", page_resource_comparison(resource), "comparison")
     site.add("sparql", "SPARQL", page_sparql(read_examples(data_path), sparql_endpoint), "downloads")
     return reports
 

@@ -20,7 +20,7 @@ Usage:
     check_wikidata.py build/ciaaw.ttl --json site/wikidata-comparison.json  # also write JSON
 
 The JSON (used by the "Wikidata Comparison" page of the site) has the keys generated, source,
-local_isotopes, wikidata_items, counts and differences; each difference has kind, name, qid, local,
+local_isotopes, resource_items, counts and differences; each difference has kind, name, qid, local,
 wikidata and text.
 """
 
@@ -231,7 +231,7 @@ def main(argv=None) -> int:
         args.json.parent.mkdir(parents=True, exist_ok=True)
         args.json.write_text(json.dumps({
             "generated": date.today().isoformat(), "source": args.ttl.name, "local_isotopes": len(local),
-            "wikidata_items": len(wikidata), "counts": dict(sorted(counts.items())), "differences": differences,
+            "resource_items": len(wikidata), "counts": dict(sorted(counts.items())), "differences": differences,
         }, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     print(f"# {len(local)} local isotopes, {len(wikidata)} Wikidata isotopes, "
           f"{sum(counts.values())} differences {dict(sorted(counts.items()))}", file=sys.stderr)

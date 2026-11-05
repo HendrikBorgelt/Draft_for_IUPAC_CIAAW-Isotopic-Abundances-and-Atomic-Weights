@@ -246,17 +246,31 @@ def test_bibliography_falls_back_to_the_doi_when_not_cached(tmp_path):
     assert "10.1515/pac-2015-0503</div>" not in b.bibliography(h, {}) and "10.1515/pac-2015-0503 <a" in b.bibliography(h, {})
 
 
-# --- Wikidata Comparison --------------------------------------------------------------------
-def test_comparison_page_lists_the_differences_and_is_in_the_navigation(site):
+# --- Comparison -----------------------------------------------------------------------------
+def test_comparison_overview_lists_the_resources_and_is_in_the_navigation(site):
+    html = text_of(site / "comparison.html")
+    soup = BeautifulSoup(html, "html.parser")
+    assert "Comparison" in [a.get_text() for a in soup.select("#main-navigation a")]
+    assert soup.select_one("#main-navigation .selected").get_text() == "Comparison"
+    assert 'href="wikidata-comparison.html"' in html and "Wikidata" in html
+
+
+def test_comparison_page_for_a_resource_lists_the_differences(site):
     html = text_of(site / "wikidata-comparison.html")
-    assert "Wikidata Comparison" in [a.get_text() for a in BeautifulSoup(html, "html.parser").select("#main-navigation a")]
-    assert "<h2" in html and "Different values" in html
+    assert "Comparison with Wikidata" in html and "Different values" in html
     assert "argon-36" in html and 'href="https://www.wikidata.org/wiki/Q2019992"' in html
+    assert [a.get_text() for a in BeautifulSoup(html, "html.parser").select("#breadcrumb a")] == ["Overview", "Wikidata"]
 
 
 def test_comparison_page_without_the_json(tmp_path):
-    page = b.page_wikidata_comparison(tmp_path / "missing.json")
-    assert "has not been generated yet" in page
+    resource = b.Resource("x", "Example", "https://example.org", tmp_path / "missing.json", "example", "Text.")
+    assert "has not been generated yet" in b.page_resource_comparison(resource)
+    assert "not generated" in b.page_comparison([resource])
+
+
+def test_resources_without_item_url_are_not_linked():
+    resource = b.Resource("x", "Example", "https://example.org", Path("none.json"), "example", "Text.")
+    assert b.item_links(resource, "A1/A2") == "A1 A2"
 
 
 def test_about_page_lists_the_authors_with_their_orcid(site):

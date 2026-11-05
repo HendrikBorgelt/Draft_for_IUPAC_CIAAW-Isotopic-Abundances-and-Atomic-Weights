@@ -38,7 +38,7 @@ We want to develop this together with the Commission. Decisions about the conten
 | `build_site.py`, `site/` | Static site for GitHub Pages |
 | `sparql/queries/` | Example SPARQL queries, shown on the site |
 | `update_references.js`, `site/references.json` | The formatted sources for the Bibliography |
-| `check_wikidata.py`, `site/wikidata-comparison.json` | The comparison with Wikidata, also shown on the site |
+| `check_wikidata.py`, `site/wikidata-comparison.json` | The comparison with Wikidata, shown in the Comparison section of the site |
 | `wikidata_links.py`, `site/wikidata.csv` | The Wikidata items linked from the element pages |
 | `test_*.py`, `fixtures/` | Tests and their small hand-built input tables |
 | `example-output*.ttl` | Example results |
@@ -125,7 +125,7 @@ Call `python3 check_wikidata.py --help` for `--strict` (exit 1 on differences) a
 
 `make wikidata-comparison` writes that JSON for the site data to `site/wikidata-comparison.json`. It
 is committed, so the build and the tests work offline, and `make serve` shows it on the
-"Wikidata Comparison" page. Refresh it with `make wikidata-comparison`.
+"Comparison" section of the site. Refresh it with `make wikidata-comparison`.
 
 ## Tests
 
