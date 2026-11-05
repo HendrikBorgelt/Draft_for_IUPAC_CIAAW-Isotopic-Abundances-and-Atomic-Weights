@@ -49,7 +49,7 @@ SPARQL_EXAMPLES_JAR  ?= $(BUILD_DIR)/sparql-examples-utils-$(SPARQL_EXAMPLES_UTI
 SPARQL_EXAMPLES_URL  ?= https://github.com/sib-swiss/sparql-examples-utils/releases/download/v$(SPARQL_EXAMPLES_UTILS_VERSION)/sparql-examples-utils-$(SPARQL_EXAMPLES_UTILS_VERSION)-uber.jar
 SPARQL_EXAMPLES_BASE ?= https://hendrikborgelt.github.io/Draft_for_IUPAC_CIAAW-Isotopic-Abundances-and-Atomic-Weights/sparql/queries/
 
-.PHONY: help install download ttl example quickstatements sssom check-wikidata check-wikidata-weights wikidata-links wikidata-comparison wikidata-weights-comparison bodr-comparison references test model validate sparql-examples print-sparql-examples-version site serve sparql-dev sparql-deploy clean
+.PHONY: help install download ttl example quickstatements sssom check-wikidata check-wikidata-weights wikidata-links wikidata-comparison wikidata-weights-comparison bodr-comparison references test model ontology validate sparql-examples print-sparql-examples-version site serve sparql-dev sparql-deploy clean
 
 help:
 	@echo "make install         install the Python dependencies"
@@ -67,6 +67,7 @@ help:
 	@echo "make references refresh site/references.json, the formatted sources for the Bibliography"
 	@echo "make test            run all tests"
 	@echo "make model           regenerate the SHACL shapes and diagrams from the DCTAP"
+	@echo "make ontology        regenerate model/ciaaw.owl, the OWL ontology, via SPARQL CONSTRUCT in model/ontology.rq"
 	@echo "make validate        check the site data against the SHACL shapes"
 	@echo "make sparql-examples convert the queries in sparql/queries to sparql-examples Turtle in sparql/examples"
 	@echo "make site            build the static site into $(SITE_DIR)"
@@ -144,6 +145,9 @@ test:
 
 model:
 	$(PYTHON) tap2model.py
+
+ontology: construct.py model/ontology.rq $(TTL)
+	$(PYTHON) construct.py model/ontology.rq $(TTL) -o model/ciaaw.owl
 
 validate:
 	$(PYTHON) tap2model.py --validate $(SITE_DATA) $(SITE_REVISION)

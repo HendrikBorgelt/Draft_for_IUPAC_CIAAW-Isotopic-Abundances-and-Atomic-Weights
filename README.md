@@ -37,6 +37,7 @@ We want to develop this together with the Commission. Decisions about the conten
 | `check_wikidata.py` | Compares the abundances in the Turtle with Wikidata |
 | `check_wikidata_weights.py` | Compares the standard atomic weights in the Turtle with the mass of the elements in Wikidata |
 | `tap2model.py` | DCTAP → SHACL shapes and UML diagrams |
+| `construct.py`, `model/ontology.rq`, `model/ciaaw.owl` | The OWL ontology, generated via SPARQL CONSTRUCT |
 | `model/` | The data model, see [below](#the-data-model) |
 | `build_site.py`, `site/` | Static site for GitHub Pages |
 | `sparql/queries/` | Example SPARQL queries, shown on the SPARQL tab and published as `.rq` files |
@@ -334,6 +335,7 @@ Things to know:
 | `make test` | `python -m pytest -q` |
 | `make model` | `python tap2model.py` |
 | `make validate` | `python tap2model.py --validate ciaaw.ttl example-output-next.ttl` |
+| `make ontology` | `python construct.py model/ontology.rq ciaaw.ttl -o model/ciaaw.owl` |
 | `make site` | `python build_site.py` and `python combine_sparql_examples.py -o _site/data/combined.ttl` |
 
 For `make download`, save the two pages from your browser as described in step 2 above.
@@ -352,6 +354,13 @@ other formats such as ShEx or LinkML can be derived from the same table.
 | [model/rules.ttl](model/rules.ttl) | Rules that compare several nodes, which a DCTAP row cannot express | Yes |
 | [model/model_shacl.ttl](model/model_shacl.ttl) | SHACL shapes | No, generated |
 | [model/diagrams.md](model/diagrams.md) | One UML diagram per aspect | No, generated |
+| [model/ontology.rq](model/ontology.rq) | The SPARQL CONSTRUCT that derives the OWL ontology from the data | Yes |
+| [model/ciaaw.owl](model/ciaaw.owl) | The OWL ontology, in Turtle | No, generated |
+
+`make ontology` runs `model/ontology.rq` over `ciaaw.ttl` with `construct.py` and
+writes `model/ciaaw.owl`: every class and property of the `ciaaw:` namespace that the data uses, with the labels,
+comments and subclass statements of the vocabulary, the domains and ranges and the property characteristics
+(`owl:FunctionalProperty`, `owl:InverseFunctionalProperty`).
 
 After changing the model, run `make model`. The tests fail if the generated files are out of date.
 
