@@ -244,3 +244,16 @@ def test_bibliography_falls_back_to_the_doi_when_not_cached(tmp_path):
     h = next(e for e in b.read_elements(b.Graph().parse(HERE / "example-output.ttl", format="turtle")) if e.symbol == "H")
     assert "Isotopic compositions" in b.bibliography(h, b.read_references(b.REFERENCES_JSON))
     assert "10.1515/pac-2015-0503</div>" not in b.bibliography(h, {}) and "10.1515/pac-2015-0503 <a" in b.bibliography(h, {})
+
+
+# --- Wikidata Comparison --------------------------------------------------------------------
+def test_comparison_page_lists_the_differences_and_is_in_the_navigation(site):
+    html = text_of(site / "wikidata-comparison.html")
+    assert "Wikidata Comparison" in [a.get_text() for a in BeautifulSoup(html, "html.parser").select("#main-navigation a")]
+    assert "<h2" in html and "Different values" in html
+    assert "argon-36" in html and 'href="https://www.wikidata.org/wiki/Q2019992"' in html
+
+
+def test_comparison_page_without_the_json(tmp_path):
+    page = b.page_wikidata_comparison(tmp_path / "missing.json")
+    assert "has not been generated yet" in page

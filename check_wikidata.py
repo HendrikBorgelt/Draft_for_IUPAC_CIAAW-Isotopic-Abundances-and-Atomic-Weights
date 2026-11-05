@@ -17,6 +17,11 @@ Only the current, non-deprecated abundance declaration is checked (as in ttl2qui
 Usage:
     check_wikidata.py build/ciaaw.ttl
     check_wikidata.py build/ciaaw.ttl --sparql-json saved-results.json    # no network
+    check_wikidata.py build/ciaaw.ttl --json site/wikidata-comparison.json  # also write JSON
+
+The JSON (used by the "Wikidata Comparison" page of the site) has the keys generated, source,
+local_isotopes, wikidata_items, counts and differences; each difference has kind, name, qid, local,
+wikidata and text.
 """
 
 from __future__ import annotations
@@ -24,6 +29,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+from datetime import date
 import urllib.parse
 import urllib.request
 from decimal import Decimal
@@ -166,6 +172,10 @@ def same(entry: dict, value: tuple) -> bool:
     return lower is not None and upper is not None and (amount - lower, upper - amount) == (unc, unc)
 
 
+def row(kind: str, name: str, text: str, qid: str = "", local: str = "", wikidata: str = "") -> dict:
+    return {"kind": kind, "name": name, "qid": qid, "local": local, "wikidata": wikidata, "text": text}
+
+
 def compare(local: list[dict], wikidata: dict[str, dict]):
     by_zn = {}
     for item in wikidata.values():
@@ -183,24 +193,27 @@ def compare(local: list[dict], wikidata: dict[str, dict]):
                     "odd_units": {u for c in used for u in c.get("odd_units", ())}}
             matched.update(c["qid"] for c in used)
         if item is None:
-            yield "NOT-FOUND", entry["name"], f"local {show(entry)}  no Wikidata item"
+            yield row("NOT-FOUND", entry["name"], f"local {show(entry)}  no Wikidata item", local=show(entry))
             continue
         where = f"{item['qid']}"
         if not item["values"]:
-            yield "NO-VALUE", entry["name"], f"local {show(entry)}  {where} has no abundance"
+            yield row("NO-VALUE", entry["name"], f"local {show(entry)}  {where} has no abundance", where, show(entry))
         elif not any(same(entry, v) for v in item["values"]):
-            yield "DIFFERENT", entry["name"], f"local {show(entry)}  {where} wikidata {' | '.join(show_wd(v) for v in item['values'])}"
+            theirs = " | ".join(show_wd(v) for v in item["values"])
+            yield row("DIFFERENT", entry["name"], f"local {show(entry)}  {where} wikidata {theirs}", where, show(entry), theirs)
         for unit in sorted(item.get("odd_units", ())):
-            yield "UNIT", entry["name"], f"{where} abundance has unexpected unit {unit}"
+            yield row("UNIT", entry["name"], f"{where} abundance has unexpected unit {unit}", where, show(entry), unit)
     for item in wikidata.values():
         if item["values"] and item["qid"] not in matched:
-            yield "ONLY-WIKIDATA", item["label"], f"{item['qid']} wikidata {show_wd(item['values'][0])}  not in local data"
+            yield row("ONLY-WIKIDATA", item["label"], f"{item['qid']} wikidata {show_wd(item['values'][0])}  not in local data",
+                      item["qid"], "", show_wd(item["values"][0]))
 
 
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("ttl", type=Path, help="Turtle file written by ciaaw2ttl.py")
     ap.add_argument("--sparql-json", type=Path, help="read saved SPARQL JSON results instead of querying Wikidata")
+    ap.add_argument("--json", type=Path, help="also write the differences and counts to this JSON file")
     ap.add_argument("--strict", action="store_true", help="exit 1 if there are differences")
     args = ap.parse_args(argv)
 
@@ -210,9 +223,16 @@ def main(argv=None) -> int:
     wikidata = group_wikidata(fetch_wikidata(args.sparql_json))
 
     counts: dict[str, int] = {}
-    for kind, name, text in compare(local, wikidata):
-        counts[kind] = counts.get(kind, 0) + 1
-        print(f"{kind:<14}{name:<16}{text}")
+    differences = list(compare(local, wikidata))
+    for d in differences:
+        counts[d["kind"]] = counts.get(d["kind"], 0) + 1
+        print(f"{d['kind']:<14}{d['name']:<16}{d['text']}")
+    if args.json:
+        args.json.parent.mkdir(parents=True, exist_ok=True)
+        args.json.write_text(json.dumps({
+            "generated": date.today().isoformat(), "source": args.ttl.name, "local_isotopes": len(local),
+            "wikidata_items": len(wikidata), "counts": dict(sorted(counts.items())), "differences": differences,
+        }, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     print(f"# {len(local)} local isotopes, {len(wikidata)} Wikidata isotopes, "
           f"{sum(counts.values())} differences {dict(sorted(counts.items()))}", file=sys.stderr)
     return 1 if args.strict and counts else 0

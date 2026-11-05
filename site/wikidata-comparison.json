@@ -1,0 +1,2188 @@
+{
+  "generated": "2026-11-05",
+  "source": "example-output.ttl",
+  "local_isotopes": 24,
+  "wikidata_items": 4777,
+  "counts": {
+    "DIFFERENT": 9,
+    "ONLY-WIKIDATA": 263
+  },
+  "differences": [
+    {
+      "kind": "DIFFERENT",
+      "name": "argon-36",
+      "qid": "Q2019992",
+      "local": "[0.00, 2.07]",
+      "wikidata": "0.333600 [0.331500, 0.335700]",
+      "text": "local [0.00, 2.07]  Q2019992 wikidata 0.333600 [0.331500, 0.335700]"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "argon-38",
+      "qid": "Q2801372",
+      "local": "[0.0, 4.3]",
+      "wikidata": "0.062900 [0.062200, 0.063600]",
+      "text": "local [0.0, 4.3]  Q2801372 wikidata 0.062900 [0.062200, 0.063600]"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "argon-40",
+      "qid": "Q1929004",
+      "local": "[93.6, 100.0]",
+      "wikidata": "99.603500 [99.60100, 99.60600]",
+      "text": "local [93.6, 100.0]  Q1929004 wikidata 99.603500 [99.60100, 99.60600]"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "calcium-40",
+      "qid": "Q2376511",
+      "local": "96.941~0.156",
+      "wikidata": "96.9400 [96.7800, 97.100]",
+      "text": "local 96.941~0.156  Q2376511 wikidata 96.9400 [96.7800, 97.100]"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "calcium-44",
+      "qid": "Q3027367",
+      "local": "2.086~0.110",
+      "wikidata": "2.0900 [1.9800, 2.200]",
+      "text": "local 2.086~0.110  Q3027367 wikidata 2.0900 [1.9800, 2.200]"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "hydrogen-1",
+      "qid": "Q12830437",
+      "local": "[99.972, 99.999]",
+      "wikidata": "99.988500 [99.981500, 99.995500]",
+      "text": "local [99.972, 99.999]  Q12830437 wikidata 99.988500 [99.981500, 99.995500]"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "hydrogen-2",
+      "qid": "Q102296",
+      "local": "[0.001, 0.028]",
+      "wikidata": "0.011500 [0.004500, 0.018500]",
+      "text": "local [0.001, 0.028]  Q102296 wikidata 0.011500 [0.004500, 0.018500]"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "helium-3",
+      "qid": "Q533498",
+      "local": "0.0002~0.0002",
+      "wikidata": "0.00013400 [0.000130500, 0.000137500]",
+      "text": "local 0.0002~0.0002  Q533498 wikidata 0.00013400 [0.000130500, 0.000137500]"
+    },
+    {
+      "kind": "DIFFERENT",
+      "name": "helium-4",
+      "qid": "Q1151346",
+      "local": "99.9998~0.0002",
+      "wikidata": "99.99986600 [99.99986300, 99.99986900]",
+      "text": "local 99.9998~0.0002  Q1151346 wikidata 99.99986600 [99.99986300, 99.99986900]"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "thallium-203",
+      "qid": "Q18883327",
+      "local": "",
+      "wikidata": "29.52400 [29.52300, 29.52500]",
+      "text": "Q18883327 wikidata 29.52400 [29.52300, 29.52500]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "thallium-205",
+      "qid": "Q18883334",
+      "local": "",
+      "wikidata": "70.4800 [70.4700, 70.4900]",
+      "text": "Q18883334 wikidata 70.4800 [70.4700, 70.4900]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "lead-204",
+      "qid": "Q18883429",
+      "local": "",
+      "wikidata": "1.400 [1.300, 1.500]",
+      "text": "Q18883429 wikidata 1.400 [1.300, 1.500]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "lead-206",
+      "qid": "Q18883438",
+      "local": "",
+      "wikidata": "24.100 [24.00, 24.200]",
+      "text": "Q18883438 wikidata 24.100 [24.00, 24.200]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "lead-207",
+      "qid": "Q18883443",
+      "local": "",
+      "wikidata": "22.100 [22.00, 22.200]",
+      "text": "Q18883443 wikidata 22.100 [22.00, 22.200]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "chromium-54",
+      "qid": "Q2239560",
+      "local": "",
+      "wikidata": "2.36500 [2.35800, 2.37200]",
+      "text": "Q2239560 wikidata 2.36500 [2.35800, 2.37200]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "ruthenium-96",
+      "qid": "Q2251024",
+      "local": "",
+      "wikidata": "5.5400 [5.400, 5.6800]",
+      "text": "Q2251024 wikidata 5.5400 [5.400, 5.6800]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "potassium-40",
+      "qid": "Q2251076",
+      "local": "",
+      "wikidata": "0.011700 [0.011600, 0.011800]",
+      "text": "Q2251076 wikidata 0.011700 [0.011600, 0.011800]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "fluorine-19",
+      "qid": "Q2257946",
+      "local": "",
+      "wikidata": "100",
+      "text": "Q2257946 wikidata 100  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "sodium-23",
+      "qid": "Q2265714",
+      "local": "",
+      "wikidata": "100",
+      "text": "Q2265714 wikidata 100  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "strontium-86",
+      "qid": "Q2267980",
+      "local": "",
+      "wikidata": "9.8600 [9.8500, 9.8700]",
+      "text": "Q2267980 wikidata 9.8600 [9.8500, 9.8700]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "titanium-50",
+      "qid": "Q2269284",
+      "local": "",
+      "wikidata": "5.1800 [5.1600, 5.200]",
+      "text": "Q2269284 wikidata 5.1800 [5.1600, 5.200]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "tin-112",
+      "qid": "Q2277116",
+      "local": "",
+      "wikidata": "0.9700 [0.9600, 0.9800]",
+      "text": "Q2277116 wikidata 0.9700 [0.9600, 0.9800]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "zinc-70",
+      "qid": "Q2284519",
+      "local": "",
+      "wikidata": "0.6100 [0.5100, 0.7100]",
+      "text": "Q2284519 wikidata 0.6100 [0.5100, 0.7100]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "samarium-152",
+      "qid": "Q2288129",
+      "local": "",
+      "wikidata": "26.7500 [26.5900, 26.9100]",
+      "text": "Q2288129 wikidata 26.7500 [26.5900, 26.9100]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "selenium-82",
+      "qid": "Q2290353",
+      "local": "",
+      "wikidata": "8.7300 [8.5100, 8.9500]",
+      "text": "Q2290353 wikidata 8.7300 [8.5100, 8.9500]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "antimony-123",
+      "qid": "Q2297512",
+      "local": "",
+      "wikidata": "42.7900 [42.7400, 42.8400]",
+      "text": "Q2297512 wikidata 42.7900 [42.7400, 42.8400]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "oxygen-16",
+      "qid": "Q2309203",
+      "local": "",
+      "wikidata": "99.75700 [99.74100, 99.77300]",
+      "text": "Q2309203 wikidata 99.75700 [99.74100, 99.77300]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "bromine-79",
+      "qid": "Q2311128",
+      "local": "",
+      "wikidata": "50.6900 [50.6200, 50.7600]",
+      "text": "Q2311128 wikidata 50.6900 [50.6200, 50.7600]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "gallium-71",
+      "qid": "Q2311889",
+      "local": "",
+      "wikidata": "39.89200 [39.88300, 39.90100]",
+      "text": "Q2311889 wikidata 39.89200 [39.88300, 39.90100]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "krypton-78",
+      "qid": "Q2318626",
+      "local": "",
+      "wikidata": "0.35500 [0.35200, 0.35800]",
+      "text": "Q2318626 wikidata 0.35500 [0.35200, 0.35800]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "niobium-93",
+      "qid": "Q2319025",
+      "local": "",
+      "wikidata": "100",
+      "text": "Q2319025 wikidata 100  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "indium-113",
+      "qid": "Q2322760",
+      "local": "",
+      "wikidata": "4.2900 [4.2400, 4.3400]",
+      "text": "Q2322760 wikidata 4.2900 [4.2400, 4.3400]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "caesium-133",
+      "qid": "Q2327948",
+      "local": "",
+      "wikidata": "100",
+      "text": "Q2327948 wikidata 100  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "zirconium-91",
+      "qid": "Q2328556",
+      "local": "",
+      "wikidata": "11.2200 [11.1700, 11.2700]",
+      "text": "Q2328556 wikidata 11.2200 [11.1700, 11.2700]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "bromine-81",
+      "qid": "Q2342633",
+      "local": "",
+      "wikidata": "49.3100 [49.2400, 49.3800]",
+      "text": "Q2342633 wikidata 49.3100 [49.2400, 49.3800]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "tin-120",
+      "qid": "Q2347800",
+      "local": "",
+      "wikidata": "32.5800 [32.4900, 32.6700]",
+      "text": "Q2347800 wikidata 32.5800 [32.4900, 32.6700]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "sulfur-32",
+      "qid": "Q2375775",
+      "local": "",
+      "wikidata": "94.9900 [94.7300, 95.2500]",
+      "text": "Q2375775 wikidata 94.9900 [94.7300, 95.2500]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "selenium-80",
+      "qid": "Q2387529",
+      "local": "",
+      "wikidata": "49.6100 [49.200, 50.0200]",
+      "text": "Q2387529 wikidata 49.6100 [49.200, 50.0200]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "xenon-129",
+      "qid": "Q2388818",
+      "local": "",
+      "wikidata": "26.400600 [26.392400, 26.408800]",
+      "text": "Q2388818 wikidata 26.400600 [26.392400, 26.408800]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "samarium-154",
+      "qid": "Q2402263",
+      "local": "",
+      "wikidata": "22.7500 [22.4600, 23.0400]",
+      "text": "Q2402263 wikidata 22.7500 [22.4600, 23.0400]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "barium-138",
+      "qid": "Q2409784",
+      "local": "",
+      "wikidata": "71.69800 [71.65600, 71.7400]",
+      "text": "Q2409784 wikidata 71.69800 [71.65600, 71.7400]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "neodymium-150",
+      "qid": "Q2410599",
+      "local": "",
+      "wikidata": "5.63800 [5.6100, 5.66600]",
+      "text": "Q2410599 wikidata 5.63800 [5.6100, 5.66600]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "cadmium-108",
+      "qid": "Q2413764",
+      "local": "",
+      "wikidata": "0.8900 [0.8600, 0.9200]",
+      "text": "Q2413764 wikidata 0.8900 [0.8600, 0.9200]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "zinc-67",
+      "qid": "Q2423143",
+      "local": "",
+      "wikidata": "4.0400 [3.8800, 4.200]",
+      "text": "Q2423143 wikidata 4.0400 [3.8800, 4.200]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "nickel-58",
+      "qid": "Q2424204",
+      "local": "",
+      "wikidata": "68.07700 [68.06800, 68.08600]",
+      "text": "Q2424204 wikidata 68.07700 [68.06800, 68.08600]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "chromium-50",
+      "qid": "Q2424589",
+      "local": "",
+      "wikidata": "4.34500 [4.33200, 4.35800]",
+      "text": "Q2424589 wikidata 4.34500 [4.33200, 4.35800]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "lanthanum-139",
+      "qid": "Q2424900",
+      "local": "",
+      "wikidata": "99.911900 [99.904800, 99.91900]",
+      "text": "Q2424900 wikidata 99.911900 [99.904800, 99.91900]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "selenium-77",
+      "qid": "Q2433972",
+      "local": "",
+      "wikidata": "7.6300 [7.4700, 7.7900]",
+      "text": "Q2433972 wikidata 7.6300 [7.4700, 7.7900]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "boron-10",
+      "qid": "Q2437314",
+      "local": "",
+      "wikidata": "19.900 [19.200, 20.600]",
+      "text": "Q2437314 wikidata 19.900 [19.200, 20.600]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "cadmium-111",
+      "qid": "Q2437333",
+      "local": "",
+      "wikidata": "12.800 [12.6800, 12.9200]",
+      "text": "Q2437333 wikidata 12.800 [12.6800, 12.9200]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "germanium-73",
+      "qid": "Q2437511",
+      "local": "",
+      "wikidata": "7.7500 [7.6300, 7.8700]",
+      "text": "Q2437511 wikidata 7.7500 [7.6300, 7.8700]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "barium-136",
+      "qid": "Q2449314",
+      "local": "",
+      "wikidata": "7.85400 [7.8300, 7.87800]",
+      "text": "Q2449314 wikidata 7.85400 [7.8300, 7.87800]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "ruthenium-104",
+      "qid": "Q2705828",
+      "local": "",
+      "wikidata": "18.6200 [18.3500, 18.8900]",
+      "text": "Q2705828 wikidata 18.6200 [18.3500, 18.8900]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "zirconium-92",
+      "qid": "Q2706395",
+      "local": "",
+      "wikidata": "17.1500 [17.0700, 17.2300]",
+      "text": "Q2706395 wikidata 17.1500 [17.0700, 17.2300]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "cadmium-116",
+      "qid": "Q2710911",
+      "local": "",
+      "wikidata": "7.4900 [7.3100, 7.6700]",
+      "text": "Q2710911 wikidata 7.4900 [7.3100, 7.6700]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "barium-132",
+      "qid": "Q2752861",
+      "local": "",
+      "wikidata": "0.10100 [0.100, 0.10200]",
+      "text": "Q2752861 wikidata 0.10100 [0.100, 0.10200]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "chlorine-35",
+      "qid": "Q2783861",
+      "local": "",
+      "wikidata": "75.7600 [75.6600, 75.8600]",
+      "text": "Q2783861 wikidata 75.7600 [75.6600, 75.8600]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "magnesium-25",
+      "qid": "Q2796325",
+      "local": "",
+      "wikidata": "10.0 [9.9900, 10.0100]",
+      "text": "Q2796325 wikidata 10.0 [9.9900, 10.0100]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "neodymium-144",
+      "qid": "Q2796610",
+      "local": "",
+      "wikidata": "23.79800 [23.77900, 23.81700]",
+      "text": "Q2796610 wikidata 23.79800 [23.77900, 23.81700]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "selenium-74",
+      "qid": "Q2806682",
+      "local": "",
+      "wikidata": "0.8900 [0.8500, 0.9300]",
+      "text": "Q2806682 wikidata 0.8900 [0.8500, 0.9300]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "sulfur-36",
+      "qid": "Q2881932",
+      "local": "",
+      "wikidata": "0.0100 [0, 0.0200]",
+      "text": "Q2881932 wikidata 0.0100 [0, 0.0200]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "palladium-110",
+      "qid": "Q2890340",
+      "local": "",
+      "wikidata": "11.7200 [11.6300, 11.8100]",
+      "text": "Q2890340 wikidata 11.7200 [11.6300, 11.8100]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "potassium-41",
+      "qid": "Q2956910",
+      "local": "",
+      "wikidata": "6.730200 [6.725800, 6.734600]",
+      "text": "Q2956910 wikidata 6.730200 [6.725800, 6.734600]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "gadolinium-155",
+      "qid": "Q2972794",
+      "local": "",
+      "wikidata": "14.800 [14.6800, 14.9200]",
+      "text": "Q2972794 wikidata 14.800 [14.6800, 14.9200]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "copper-63",
+      "qid": "Q3031418",
+      "local": "",
+      "wikidata": "69.1500 [69.00, 69.300]",
+      "text": "Q3031418 wikidata 69.1500 [69.00, 69.300]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "tin-115",
+      "qid": "Q3039718",
+      "local": "",
+      "wikidata": "0.3400 [0.3300, 0.3500]",
+      "text": "Q3039718 wikidata 0.3400 [0.3300, 0.3500]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "tellurium-128",
+      "qid": "Q3067520",
+      "local": "",
+      "wikidata": "31.7400 [31.6600, 31.8200]",
+      "text": "Q3067520 wikidata 31.7400 [31.6600, 31.8200]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "iodine-127",
+      "qid": "Q3069233",
+      "local": "",
+      "wikidata": "100",
+      "text": "Q3069233 wikidata 100  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "xenon-126",
+      "qid": "Q3134801",
+      "local": "",
+      "wikidata": "0.08900 [0.088800, 0.089200]",
+      "text": "Q3134801 wikidata 0.08900 [0.088800, 0.089200]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "ruthenium-99",
+      "qid": "Q3190653",
+      "local": "",
+      "wikidata": "12.7600 [12.6200, 12.900]",
+      "text": "Q3190653 wikidata 12.7600 [12.6200, 12.900]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "barium-135",
+      "qid": "Q3192465",
+      "local": "",
+      "wikidata": "6.59200 [6.5800, 6.60400]",
+      "text": "Q3192465 wikidata 6.59200 [6.5800, 6.60400]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "neodymium-142",
+      "qid": "Q3193312",
+      "local": "",
+      "wikidata": "27.15200 [27.11200, 27.19200]",
+      "text": "Q3193312 wikidata 27.15200 [27.11200, 27.19200]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "silver-107",
+      "qid": "Q3204948",
+      "local": "",
+      "wikidata": "51.83900 [51.83100, 51.84700]",
+      "text": "Q3204948 wikidata 51.83900 [51.83100, 51.84700]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "ruthenium-102",
+      "qid": "Q3221068",
+      "local": "",
+      "wikidata": "31.5500 [31.4100, 31.6900]",
+      "text": "Q3221068 wikidata 31.5500 [31.4100, 31.6900]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "xenon-124",
+      "qid": "Q3268486",
+      "local": "",
+      "wikidata": "0.095200 [0.094900, 0.095500]",
+      "text": "Q3268486 wikidata 0.095200 [0.094900, 0.095500]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "nitrogen-15",
+      "qid": "Q3271953",
+      "local": "",
+      "wikidata": "0.36400 [0.34400, 0.38400]",
+      "text": "Q3271953 wikidata 0.36400 [0.34400, 0.38400]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "strontium-88",
+      "qid": "Q3355112",
+      "local": "",
+      "wikidata": "82.5800 [82.5700, 82.5900]",
+      "text": "Q3355112 wikidata 82.5800 [82.5700, 82.5900]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "molybdenum-95",
+      "qid": "Q3355387",
+      "local": "",
+      "wikidata": "15.8400 [15.7300, 15.9500]",
+      "text": "Q3355387 wikidata 15.8400 [15.7300, 15.9500]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "oxygen-17",
+      "qid": "Q3359113",
+      "local": "",
+      "wikidata": "0.03800 [0.03700, 0.03900]",
+      "text": "Q3359113 wikidata 0.03800 [0.03700, 0.03900]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "silicon-29",
+      "qid": "Q3410389",
+      "local": "",
+      "wikidata": "4.68500 [4.67700, 4.69300]",
+      "text": "Q3410389 wikidata 4.68500 [4.67700, 4.69300]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "xenon-134",
+      "qid": "Q3459792",
+      "local": "",
+      "wikidata": "10.435700 [10.433600, 10.437800]",
+      "text": "Q3459792 wikidata 10.435700 [10.433600, 10.437800]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "gadolinium-152",
+      "qid": "Q3532075",
+      "local": "",
+      "wikidata": "0.200 [0.1900, 0.2100]",
+      "text": "Q3532075 wikidata 0.200 [0.1900, 0.2100]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "bismuth-209",
+      "qid": "Q18888193",
+      "local": "",
+      "wikidata": "100",
+      "text": "Q18888193 wikidata 100  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "phosphorus-31",
+      "qid": "Q2459552",
+      "local": "",
+      "wikidata": "100",
+      "text": "Q2459552 wikidata 100  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "titanium-48",
+      "qid": "Q2467450",
+      "local": "",
+      "wikidata": "73.7200 [73.6900, 73.7500]",
+      "text": "Q2467450 wikidata 73.7200 [73.6900, 73.7500]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "nickel-61",
+      "qid": "Q2468639",
+      "local": "",
+      "wikidata": "1.139900 [1.138600, 1.141200]",
+      "text": "Q2468639 wikidata 1.139900 [1.138600, 1.141200]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "ruthenium-98",
+      "qid": "Q2476375",
+      "local": "",
+      "wikidata": "1.8700 [1.8400, 1.900]",
+      "text": "Q2476375 wikidata 1.8700 [1.8400, 1.900]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "tellurium-125",
+      "qid": "Q2480123",
+      "local": "",
+      "wikidata": "7.0700 [6.9200, 7.2200]",
+      "text": "Q2480123 wikidata 7.0700 [6.9200, 7.2200]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "titanium-49",
+      "qid": "Q2482282",
+      "local": "",
+      "wikidata": "5.4100 [5.3900, 5.4300]",
+      "text": "Q2482282 wikidata 5.4100 [5.3900, 5.4300]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "titanium-47",
+      "qid": "Q2484855",
+      "local": "",
+      "wikidata": "7.4400 [7.4200, 7.4600]",
+      "text": "Q2484855 wikidata 7.4400 [7.4200, 7.4600]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "gadolinium-160",
+      "qid": "Q2488300",
+      "local": "",
+      "wikidata": "21.8600 [21.6700, 22.0500]",
+      "text": "Q2488300 wikidata 21.8600 [21.6700, 22.0500]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "indium-115",
+      "qid": "Q2489248",
+      "local": "",
+      "wikidata": "95.7100 [95.6600, 95.7600]",
+      "text": "Q2489248 wikidata 95.7100 [95.6600, 95.7600]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "praseodymium-141",
+      "qid": "Q2496517",
+      "local": "",
+      "wikidata": "100",
+      "text": "Q2496517 wikidata 100  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "xenon-131",
+      "qid": "Q2501965",
+      "local": "",
+      "wikidata": "21.23200 [21.20200, 21.26200]",
+      "text": "Q2501965 wikidata 21.23200 [21.20200, 21.26200]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "ruthenium-100",
+      "qid": "Q2511176",
+      "local": "",
+      "wikidata": "12.600 [12.5300, 12.6700]",
+      "text": "Q2511176 wikidata 12.600 [12.5300, 12.6700]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "germanium-74",
+      "qid": "Q2531608",
+      "local": "",
+      "wikidata": "36.500 [36.300, 36.700]",
+      "text": "Q2531608 wikidata 36.500 [36.300, 36.700]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "selenium-76",
+      "qid": "Q2533598",
+      "local": "",
+      "wikidata": "9.3700 [9.0800, 9.6600]",
+      "text": "Q2533598 wikidata 9.3700 [9.0800, 9.6600]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "tellurium-120",
+      "qid": "Q2538285",
+      "local": "",
+      "wikidata": "0.0900 [0.0800, 0.100]",
+      "text": "Q2538285 wikidata 0.0900 [0.0800, 0.100]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "barium-134",
+      "qid": "Q2538685",
+      "local": "",
+      "wikidata": "2.41700 [2.39900, 2.43500]",
+      "text": "Q2538685 wikidata 2.41700 [2.39900, 2.43500]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "palladium-106",
+      "qid": "Q2541204",
+      "local": "",
+      "wikidata": "27.3300 [27.300, 27.3600]",
+      "text": "Q2541204 wikidata 27.3300 [27.300, 27.3600]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "cadmium-110",
+      "qid": "Q2549993",
+      "local": "",
+      "wikidata": "12.4900 [12.3100, 12.6700]",
+      "text": "Q2549993 wikidata 12.4900 [12.3100, 12.6700]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "terbium-159",
+      "qid": "Q2554426",
+      "local": "",
+      "wikidata": "100",
+      "text": "Q2554426 wikidata 100  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "copper-65",
+      "qid": "Q2557191",
+      "local": "",
+      "wikidata": "30.8500 [30.700, 31.00]",
+      "text": "Q2557191 wikidata 30.8500 [30.700, 31.00]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "krypton-82",
+      "qid": "Q2558547",
+      "local": "",
+      "wikidata": "11.59300 [11.56200, 11.62400]",
+      "text": "Q2558547 wikidata 11.59300 [11.56200, 11.62400]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "barium-130",
+      "qid": "Q2574790",
+      "local": "",
+      "wikidata": "0.10600 [0.10500, 0.10700]",
+      "text": "Q2574790 wikidata 0.10600 [0.10500, 0.10700]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "yttrium-89",
+      "qid": "Q2581836",
+      "local": "",
+      "wikidata": "100",
+      "text": "Q2581836 wikidata 100  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "cadmium-114",
+      "qid": "Q2604804",
+      "local": "",
+      "wikidata": "28.7300 [28.3100, 29.1500]",
+      "text": "Q2604804 wikidata 28.7300 [28.3100, 29.1500]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "zirconium-96",
+      "qid": "Q2606117",
+      "local": "",
+      "wikidata": "2.800 [2.7100, 2.8900]",
+      "text": "Q2606117 wikidata 2.800 [2.7100, 2.8900]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "palladium-108",
+      "qid": "Q2611037",
+      "local": "",
+      "wikidata": "26.4600 [26.3700, 26.5500]",
+      "text": "Q2611037 wikidata 26.4600 [26.3700, 26.5500]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "xenon-130",
+      "qid": "Q2622312",
+      "local": "",
+      "wikidata": "4.07100 [4.069700, 4.072300]",
+      "text": "Q2622312 wikidata 4.07100 [4.069700, 4.072300]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "cerium-138",
+      "qid": "Q2639061",
+      "local": "",
+      "wikidata": "0.25100 [0.24900, 0.25300]",
+      "text": "Q2639061 wikidata 0.25100 [0.24900, 0.25300]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "cerium-140",
+      "qid": "Q2646578",
+      "local": "",
+      "wikidata": "88.4500 [88.39900, 88.50100]",
+      "text": "Q2646578 wikidata 88.4500 [88.39900, 88.50100]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "boron-11",
+      "qid": "Q2659502",
+      "local": "",
+      "wikidata": "80.100 [79.400, 80.800]",
+      "text": "Q2659502 wikidata 80.100 [79.400, 80.800]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "rhodium-103",
+      "qid": "Q2672056",
+      "local": "",
+      "wikidata": "100",
+      "text": "Q2672056 wikidata 100  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "germanium-70",
+      "qid": "Q2674362",
+      "local": "",
+      "wikidata": "20.5700 [20.300, 20.8400]",
+      "text": "Q2674362 wikidata 20.5700 [20.300, 20.8400]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "molybdenum-97",
+      "qid": "Q2690215",
+      "local": "",
+      "wikidata": "9.600 [9.4600, 9.7400]",
+      "text": "Q2690215 wikidata 9.600 [9.4600, 9.7400]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "palladium-105",
+      "qid": "Q2692839",
+      "local": "",
+      "wikidata": "22.3300 [22.2500, 22.4100]",
+      "text": "Q2692839 wikidata 22.3300 [22.2500, 22.4100]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "titanium-46",
+      "qid": "Q2694202",
+      "local": "",
+      "wikidata": "8.2500 [8.2200, 8.2800]",
+      "text": "Q2694202 wikidata 8.2500 [8.2200, 8.2800]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "tin-124",
+      "qid": "Q2695937",
+      "local": "",
+      "wikidata": "5.7900 [5.7400, 5.8400]",
+      "text": "Q2695937 wikidata 5.7900 [5.7400, 5.8400]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "iron-54",
+      "qid": "Q2696892",
+      "local": "",
+      "wikidata": "5.84500 [5.8100, 5.8800]",
+      "text": "Q2696892 wikidata 5.84500 [5.8100, 5.8800]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "iron-58",
+      "qid": "Q2704780",
+      "local": "",
+      "wikidata": "0.28200 [0.27800, 0.28600]",
+      "text": "Q2704780 wikidata 0.28200 [0.27800, 0.28600]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "molybdenum-98",
+      "qid": "Q2019439",
+      "local": "",
+      "wikidata": "24.3900 [24.0200, 24.7600]",
+      "text": "Q2019439 wikidata 24.3900 [24.0200, 24.7600]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "rubidium-87",
+      "qid": "Q2019749",
+      "local": "",
+      "wikidata": "27.8300 [27.8100, 27.8500]",
+      "text": "Q2019749 wikidata 27.8300 [27.8100, 27.8500]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "potassium-39",
+      "qid": "Q2023226",
+      "local": "",
+      "wikidata": "93.258100 [93.253700, 93.262500]",
+      "text": "Q2023226 wikidata 93.258100 [93.253700, 93.262500]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "europium-153",
+      "qid": "Q2027407",
+      "local": "",
+      "wikidata": "52.1900 [52.1300, 52.2500]",
+      "text": "Q2027407 wikidata 52.1900 [52.1300, 52.2500]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "germanium-72",
+      "qid": "Q2035731",
+      "local": "",
+      "wikidata": "27.4500 [27.1300, 27.7700]",
+      "text": "Q2035731 wikidata 27.4500 [27.1300, 27.7700]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "cadmium-112",
+      "qid": "Q2040848",
+      "local": "",
+      "wikidata": "24.1300 [23.9200, 24.3400]",
+      "text": "Q2040848 wikidata 24.1300 [23.9200, 24.3400]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "sulfur-33",
+      "qid": "Q2055815",
+      "local": "",
+      "wikidata": "0.7500 [0.7300, 0.7700]",
+      "text": "Q2055815 wikidata 0.7500 [0.7300, 0.7700]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "neodymium-143",
+      "qid": "Q2064444",
+      "local": "",
+      "wikidata": "12.17400 [12.14800, 12.200]",
+      "text": "Q2064444 wikidata 12.17400 [12.14800, 12.200]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "krypton-80",
+      "qid": "Q2071481",
+      "local": "",
+      "wikidata": "2.28600 [2.27600, 2.29600]",
+      "text": "Q2071481 wikidata 2.28600 [2.27600, 2.29600]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "samarium-147",
+      "qid": "Q2081111",
+      "local": "",
+      "wikidata": "14.9900 [14.8100, 15.1700]",
+      "text": "Q2081111 wikidata 14.9900 [14.8100, 15.1700]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "zirconium-90",
+      "qid": "Q2090546",
+      "local": "",
+      "wikidata": "51.4500 [51.0500, 51.8500]",
+      "text": "Q2090546 wikidata 51.4500 [51.0500, 51.8500]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "magnesium-24",
+      "qid": "Q2096096",
+      "local": "",
+      "wikidata": "78.9900 [78.9500, 79.0300]",
+      "text": "Q2096096 wikidata 78.9900 [78.9500, 79.0300]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "nickel-60",
+      "qid": "Q2103496",
+      "local": "",
+      "wikidata": "26.22300 [26.21500, 26.23100]",
+      "text": "Q2103496 wikidata 26.22300 [26.21500, 26.23100]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "tin-118",
+      "qid": "Q2122600",
+      "local": "",
+      "wikidata": "24.2200 [24.1300, 24.3100]",
+      "text": "Q2122600 wikidata 24.2200 [24.1300, 24.3100]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "xenon-132",
+      "qid": "Q2125594",
+      "local": "",
+      "wikidata": "26.908600 [26.905300, 26.911900]",
+      "text": "Q2125594 wikidata 26.908600 [26.905300, 26.911900]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "tellurium-123",
+      "qid": "Q2129067",
+      "local": "",
+      "wikidata": "0.8900 [0.8600, 0.9200]",
+      "text": "Q2129067 wikidata 0.8900 [0.8600, 0.9200]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "zinc-64",
+      "qid": "Q2133737",
+      "local": "",
+      "wikidata": "49.1700 [48.4200, 49.9200]",
+      "text": "Q2133737 wikidata 49.1700 [48.4200, 49.9200]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "tin-119",
+      "qid": "Q2140731",
+      "local": "",
+      "wikidata": "8.5900 [8.5500, 8.6300]",
+      "text": "Q2140731 wikidata 8.5900 [8.5500, 8.6300]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "uranium-234",
+      "qid": "Q2153640",
+      "local": "",
+      "wikidata": "0.005400 [0.004900, 0.005900]",
+      "text": "Q2153640 wikidata 0.005400 [0.004900, 0.005900]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "krypton-84",
+      "qid": "Q2163590",
+      "local": "",
+      "wikidata": "56.98700 [56.97200, 57.00200]",
+      "text": "Q2163590 wikidata 56.98700 [56.97200, 57.00200]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "rubidium-85",
+      "qid": "Q2171949",
+      "local": "",
+      "wikidata": "72.1700 [72.1500, 72.1900]",
+      "text": "Q2171949 wikidata 72.1700 [72.1500, 72.1900]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "gadolinium-154",
+      "qid": "Q2175390",
+      "local": "",
+      "wikidata": "2.1800 [2.1500, 2.2100]",
+      "text": "Q2175390 wikidata 2.1800 [2.1500, 2.2100]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "palladium-102",
+      "qid": "Q2177150",
+      "local": "",
+      "wikidata": "1.0200 [1.0100, 1.0300]",
+      "text": "Q2177150 wikidata 1.0200 [1.0100, 1.0300]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "germanium-76",
+      "qid": "Q2190009",
+      "local": "",
+      "wikidata": "7.7300 [7.6100, 7.8500]",
+      "text": "Q2190009 wikidata 7.7300 [7.6100, 7.8500]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "tellurium-130",
+      "qid": "Q2190156",
+      "local": "",
+      "wikidata": "34.0800 [33.4600, 34.700]",
+      "text": "Q2190156 wikidata 34.0800 [33.4600, 34.700]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "tin-114",
+      "qid": "Q2191216",
+      "local": "",
+      "wikidata": "0.6600 [0.6500, 0.6700]",
+      "text": "Q2191216 wikidata 0.6600 [0.6500, 0.6700]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "krypton-86",
+      "qid": "Q2195058",
+      "local": "",
+      "wikidata": "17.27900 [17.23800, 17.3200]",
+      "text": "Q2195058 wikidata 17.27900 [17.23800, 17.3200]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "neodymium-145",
+      "qid": "Q2198672",
+      "local": "",
+      "wikidata": "8.29300 [8.28100, 8.30500]",
+      "text": "Q2198672 wikidata 8.29300 [8.28100, 8.30500]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "aluminium-27",
+      "qid": "Q2225512",
+      "local": "",
+      "wikidata": "100",
+      "text": "Q2225512 wikidata 100  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "gadolinium-157",
+      "qid": "Q2226266",
+      "local": "",
+      "wikidata": "15.6500 [15.6300, 15.6700]",
+      "text": "Q2226266 wikidata 15.6500 [15.6300, 15.6700]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "strontium-84",
+      "qid": "Q2226267",
+      "local": "",
+      "wikidata": "0.5600 [0.5500, 0.5700]",
+      "text": "Q2226267 wikidata 0.5600 [0.5500, 0.5700]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "silicon-28",
+      "qid": "Q2236831",
+      "local": "",
+      "wikidata": "92.22300 [92.20400, 92.24200]",
+      "text": "Q2236831 wikidata 92.22300 [92.20400, 92.24200]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "gadolinium-158",
+      "qid": "Q2237256",
+      "local": "",
+      "wikidata": "24.8400 [24.7700, 24.9100]",
+      "text": "Q2237256 wikidata 24.8400 [24.7700, 24.9100]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "nickel-62",
+      "qid": "Q284149",
+      "local": "",
+      "wikidata": "3.634600 [3.630600, 3.638600]",
+      "text": "Q284149 wikidata 3.634600 [3.630600, 3.638600]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "oxygen-18",
+      "qid": "Q662269",
+      "local": "",
+      "wikidata": "0.20500 [0.19100, 0.21900]",
+      "text": "Q662269 wikidata 0.20500 [0.19100, 0.21900]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "uranium-235",
+      "qid": "Q848497",
+      "local": "",
+      "wikidata": "0.720400 [0.719800, 0.72100]",
+      "text": "Q848497 wikidata 0.720400 [0.719800, 0.72100]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "iron-56",
+      "qid": "Q1052454",
+      "local": "",
+      "wikidata": "91.75400 [91.71800, 91.7900]",
+      "text": "Q1052454 wikidata 91.75400 [91.71800, 91.7900]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "carbon-12",
+      "qid": "Q1058364",
+      "local": "",
+      "wikidata": "98.9300 [98.8500, 99.0100]",
+      "text": "Q1058364 wikidata 98.9300 [98.8500, 99.0100]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "nitrogen-14",
+      "qid": "Q1138479",
+      "local": "",
+      "wikidata": "99.63600 [99.61600, 99.65600]",
+      "text": "Q1138479 wikidata 99.63600 [99.61600, 99.65600]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "uranium-238",
+      "qid": "Q1148503",
+      "local": "",
+      "wikidata": "99.274200 [99.273200, 99.275200]",
+      "text": "Q1148503 wikidata 99.274200 [99.273200, 99.275200]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "carbon-13",
+      "qid": "Q1770822",
+      "local": "",
+      "wikidata": "1.0700 [0.9900, 1.1500]",
+      "text": "Q1770822 wikidata 1.0700 [0.9900, 1.1500]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "xenon-136",
+      "qid": "Q1851814",
+      "local": "",
+      "wikidata": "8.857300 [8.852900, 8.861700]",
+      "text": "Q1851814 wikidata 8.857300 [8.852900, 8.861700]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "antimony-121",
+      "qid": "Q1856817",
+      "local": "",
+      "wikidata": "57.2100 [57.1600, 57.2600]",
+      "text": "Q1856817 wikidata 57.2100 [57.1600, 57.2600]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "samarium-144",
+      "qid": "Q1862339",
+      "local": "",
+      "wikidata": "3.0700 [3.00, 3.1400]",
+      "text": "Q1862339 wikidata 3.0700 [3.00, 3.1400]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "sulfur-34",
+      "qid": "Q1880449",
+      "local": "",
+      "wikidata": "4.2500 [4.0100, 4.4900]",
+      "text": "Q1880449 wikidata 4.2500 [4.0100, 4.4900]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "neodymium-146",
+      "qid": "Q1880887",
+      "local": "",
+      "wikidata": "17.18900 [17.15700, 17.22100]",
+      "text": "Q1880887 wikidata 17.18900 [17.15700, 17.22100]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "selenium-78",
+      "qid": "Q1890759",
+      "local": "",
+      "wikidata": "23.7700 [23.4900, 24.0500]",
+      "text": "Q1890759 wikidata 23.7700 [23.4900, 24.0500]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "tin-122",
+      "qid": "Q1895278",
+      "local": "",
+      "wikidata": "4.6300 [4.600, 4.6600]",
+      "text": "Q1895278 wikidata 4.6300 [4.600, 4.6600]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "samarium-150",
+      "qid": "Q1905822",
+      "local": "",
+      "wikidata": "7.3800 [7.3700, 7.3900]",
+      "text": "Q1905822 wikidata 7.3800 [7.3700, 7.3900]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "samarium-149",
+      "qid": "Q1915454",
+      "local": "",
+      "wikidata": "13.8200 [13.7500, 13.8900]",
+      "text": "Q1915454 wikidata 13.8200 [13.7500, 13.8900]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "krypton-83",
+      "qid": "Q1921298",
+      "local": "",
+      "wikidata": "11.500 [11.48100, 11.51900]",
+      "text": "Q1921298 wikidata 11.500 [11.48100, 11.51900]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "cerium-136",
+      "qid": "Q1927406",
+      "local": "",
+      "wikidata": "0.18500 [0.18300, 0.18700]",
+      "text": "Q1927406 wikidata 0.18500 [0.18300, 0.18700]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "molybdenum-96",
+      "qid": "Q1928853",
+      "local": "",
+      "wikidata": "16.6700 [16.5200, 16.8200]",
+      "text": "Q1928853 wikidata 16.6700 [16.5200, 16.8200]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "vanadium-51",
+      "qid": "Q1931262",
+      "local": "",
+      "wikidata": "99.7500 [99.74800, 99.75200]",
+      "text": "Q1931262 wikidata 99.7500 [99.74800, 99.75200]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "xenon-128",
+      "qid": "Q1953543",
+      "local": "",
+      "wikidata": "1.910200 [1.909400, 1.91100]",
+      "text": "Q1953543 wikidata 1.910200 [1.909400, 1.91100]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "lanthanum-138",
+      "qid": "Q1967612",
+      "local": "",
+      "wikidata": "0.0888100 [0.088100, 0.0895200]",
+      "text": "Q1967612 wikidata 0.0888100 [0.088100, 0.0895200]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "scandium-45",
+      "qid": "Q1975917",
+      "local": "",
+      "wikidata": "100",
+      "text": "Q1975917 wikidata 100  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "palladium-104",
+      "qid": "Q1978569",
+      "local": "",
+      "wikidata": "11.1400 [11.0600, 11.2200]",
+      "text": "Q1978569 wikidata 11.1400 [11.0600, 11.2200]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "samarium-148",
+      "qid": "Q1985308",
+      "local": "",
+      "wikidata": "11.2400 [11.1400, 11.3400]",
+      "text": "Q1985308 wikidata 11.2400 [11.1400, 11.3400]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "tin-116",
+      "qid": "Q1995851",
+      "local": "",
+      "wikidata": "14.5400 [14.4500, 14.6300]",
+      "text": "Q1995851 wikidata 14.5400 [14.4500, 14.6300]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "ytterbium-168",
+      "qid": "Q18882562",
+      "local": "",
+      "wikidata": "0.12300 [0.1200, 0.12600]",
+      "text": "Q18882562 wikidata 0.12300 [0.1200, 0.12600]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "ytterbium-171",
+      "qid": "Q18882567",
+      "local": "",
+      "wikidata": "14.0900 [13.9500, 14.2300]",
+      "text": "Q18882567 wikidata 14.0900 [13.9500, 14.2300]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "ytterbium-170",
+      "qid": "Q18882565",
+      "local": "",
+      "wikidata": "2.98200 [2.94300, 3.02100]",
+      "text": "Q18882565 wikidata 2.98200 [2.94300, 3.02100]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "ytterbium-172",
+      "qid": "Q18882570",
+      "local": "",
+      "wikidata": "21.6800 [21.5500, 21.8100]",
+      "text": "Q18882570 wikidata 21.6800 [21.5500, 21.8100]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "ytterbium-173",
+      "qid": "Q18882571",
+      "local": "",
+      "wikidata": "16.10300 [16.0400, 16.16600]",
+      "text": "Q18882571 wikidata 16.10300 [16.0400, 16.16600]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "ytterbium-174",
+      "qid": "Q18882575",
+      "local": "",
+      "wikidata": "32.02600 [31.94600, 32.10600]",
+      "text": "Q18882575 wikidata 32.02600 [31.94600, 32.10600]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "ytterbium-176",
+      "qid": "Q18882579",
+      "local": "",
+      "wikidata": "12.99600 [12.91300, 13.07900]",
+      "text": "Q18882579 wikidata 12.99600 [12.91300, 13.07900]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "lutetium-175",
+      "qid": "Q18882652",
+      "local": "",
+      "wikidata": "97.40100 [97.38800, 97.41400]",
+      "text": "Q18882652 wikidata 97.40100 [97.38800, 97.41400]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "lutetium-176",
+      "qid": "Q18882668",
+      "local": "",
+      "wikidata": "2.59900 [2.58600, 2.61200]",
+      "text": "Q18882668 wikidata 2.59900 [2.58600, 2.61200]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "tantalum-180m1",
+      "qid": "Q18882796",
+      "local": "",
+      "wikidata": "0.0120100 [0.0116899999999999999700, 0.0123300000000000000300]",
+      "text": "Q18882796 wikidata 0.0120100 [0.0116899999999999999700, 0.0123300000000000000300]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "tantalum-181",
+      "qid": "Q18882801",
+      "local": "",
+      "wikidata": "99.9879900 [99.9876700, 99.9883100]",
+      "text": "Q18882801 wikidata 99.9879900 [99.9876700, 99.9883100]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "tungsten-180",
+      "qid": "Q18882857",
+      "local": "",
+      "wikidata": "0.1200 [0.1100, 0.1300]",
+      "text": "Q18882857 wikidata 0.1200 [0.1100, 0.1300]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "tungsten-183",
+      "qid": "Q18882866",
+      "local": "",
+      "wikidata": "14.3100 [14.2700, 14.3500]",
+      "text": "Q18882866 wikidata 14.3100 [14.2700, 14.3500]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "tungsten-182",
+      "qid": "Q18882864",
+      "local": "",
+      "wikidata": "26.500 [26.3400, 26.6600]",
+      "text": "Q18882864 wikidata 26.500 [26.3400, 26.6600]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "tungsten-186",
+      "qid": "Q18882871",
+      "local": "",
+      "wikidata": "28.4300 [28.2400, 28.6200]",
+      "text": "Q18882871 wikidata 28.4300 [28.2400, 28.6200]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "tungsten-184",
+      "qid": "Q18882868",
+      "local": "",
+      "wikidata": "30.6400 [30.6200, 30.6600]",
+      "text": "Q18882868 wikidata 30.6400 [30.6200, 30.6600]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "rhenium-185",
+      "qid": "Q18882926",
+      "local": "",
+      "wikidata": "37.400 [37.3800, 37.4200]",
+      "text": "Q18882926 wikidata 37.400 [37.3800, 37.4200]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "rhenium-187",
+      "qid": "Q18882930",
+      "local": "",
+      "wikidata": "62.600 [62.5800, 62.6200]",
+      "text": "Q18882930 wikidata 62.600 [62.5800, 62.6200]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "osmium-184",
+      "qid": "Q18882967",
+      "local": "",
+      "wikidata": "0.0200 [0.0100, 0.0300]",
+      "text": "Q18882967 wikidata 0.0200 [0.0100, 0.0300]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "osmium-186",
+      "qid": "Q18882971",
+      "local": "",
+      "wikidata": "1.5900 [1.5600, 1.6200]",
+      "text": "Q18882971 wikidata 1.5900 [1.5600, 1.6200]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "osmium-189",
+      "qid": "Q18882975",
+      "local": "",
+      "wikidata": "16.1500 [16.100, 16.200]",
+      "text": "Q18882975 wikidata 16.1500 [16.100, 16.200]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "osmium-187",
+      "qid": "Q18882972",
+      "local": "",
+      "wikidata": "1.9600 [1.9400, 1.9800]",
+      "text": "Q18882972 wikidata 1.9600 [1.9400, 1.9800]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "osmium-188",
+      "qid": "Q18882973",
+      "local": "",
+      "wikidata": "13.2400 [13.1600, 13.3200]",
+      "text": "Q18882973 wikidata 13.2400 [13.1600, 13.3200]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "osmium-190",
+      "qid": "Q18882977",
+      "local": "",
+      "wikidata": "26.2600 [26.2400, 26.2800]",
+      "text": "Q18882977 wikidata 26.2600 [26.2400, 26.2800]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "osmium-192",
+      "qid": "Q18882981",
+      "local": "",
+      "wikidata": "40.7800 [40.5900, 40.9700]",
+      "text": "Q18882981 wikidata 40.7800 [40.5900, 40.9700]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "iridium-191",
+      "qid": "Q18883039",
+      "local": "",
+      "wikidata": "37.300 [37.100, 37.500]",
+      "text": "Q18883039 wikidata 37.300 [37.100, 37.500]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "iridium-193",
+      "qid": "Q18883045",
+      "local": "",
+      "wikidata": "62.700 [62.500, 62.900]",
+      "text": "Q18883045 wikidata 62.700 [62.500, 62.900]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "platinum-190",
+      "qid": "Q18883092",
+      "local": "",
+      "wikidata": "0.01200 [0.0100, 0.01400]",
+      "text": "Q18883092 wikidata 0.01200 [0.0100, 0.01400]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "platinum-194",
+      "qid": "Q18883099",
+      "local": "",
+      "wikidata": "32.8600 [32.4600, 33.2600]",
+      "text": "Q18883099 wikidata 32.8600 [32.4600, 33.2600]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "platinum-192",
+      "qid": "Q18883096",
+      "local": "",
+      "wikidata": "0.78200 [0.75800, 0.80600]",
+      "text": "Q18883096 wikidata 0.78200 [0.75800, 0.80600]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "platinum-196",
+      "qid": "Q18883102",
+      "local": "",
+      "wikidata": "25.2100 [24.8700, 25.5500]",
+      "text": "Q18883102 wikidata 25.2100 [24.8700, 25.5500]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "platinum-195",
+      "qid": "Q18883100",
+      "local": "",
+      "wikidata": "33.7800 [33.5400, 34.0200]",
+      "text": "Q18883100 wikidata 33.7800 [33.5400, 34.0200]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "platinum-198",
+      "qid": "Q18883105",
+      "local": "",
+      "wikidata": "7.3600 [7.2300, 7.4900]",
+      "text": "Q18883105 wikidata 7.3600 [7.2300, 7.4900]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "gold-197",
+      "qid": "Q18883174",
+      "local": "",
+      "wikidata": "100",
+      "text": "Q18883174 wikidata 100  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "mercury-196",
+      "qid": "Q18883230",
+      "local": "",
+      "wikidata": "0.1500 [0.1400, 0.1600]",
+      "text": "Q18883230 wikidata 0.1500 [0.1400, 0.1600]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "mercury-199",
+      "qid": "Q18883234",
+      "local": "",
+      "wikidata": "16.8700 [16.6500, 17.0900]",
+      "text": "Q18883234 wikidata 16.8700 [16.6500, 17.0900]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "mercury-198",
+      "qid": "Q18883233",
+      "local": "",
+      "wikidata": "9.9700 [9.7700, 10.1700]",
+      "text": "Q18883233 wikidata 9.9700 [9.7700, 10.1700]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "mercury-202",
+      "qid": "Q18883239",
+      "local": "",
+      "wikidata": "29.8600 [29.600, 30.1200]",
+      "text": "Q18883239 wikidata 29.8600 [29.600, 30.1200]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "mercury-200",
+      "qid": "Q18883236",
+      "local": "",
+      "wikidata": "23.100 [22.9100, 23.2900]",
+      "text": "Q18883236 wikidata 23.100 [22.9100, 23.2900]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "mercury-201",
+      "qid": "Q18883237",
+      "local": "",
+      "wikidata": "13.1800 [13.0900, 13.2700]",
+      "text": "Q18883237 wikidata 13.1800 [13.0900, 13.2700]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "mercury-204",
+      "qid": "Q18883242",
+      "local": "",
+      "wikidata": "6.8700 [6.7200, 7.0200]",
+      "text": "Q18883242 wikidata 6.8700 [6.7200, 7.0200]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "zinc-66",
+      "qid": "Q4046116",
+      "local": "",
+      "wikidata": "27.7300 [26.7500, 28.7100]",
+      "text": "Q4046116 wikidata 27.7300 [26.7500, 28.7100]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "europium-151",
+      "qid": "Q4293411",
+      "local": "",
+      "wikidata": "47.8100 [47.7800, 47.8400]",
+      "text": "Q4293411 wikidata 47.8100 [47.7800, 47.8400]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "strontium-87",
+      "qid": "Q4300037",
+      "local": "",
+      "wikidata": "7.00 [6.9900, 7.0100]",
+      "text": "Q4300037 wikidata 7.00 [6.9900, 7.0100]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "cadmium-106",
+      "qid": "Q4342100",
+      "local": "",
+      "wikidata": "1.2500 [1.1900, 1.3100]",
+      "text": "Q4342100 wikidata 1.2500 [1.1900, 1.3100]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "cobalt-59",
+      "qid": "Q4350852",
+      "local": "",
+      "wikidata": "100",
+      "text": "Q4350852 wikidata 100  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "chromium-52",
+      "qid": "Q4469260",
+      "local": "",
+      "wikidata": "83.78900 [83.77100, 83.80700]",
+      "text": "Q4469260 wikidata 83.78900 [83.77100, 83.80700]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "molybdenum-92",
+      "qid": "Q4499982",
+      "local": "",
+      "wikidata": "14.5300 [14.2300, 14.8300]",
+      "text": "Q4499982 wikidata 14.5300 [14.2300, 14.8300]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "vanadium-50",
+      "qid": "Q4504994",
+      "local": "",
+      "wikidata": "0.2500 [0.24800, 0.25200]",
+      "text": "Q4504994 wikidata 0.2500 [0.24800, 0.25200]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "gadolinium-156",
+      "qid": "Q4505367",
+      "local": "",
+      "wikidata": "20.4700 [20.3800, 20.5600]",
+      "text": "Q4505367 wikidata 20.4700 [20.3800, 20.5600]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "cadmium-113",
+      "qid": "Q4565030",
+      "local": "",
+      "wikidata": "12.2200 [12.100, 12.3400]",
+      "text": "Q4565030 wikidata 12.2200 [12.100, 12.3400]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "cerium-142",
+      "qid": "Q4591114",
+      "local": "",
+      "wikidata": "11.11400 [11.06300, 11.16500]",
+      "text": "Q4591114 wikidata 11.11400 [11.06300, 11.16500]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "molybdenum-100",
+      "qid": "Q4689619",
+      "local": "",
+      "wikidata": "9.8200 [9.5100, 10.1300]",
+      "text": "Q4689619 wikidata 9.8200 [9.5100, 10.1300]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "barium-137",
+      "qid": "Q4734760",
+      "local": "",
+      "wikidata": "11.23200 [11.20800, 11.25600]",
+      "text": "Q4734760 wikidata 11.23200 [11.20800, 11.25600]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "gallium-69",
+      "qid": "Q4738844",
+      "local": "",
+      "wikidata": "60.10800 [60.09900, 60.11700]",
+      "text": "Q4738844 wikidata 60.10800 [60.09900, 60.11700]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "zirconium-94",
+      "qid": "Q4808461",
+      "local": "",
+      "wikidata": "17.3800 [17.100, 17.6600]",
+      "text": "Q4808461 wikidata 17.3800 [17.100, 17.6600]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "arsenic-75",
+      "qid": "Q4942137",
+      "local": "",
+      "wikidata": "100",
+      "text": "Q4942137 wikidata 100  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "tin-117",
+      "qid": "Q4970255",
+      "local": "",
+      "wikidata": "7.6800 [7.6100, 7.7500]",
+      "text": "Q4970255 wikidata 7.6800 [7.6100, 7.7500]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "neodymium-148",
+      "qid": "Q4990557",
+      "local": "",
+      "wikidata": "5.75600 [5.73500, 5.77700]",
+      "text": "Q4990557 wikidata 5.75600 [5.73500, 5.77700]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "tellurium-124",
+      "qid": "Q4993070",
+      "local": "",
+      "wikidata": "4.7400 [4.600, 4.8800]",
+      "text": "Q4993070 wikidata 4.7400 [4.600, 4.8800]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "chlorine-37",
+      "qid": "Q5102949",
+      "local": "",
+      "wikidata": "24.2400 [24.1400, 24.3400]",
+      "text": "Q5102949 wikidata 24.2400 [24.1400, 24.3400]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "tellurium-122",
+      "qid": "Q5315292",
+      "local": "",
+      "wikidata": "2.5500 [2.4300, 2.6700]",
+      "text": "Q5315292 wikidata 2.5500 [2.4300, 2.6700]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "nickel-64",
+      "qid": "Q5459468",
+      "local": "",
+      "wikidata": "0.925500 [0.923600, 0.927400]",
+      "text": "Q5459468 wikidata 0.925500 [0.923600, 0.927400]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "silver-109",
+      "qid": "Q5518299",
+      "local": "",
+      "wikidata": "48.16100 [48.15300, 48.16900]",
+      "text": "Q5518299 wikidata 48.16100 [48.15300, 48.16900]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "thorium-232",
+      "qid": "Q7885290",
+      "local": "",
+      "wikidata": "100",
+      "text": "Q7885290 wikidata 100  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "zinc-68",
+      "qid": "Q8072263",
+      "local": "",
+      "wikidata": "18.4500 [17.8200, 19.0800]",
+      "text": "Q8072263 wikidata 18.4500 [17.8200, 19.0800]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "lithium-6",
+      "qid": "Q10322200",
+      "local": "",
+      "wikidata": "7.5900 [7.5500, 7.6300]",
+      "text": "Q10322200 wikidata 7.5900 [7.5500, 7.6300]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "lithium-7",
+      "qid": "Q10322201",
+      "local": "",
+      "wikidata": "92.4100 [92.3700, 92.4500]",
+      "text": "Q10322201 wikidata 92.4100 [92.3700, 92.4500]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "chromium-53",
+      "qid": "Q13466446",
+      "local": "",
+      "wikidata": "9.50100 [9.48400, 9.51800]",
+      "text": "Q13466446 wikidata 9.50100 [9.48400, 9.51800]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "magnesium-26",
+      "qid": "Q13808814",
+      "local": "",
+      "wikidata": "11.0100 [10.9800, 11.0400]",
+      "text": "Q13808814 wikidata 11.0100 [10.9800, 11.0400]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "manganese-55",
+      "qid": "Q13811964",
+      "local": "",
+      "wikidata": "100",
+      "text": "Q13811964 wikidata 100  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "molybdenum-94",
+      "qid": "Q13860694",
+      "local": "",
+      "wikidata": "9.1500 [9.0600, 9.2400]",
+      "text": "Q13860694 wikidata 9.1500 [9.0600, 9.2400]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "ruthenium-101",
+      "qid": "Q14292039",
+      "local": "",
+      "wikidata": "17.0600 [17.0400, 17.0800]",
+      "text": "Q14292039 wikidata 17.0600 [17.0400, 17.0800]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "silicon-30",
+      "qid": "Q14338840",
+      "local": "",
+      "wikidata": "3.09200 [3.08100, 3.10300]",
+      "text": "Q14338840 wikidata 3.09200 [3.08100, 3.10300]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "tellurium-126",
+      "qid": "Q14467249",
+      "local": "",
+      "wikidata": "18.8400 [18.5900, 19.0900]",
+      "text": "Q14467249 wikidata 18.8400 [18.5900, 19.0900]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "iron-57",
+      "qid": "Q14744877",
+      "local": "",
+      "wikidata": "2.11900 [2.10900, 2.12900]",
+      "text": "Q14744877 wikidata 2.11900 [2.10900, 2.12900]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "erbium-162",
+      "qid": "Q15874939",
+      "local": "",
+      "wikidata": "0.13900 [0.13400, 0.14400]",
+      "text": "Q15874939 wikidata 0.13900 [0.13400, 0.14400]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "erbium-164",
+      "qid": "Q15874941",
+      "local": "",
+      "wikidata": "1.60100 [1.59800, 1.60400]",
+      "text": "Q15874941 wikidata 1.60100 [1.59800, 1.60400]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "erbium-168",
+      "qid": "Q15874946",
+      "local": "",
+      "wikidata": "26.97800 [26.9600, 26.99600]",
+      "text": "Q15874946 wikidata 26.97800 [26.9600, 26.99600]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "erbium-166",
+      "qid": "Q15874944",
+      "local": "",
+      "wikidata": "33.50300 [33.46700, 33.53900]",
+      "text": "Q15874944 wikidata 33.50300 [33.46700, 33.53900]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "erbium-167",
+      "qid": "Q15874945",
+      "local": "",
+      "wikidata": "22.86900 [22.8600, 22.87800]",
+      "text": "Q15874945 wikidata 22.86900 [22.8600, 22.87800]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "erbium-170",
+      "qid": "Q15874948",
+      "local": "",
+      "wikidata": "14.9100 [14.87400, 14.94600]",
+      "text": "Q15874948 wikidata 14.9100 [14.87400, 14.94600]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "holmium-165",
+      "qid": "Q15876412",
+      "local": "",
+      "wikidata": "100",
+      "text": "Q15876412 wikidata 100  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "thulium-169",
+      "qid": "Q15882884",
+      "local": "",
+      "wikidata": "100",
+      "text": "Q15882884 wikidata 100  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "lead-208",
+      "qid": "Q16670466",
+      "local": "",
+      "wikidata": "52.400 [52.300, 52.500]",
+      "text": "Q16670466 wikidata 52.400 [52.300, 52.500]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "hafnium-174",
+      "qid": "Q18087008",
+      "local": "",
+      "wikidata": "0.1600 [0.1500, 0.1700]",
+      "text": "Q18087008 wikidata 0.1600 [0.1500, 0.1700]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "hafnium-177",
+      "qid": "Q18087014",
+      "local": "",
+      "wikidata": "18.600 [18.5100, 18.6900]",
+      "text": "Q18087014 wikidata 18.600 [18.5100, 18.6900]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "hafnium-176",
+      "qid": "Q18087012",
+      "local": "",
+      "wikidata": "5.2600 [5.1900, 5.3300]",
+      "text": "Q18087012 wikidata 5.2600 [5.1900, 5.3300]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "hafnium-179",
+      "qid": "Q18087018",
+      "local": "",
+      "wikidata": "13.6200 [13.600, 13.6400]",
+      "text": "Q18087018 wikidata 13.6200 [13.600, 13.6400]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "hafnium-178",
+      "qid": "Q18087016",
+      "local": "",
+      "wikidata": "27.2800 [27.2100, 27.3500]",
+      "text": "Q18087016 wikidata 27.2800 [27.2100, 27.3500]  not in local data"
+    },
+    {
+      "kind": "ONLY-WIKIDATA",
+      "name": "hafnium-180",
+      "qid": "Q18087020",
+      "local": "",
+      "wikidata": "35.0800 [34.9200, 35.2400]",
+      "text": "Q18087020 wikidata 35.0800 [34.9200, 35.2400]  not in local data"
+    }
+  ]
+}
