@@ -248,8 +248,13 @@ def read_references(path: Path) -> dict[str, str]:
 
 def bibliography(e: Element, references: dict[str, str]) -> str:
     """The sources of all declarations on an element page, formatted by citation.js, or "" without sources."""
-    return bibliography_section({s.removeprefix("https://doi.org/") for d in [*e.history, *(d for i in e.isotopes for d in i.history)]
-                                 for s in d.sources if s.startswith("https://doi.org/10.")}, references)
+    return declarations_bibliography([*e.history, *(d for i in e.isotopes for d in i.history)], references)
+
+
+def declarations_bibliography(declarations: list[Declaration], references: dict[str, str]) -> str:
+    """The Bibliography of some declarations: their DOIs, formatted by citation.js."""
+    return bibliography_section({s.removeprefix("https://doi.org/") for d in declarations for s in d.sources
+                                 if s.startswith("https://doi.org/10.")}, references)
 
 
 def bibliography_section(dois: set[str], references: dict[str, str]) -> str:
@@ -449,7 +454,8 @@ def turtle_section(name: str, turtle: str) -> str:
     return f"## Turtle\n\nThis resource as a file: [{name}.ttl]({name}.ttl)\n\n```turtle\n{turtle}```\n"
 
 
-def page_isotope(e: Element, i: Isotope, notes: dict[str, str], links: dict, turtle: str) -> str:
+def page_isotope(e: Element, i: Isotope, notes: dict[str, str], links: dict, turtle: str,
+                 references: dict[str, str] | None = None) -> str:
     facts = ["| Property | Value |", "| --- | --- |", f"| Element | [{e.name}](../elements/{e.page}.md) |",
              f"| Mass number | {i.mass_number} |", f"| IRI | `{i.iri}` |"]
     if i.matches:
@@ -460,11 +466,14 @@ def page_isotope(e: Element, i: Isotope, notes: dict[str, str], links: dict, tur
              "## Isotopic abundance\n", declaration_table(i.history, "") + "\n"]
     if i.abundance.notes:
         parts += [f"Notes: {note_links(i.abundance.notes)}\n", notes_section(notes, i.abundance.notes)]
+    if bib := declarations_bibliography(i.history, references or {}):
+        parts.append(bib)
     parts.append(turtle_section(i.page, turtle))
     return "\n".join(parts)
 
 
-def page_declaration(d: Declaration, title: str, about: str, notes: dict[str, str], turtle: str) -> str:
+def page_declaration(d: Declaration, title: str, about: str, notes: dict[str, str], turtle: str,
+                     references: dict[str, str] | None = None) -> str:
     facts = ["| Property | Value |", "| --- | --- |", f"| About | {about} |", f"| Value | {d.text} |",
              f"| Year | {d.issued or '—'} |", f"| Source | {source_links(d.sources)} |",
              f"| Status | {declaration_status(d, '')} |", f"| IRI | `{d.iri}` |"]
@@ -473,6 +482,8 @@ def page_declaration(d: Declaration, title: str, about: str, notes: dict[str, st
     parts = [f"# {title}\n", "\n".join(facts) + "\n"]
     if d.notes:
         parts.append(notes_section(notes, d.notes))
+    if references is not None and (bib := declarations_bibliography([d], references)):
+        parts.append(bib)
     parts.append(turtle_section(local_name(d.iri), turtle))
     return "\n".join(parts)
 
@@ -805,21 +816,23 @@ def write_turtle(out: Path, g: Graph, iri: URIRef, path: str) -> str:
     return text
 
 
-def add_subpages(site: Site, g: Graph, e: Element, notes: dict[str, str], links: dict) -> None:
+def add_subpages(site: Site, g: Graph, e: Element, notes: dict[str, str], links: dict,
+                 references: dict[str, str] | None = None) -> None:
     """The pages of the isotopes and declarations of an element. Their IRIs lead here."""
-    def add_declaration(d: Declaration, title: str, about: str, section: str) -> None:
+    def add_declaration(d: Declaration, title: str, about: str, section: str, cite: bool = False) -> None:
         path = f"id/{local_name(d.iri)}"
         turtle = write_turtle(site.out, g, d.iri, path)
-        site.add(path, title, page_declaration(d, title, about, notes, turtle), section, turtle=True)
+        site.add(path, title, page_declaration(d, title, about, notes, turtle, references if cite else None),
+                 section, turtle=True)
 
     for d in e.history:
         add_declaration(d, f"Standard atomic weight of {e.name}", f"[{e.name}](../elements/{e.page}.md)", "atomic-weights")
     for i in e.isotopes:
         name, path = f"{e.name}-{i.mass_number}", f"id/{i.page}"
         turtle = write_turtle(site.out, g, i.iri, path)
-        site.add(path, name.capitalize(), page_isotope(e, i, notes, links, turtle), "isotopic-abundances", turtle=True)
+        site.add(path, name.capitalize(), page_isotope(e, i, notes, links, turtle, references), "isotopic-abundances", turtle=True)
         for d in i.history:
-            add_declaration(d, f"Isotopic abundance of {name}", f"[{name}]({i.page}.md)", "isotopic-abundances")
+            add_declaration(d, f"Isotopic abundance of {name}", f"[{name}]({i.page}.md)", "isotopic-abundances", cite=True)
 
 
 def sparql_editor(endpoint: str, examples: list[Example]) -> str:
@@ -877,7 +890,7 @@ def build(data_path: Path, revision_path: Path, out: Path, sparql_endpoint: str 
         turtle = write_turtle(out, data, element.iri, path)
         site.add(path, element.name.capitalize(), page_element(element, notes, links, references, turtle),
                  "atomic-weights", turtle=True)
-        add_subpages(site, data, element, notes, links)
+        add_subpages(site, data, element, notes, links, references)
     site.add("model", "Data Model", page_model(tap, reports), "model")
     site.add("revision-example", "Revision Example", page_revision(revision), "model")
     site.add("downloads", "Downloads", page_downloads(out, elements), "downloads")

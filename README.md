@@ -227,7 +227,7 @@ from P356 if the source has one) as the abundance comparison. `make wikidata-wei
 `site/wikidata-weights-comparison.json` for the site. Mind that CIAAW gives no weight for elements without a stable
 isotope, so for those Wikidata is "only in the resource". The local data has no masses of single isotopes.
 
-Each element page ends with a Bibliography of the DOIs in `dcterms:source` of its declarations.
+Each element page, each isotope page and each isotopic abundance page ends with a Bibliography of the DOIs in `dcterms:source` of its declarations.
 They are formatted as APA by [citation.js](https://citation.js.org), the way the author's blog does it:
 `make references` (`update_references.js`, needs Node.js; if the system npm fails use
 `make references NPM="node path/to/npm-cli.js"`) looks up the DOIs that are not yet in
