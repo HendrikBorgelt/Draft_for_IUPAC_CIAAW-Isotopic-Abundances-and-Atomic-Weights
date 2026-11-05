@@ -520,7 +520,7 @@ shape:StandardAtomicWeightDeclaration-ciaaw-value sh:maxCount 1 ;
     sh:name "value"@en ;
     sh:nodeKind sh:BlankNode ;
     sh:path ciaaw:value ;
-    sh:xone ( shape:IntervalValue shape:ValueWithUncertainty ) .
+    sh:xone ( shape:IntervalValue shape:ValueWithUncertainty shape:SingleValue ) .
 
 shape:StandardAtomicWeightDeclaration-rdf-type sh:hasValue ciaaw:StandardAtomicWeightDeclaration ;
     sh:minCount 1 ;
@@ -582,14 +582,6 @@ shape:IntervalValue a sh:NodeShape ;
         shape:IntervalValue-qudt-upperBound,
         shape:IntervalValue-rdf-type .
 
-shape:SingleValue a sh:NodeShape ;
-    rdfs:label "Single value"@en ;
-    sh:closed true ;
-    sh:property shape:SingleValue-ciaaw-significantFigures,
-        shape:SingleValue-qudt-hasUnit,
-        shape:SingleValue-qudt-numericValue,
-        shape:SingleValue-rdf-type .
-
 shape:ValueWithUncertainty a sh:NodeShape ;
     rdfs:label "Value with uncertainty"@en ;
     sh:closed true ;
@@ -599,6 +591,14 @@ shape:ValueWithUncertainty a sh:NodeShape ;
         shape:ValueWithUncertainty-qudt-numericValue,
         shape:ValueWithUncertainty-qudt-standardUncertainty,
         shape:ValueWithUncertainty-rdf-type .
+
+shape:SingleValue a sh:NodeShape ;
+    rdfs:label "Single value"@en ;
+    sh:closed true ;
+    sh:property shape:SingleValue-ciaaw-significantFigures,
+        shape:SingleValue-qudt-hasUnit,
+        shape:SingleValue-qudt-numericValue,
+        shape:SingleValue-rdf-type .
 
 shape:Declaration a sh:NodeShape ;
     rdfs:label "Declaration"@en ;

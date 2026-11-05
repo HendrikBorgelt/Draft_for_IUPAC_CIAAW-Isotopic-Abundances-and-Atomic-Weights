@@ -33,6 +33,7 @@ We want to develop this together with the Commission. Decisions about the conten
 | `supplement.csv` | What the tables lack: report year, DOI, ChEBI matches |
 | `ttl2quickstatements.py` | Turtle → QuickStatements CSV for Wikidata (isotope abundances only) |
 | `ttl2sssom.py` | Turtle → SSSOM mappings of the elements and isotopes to Wikidata and ChEBI |
+| `historical2ttl.py`, `historical/` | Adds the historical standard atomic weights from [ciaaw.org](https://www.ciaaw.org/historical-atomic-weights.htm) to the Turtle |
 | `check_wikidata.py` | Compares the abundances in the Turtle with Wikidata |
 | `check_wikidata_weights.py` | Compares the standard atomic weights in the Turtle with the mass of the elements in Wikidata |
 | `tap2model.py` | DCTAP → SHACL shapes and UML diagrams |
@@ -99,6 +100,13 @@ make ttl PREVIOUS=ciaaw.ttl
 
 Declarations whose value changed are kept, flagged `owl:deprecated`, and linked with
 `dcterms:isReplacedBy` / `dcterms:replaces`.
+
+`make ttl` also adds the historical standard atomic weights from `historical/IUPAC-TSAW.csv`, the table of
+[ciaaw.org](https://www.ciaaw.org/historical-atomic-weights.htm) (`https://www.ciaaw.org/data/IUPAC-TSAW.csv`).
+Each earlier recommendation becomes a declaration, chained to the next one like the superseded values above. The
+script stops if the newest recommendation differs from the current value. Rows marked `n/a` are left out, because
+they record that no value was recommended. Np, Ra, Rn and Tc have no current standard atomic weight, so their history
+is left out too.
 
 ### Options
 

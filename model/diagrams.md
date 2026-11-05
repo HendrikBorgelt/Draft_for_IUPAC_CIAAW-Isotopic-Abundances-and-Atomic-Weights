@@ -37,6 +37,7 @@ classDiagram
     Declaration --> "0..*" Footnote : ciaaw#58;footnote
     StandardAtomicWeightDeclaration --> "1" IntervalValue : ciaaw#58;value (one of)
     StandardAtomicWeightDeclaration --> "1" ValueWithUncertainty : ciaaw#58;value (one of)
+    StandardAtomicWeightDeclaration --> "1" SingleValue : ciaaw#58;value (one of)
     ConventionalAtomicWeightDeclaration --> "1" SingleValue : ciaaw#58;value
     IsotopicAbundanceDeclaration --> "1" IntervalValue : ciaaw#58;value (one of)
     IsotopicAbundanceDeclaration --> "1" ValueWithUncertainty : ciaaw#58;value (one of)
@@ -90,6 +91,7 @@ classDiagram
     StandardAtomicWeightDeclaration --> "1" Element : ciaaw#58;ofElement
     StandardAtomicWeightDeclaration --> "1" IntervalValue : ciaaw#58;value (one of)
     StandardAtomicWeightDeclaration --> "1" ValueWithUncertainty : ciaaw#58;value (one of)
+    StandardAtomicWeightDeclaration --> "1" SingleValue : ciaaw#58;value (one of)
     ConventionalAtomicWeightDeclaration --> "1" Element : ciaaw#58;ofElement
     ConventionalAtomicWeightDeclaration --> "1" SingleValue : ciaaw#58;value
 ```
@@ -158,12 +160,12 @@ classDiagram
         ciaaw:significantFigures : integer [1]
         ciaaw:significantFiguresUncertainty : integer [1]
     }
-    class ConventionalAtomicWeightDeclaration["ciaaw:ConventionalAtomicWeightDeclaration"]
     class SingleValue["Single value"] {
         qudt:hasUnit : IRI [1]
         qudt:numericValue : decimal [1]
         ciaaw:significantFigures : integer [0..1]
     }
+    class ConventionalAtomicWeightDeclaration["ciaaw:ConventionalAtomicWeightDeclaration"]
     class IsotopicAbundanceDeclaration["ciaaw:IsotopicAbundanceDeclaration"]
     class AtomicMassDeclaration["ciaaw:AtomicMassDeclaration"]
     class MassValue["Mass with uncertainty"] {
@@ -175,6 +177,7 @@ classDiagram
     }
     StandardAtomicWeightDeclaration --> "1" IntervalValue : ciaaw#58;value (one of)
     StandardAtomicWeightDeclaration --> "1" ValueWithUncertainty : ciaaw#58;value (one of)
+    StandardAtomicWeightDeclaration --> "1" SingleValue : ciaaw#58;value (one of)
     ConventionalAtomicWeightDeclaration --> "1" SingleValue : ciaaw#58;value
     IsotopicAbundanceDeclaration --> "1" IntervalValue : ciaaw#58;value (one of)
     IsotopicAbundanceDeclaration --> "1" ValueWithUncertainty : ciaaw#58;value (one of)
