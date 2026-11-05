@@ -4,20 +4,17 @@ and the isotopic compositions as segmented bars. Built by build_site.py, which c
 The page is HTML and CSS without JavaScript. The periodic table colours each element by the relative uncertainty of
 its standard atomic weight (the width of the interval, or twice the standard uncertainty, divided by the value), by
 the year of the current value, or by the number of values recommended since 1902; radio inputs switch the colouring
-and choose the element whose details and history show below the table. The history comes from
-site/historical-atomic-weights.csv, CIAAW's table of every standard atomic weight recommended since 1902
-(https://ciaaw.org/historical-atomic-weights.htm, refreshed with `make history`); without the file the page shows the
-current values only. The styles are in site/static/style.css under .page-visualization.
+and choose the element whose details and history show below the table. The history is the chain of declarations of
+each element in the data (ciaaw:hasDeclaration, with dcterms:issued and dcterms:source), which historical2ttl.py
+adds from CIAAW's table of every standard atomic weight recommended since 1902. The styles are in
+site/static/style.css under .page-visualization.
 """
 from __future__ import annotations
 
-import csv
 import html
 import math
-import re
-from collections import Counter, defaultdict
+from collections import Counter
 from decimal import ROUND_CEILING, ROUND_FLOOR, ROUND_HALF_EVEN, Decimal
-from pathlib import Path
 
 from rdflib import Graph
 
@@ -65,8 +62,8 @@ def significant(d: Decimal, figures: int, rounding: str = ROUND_HALF_EVEN) -> st
 def compact_text(q: dict) -> str:
     """The value for a cell of the periodic table: five significant figures, an interval with its bounds rounded outward."""
     if q["kind"] == "interval":
-        return f"{significant(q['lower'], 5, ROUND_FLOOR)}–{significant(q['upper'], 5, ROUND_CEILING)}"
-    return significant(q["value"], 5)
+        return f"{significant(q['low'], 5, ROUND_FLOOR)}–{significant(q['high'], 5, ROUND_CEILING)}"
+    return significant(q["mid"], 5)
 
 
 def sci(x: float, markdown: bool = False) -> str:
@@ -85,57 +82,19 @@ def bin_index(x: float, bins: list) -> int:
 
 
 def quantity(g: Graph, declaration) -> dict:
-    """The numbers of a declaration: kind, bounds or value and uncertainty, midpoint and relative uncertainty."""
+    """The numbers of a declaration: kind, low and high end, midpoint and relative uncertainty."""
     node = g.value(declaration, b.CIAAW.value)
     lower, upper = g.value(node, b.QUDT.lowerBound), g.value(node, b.QUDT.upperBound)
     if lower is not None:
         lower, upper = Decimal(str(lower)), Decimal(str(upper))
         mid = (lower + upper) / 2
-        return {"kind": "interval", "lower": lower, "upper": upper, "mid": mid, "relative": float((upper - lower) / mid)}
+        return {"kind": "interval", "low": lower, "high": upper, "mid": mid, "relative": float((upper - lower) / mid)}
     value = Decimal(str(g.value(node, b.QUDT.numericValue)))
     uncertainty = g.value(node, b.QUDT.standardUncertainty)
     if uncertainty is None:
-        return {"kind": "exact", "value": value, "mid": value, "relative": 0.0}
+        return {"kind": "exact", "low": value, "high": value, "mid": value, "relative": 0.0}
     uncertainty = Decimal(str(uncertainty))
-    return {"kind": "value", "value": value, "uncertainty": uncertainty, "mid": value, "relative": float(2 * uncertainty / value)}
-
-
-def parse_history_value(text: str) -> dict | None:
-    """The value of a history row: interval, value with uncertainty or exact; None for a withdrawn value (n/a)."""
-    compact = re.sub(r"\s+", "", text.replace("(exact)", ""))
-    if compact.lower() in ("", "n/a"):
-        return None
-    if m := re.fullmatch(r"\[([\d.]+),([\d.]+)\]", compact):
-        lower, upper = Decimal(m[1]), Decimal(m[2])
-        return {"kind": "interval", "low": lower, "high": upper, "mid": (lower + upper) / 2}
-    if m := re.fullmatch(r"([\d.]+)\((\d+)\)", compact):
-        value = Decimal(m[1])
-        uncertainty = Decimal(m[2]).scaleb(-(len(m[1].split(".")[1]) if "." in m[1] else 0))
-        return {"kind": "value", "low": value - uncertainty, "high": value + uncertainty, "mid": value}
-    if re.fullmatch(r"[\d.]+", compact):
-        value = Decimal(compact)
-        return {"kind": "exact", "low": value, "high": value, "mid": value}
-    raise ValueError(f"unrecognised historical value {text!r}")
-
-
-def read_history(path: Path) -> dict[str, list[dict]]:
-    """Symbol -> the values recommended since 1902, oldest first: year, text as published, doi, numbers (q)."""
-    if not path.exists():
-        return {}
-    history: dict[str, list[dict]] = defaultdict(list)
-    with path.open(newline="", encoding="utf-8", errors="replace") as fh:
-        for row in csv.reader(fh):
-            if len(row) != 5 or row[1] == "no changes":
-                continue
-            year = re.sub(r"<[^>]+>", "", row[0]).strip()
-            if not year.isdigit():
-                continue
-            doi = row[4].strip()
-            history[row[1]].append({"year": int(year), "text": row[3].strip(), "doi": doi if doi.startswith("10.") else "",
-                                    "q": parse_history_value(row[3])})
-    for entries in history.values():
-        entries.sort(key=lambda h: h["year"])
-    return dict(history)
+    return {"kind": "value", "low": value - uncertainty, "high": value + uncertainty, "mid": value, "relative": float(2 * uncertainty / value)}
 
 
 def position(z: int) -> tuple[int, int]:
@@ -166,29 +125,29 @@ def sup(a: int, symbol: str) -> str:
     return f"<sup>{a}</sup>{symbol}"
 
 
-def doi_link(doi: str, markdown: bool = False) -> str:
-    if not doi:
-        return ""
-    return f"[doi:{doi}](https://doi.org/{doi})" if markdown else f'<a href="https://doi.org/{html.escape(doi)}">doi:{html.escape(doi)}</a>'
+def source_link(source: str, markdown: bool = False) -> str:
+    label = source.removeprefix("https://doi.org/").removeprefix("http://doi.org/")
+    label = f"doi:{label}" if label != source else source
+    return f"[{label}]({source})" if markdown else f'<a href="{html.escape(source)}">{html.escape(label)}</a>'
 
 
 class Item:
     """One element with the numbers the page needs beside the Element of build_site."""
 
-    def __init__(self, e: b.Element, g: Graph, history: list[dict]):
+    def __init__(self, e: b.Element, g: Graph):
         self.e = e
         self.symbol, self.z, self.name = e.symbol, e.z, e.name
         self.weight = quantity(g, e.weight.iri) if e.weight else None
-        self.history = history
-        self.values = [h for h in history if h["q"]]
+        self.history = sorted(({"year": int(d.issued[:4]), "text": d.text, "sources": d.sources, "q": quantity(g, d.iri)}
+                               for d in e.history if d.issued[:4].isdigit()), key=lambda h: h["year"])
         self.isotopes = [(i, quantity(g, i.abundance.iri)) for i in e.isotopes]
 
     def bins(self) -> dict[str, int | None]:
         if self.weight is None:
             return {key: None for key, *_ in VIEWS}
         return {"uncertainty": bin_index(self.weight["relative"], VIEWS[0][3]),
-                "year": bin_index(self.values[-1]["year"], VIEWS[1][3]) if self.values else None,
-                "revisions": bin_index(len(self.values), VIEWS[2][3]) if self.values else None}
+                "year": bin_index(self.history[-1]["year"], VIEWS[1][3]) if self.history else None,
+                "revisions": bin_index(len(self.history), VIEWS[2][3]) if self.history else None}
 
 
 def composition_bar(item: Item) -> str:
@@ -223,7 +182,7 @@ def svg_text(x: float, y: float, text: str, anchor: str = "start", fill: str = M
 
 def history_chart(item: Item) -> str:
     """Timeline of the values recommended for one element: a step line, uncertainty bars, intervals as bands."""
-    pts = item.values
+    pts = item.history
     W, H, L, R, T, B = 640, 220, 84, 24, 20, 30
     lo, hi = min(float(p["q"]["low"]) for p in pts), max(float(p["q"]["high"]) for p in pts)
     if hi == lo:
@@ -313,16 +272,14 @@ def panel(item: Item, notes: dict[str, str]) -> str:
         lines.append(f'<p>Standard atomic weight, given as {kind}.{relative}</p>')
         if e.weight.notes:
             lines.append('<ul class="notes">' + "".join(f"<li><b>{n}</b> {html.escape(notes[n])}</li>" for n in e.weight.notes) + "</ul>")
-        parts = [f"issued {e.weight.issued}" if e.weight.issued else "",
-                 ", ".join(f'<a href="{html.escape(s)}">{html.escape(s.removeprefix("https://doi.org/"))}</a>' for s in e.weight.sources)]
+        parts = [f"issued {e.weight.issued}" if e.weight.issued else "", ", ".join(source_link(s) for s in e.weight.sources)]
         if any(parts):
             lines.append("<p>" + ", ".join(p for p in parts if p) + "</p>")
     if item.history:
         lines.append(f'<h4>{plural(len(item.history), "value")} recommended since {item.history[0]["year"]}</h4>')
-        if item.values:
-            lines.append(history_chart(item))
-        rows = "".join(f'<tr><td class="num">{h["year"]}</td><td class="num">{html.escape(h["text"])}</td><td>{doi_link(h["doi"])}</td></tr>'
-                       for h in reversed(item.history))
+        lines.append(history_chart(item))
+        rows = "".join(f'<tr><td class="num">{h["year"]}</td><td class="num">{h["text"]}</td>'
+                       f'<td>{", ".join(source_link(s) for s in h["sources"])}</td></tr>' for h in reversed(item.history))
         lines.append(f'<table><thead><tr><th class="num">Year</th><th class="num">Value</th><th>Report</th></tr></thead><tbody>{rows}</tbody></table>')
     if item.isotopes:
         lines.append(f'<h4>{plural(len(item.isotopes), "isotope")} with an abundance</h4>')
@@ -359,24 +316,23 @@ def markdown_twin(items: list[Item], coverage: str, counts: list[tuple[int, str]
         w = i.weight
         weight = i.e.weight.text if w else (f"[{i.e.longest_lived}]" if i.e.longest_lived else "")
         lines.append(f"| {i.z} | {i.symbol} | {i.name} | {weight} | {sci(w['relative'], True) if w and w['relative'] else ''} | "
-                     f"{i.values[-1]['year'] if w and i.values else ''} | {len(i.history) or ''} | {len(i.isotopes) or ''} |")
-    if any(i.history for i in items):
+                     f"{i.history[-1]['year'] if w and i.history else ''} | {len(i.history) or ''} | {len(i.isotopes) or ''} |")
+    if with_history:
         lines += ["", "## Values recommended since 1902", "", "| Z | Symbol | Element | Year | Value | Report |", "|--:|---|---|--:|--:|---|"]
         for i in items:
             for h in reversed(i.history):
-                lines.append(f"| {i.z} | {i.symbol} | {i.name} | {h['year']} | {h['text']} | {doi_link(h['doi'], True)} |")
+                lines.append(f"| {i.z} | {i.symbol} | {i.name} | {h['year']} | {h['text']} | {', '.join(source_link(s, True) for s in h['sources'])} |")
     lines += ["", "## Isotopic abundances", "", "| Z | Isotope | Element | Amount fraction |", "|--:|---|---|--:|"]
     for i in items:
         for iso, _ in i.isotopes:
             lines.append(f"| {i.z} | {i.symbol}-{iso.mass_number} | {i.name} | {iso.abundance.text} |")
-    return "\n".join(line for line in lines if line is not None) + "\n"
+    return "\n".join(lines) + "\n"
 
 
-def page(elements: list[b.Element], g: Graph, notes: dict[str, str], history_path: Path, coverage: str) -> tuple[str, str]:
+def page(elements: list[b.Element], g: Graph, notes: dict[str, str], coverage: str) -> tuple[str, str]:
     """The HTML body of the Visualization page and its Markdown twin."""
-    history = read_history(history_path)
-    items = [Item(e, g, history.get(e.symbol, [])) for e in elements]
-    with_history = any(i.history for i in items)
+    items = [Item(e, g) for e in elements]
+    with_history = any(len(i.history) > 1 for i in items)
     views = VIEWS if with_history else VIEWS[:1]
     with_weight = [i for i in items if i.weight]
     intervals = [i for i in with_weight if i.weight["kind"] == "interval"]

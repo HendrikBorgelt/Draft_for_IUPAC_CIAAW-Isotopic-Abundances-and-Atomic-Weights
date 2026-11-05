@@ -46,7 +46,7 @@ We want to develop this together with the Commission. Decisions about the conten
 | `check_wikidata_weights.py`, `site/wikidata-weights-comparison.json` | The comparison of the atomic weights with Wikidata, also in the Comparison section |
 | `check_bodr.py`, `site/bodr-comparison.json` | The comparison with BODR, shown in the Comparison section |
 | `wikidata_links.py`, `site/wikidata.csv` | The Wikidata items linked from the element pages |
-| `visualization.py`, `site/historical-atomic-weights.csv` | The Visualization tab: periodic table of the weights, their history since 1902, isotopic compositions |
+| `visualization.py` | The Visualization tab: periodic table of the weights, their history since 1902, isotopic compositions |
 | `test_*.py`, `fixtures/` | Tests and their small hand-built input tables |
 | `ciaaw.ttl` | The full data, published on the site and loaded by the SPARQL endpoint |
 | `example-output*.ttl` | Small example results, used by the tests and the revision example |
@@ -233,10 +233,9 @@ values recommended since 1902; the element chosen in the table, with its history
 many weights changed in each year; and the isotopic composition of every element as a segmented bar. The page
 is HTML and CSS without JavaScript, and its Markdown twin holds the same figures as tables.
 
-The history comes from `site/historical-atomic-weights.csv`, CIAAW's table of every standard atomic weight it
-has recommended since 1902 (<https://ciaaw.org/historical-atomic-weights.htm>, © CIAAW 2016–2024, reproduced
-under the terms of its [Impressum](https://ciaaw.org/impressum.htm)), committed so that the build works offline
-and refreshed with `make history`. Without the file the tab shows the current values only.
+The history is the chain of declarations of each element in the data, which `historical2ttl.py` adds from
+CIAAW's table of every standard atomic weight recommended since 1902 (© CIAAW 2016–2024, reproduced under
+the terms of its [Impressum](https://ciaaw.org/impressum.htm)); the tab carries the acknowledgement.
 
 ### Atomic weights
 

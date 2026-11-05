@@ -65,7 +65,6 @@ NAV = [("index", "Home"), ("atomic-weights", "Atomic Weights"), ("isotopic-abund
        ("model", "Data Model"), ("downloads", "Downloads"), ("sparql", "SPARQL"), ("about", "About")]
 SUBNAV = {"atomic-weights": [("atomic-weights", "Values"), ("visualization", "Visualization")],
           "model": [("model", "Data Model"), ("revision-example", "Revision Example")]}
-HISTORY_CSV = SITE_SRC / "historical-atomic-weights.csv"
 
 QUERIES = HERE / "sparql" / "queries"
 EXAMPLES = HERE / "sparql" / "examples"
@@ -856,7 +855,7 @@ def hand_written(name: str, elements: list[Element]) -> str:
 
 def build(data_path: Path, revision_path: Path, out: Path, sparql_endpoint: str = "",
           wikidata_path: Path = WIKIDATA_CSV, references_path: Path = REFERENCES_JSON,
-          resources: list[Resource] | None = None, history_path: Path = HISTORY_CSV) -> dict[str, bool]:
+          resources: list[Resource] | None = None) -> dict[str, bool]:
     import visualization
     if out.exists():
         shutil.rmtree(out)
@@ -890,7 +889,7 @@ def build(data_path: Path, revision_path: Path, out: Path, sparql_endpoint: str 
     site.add("about", "About", hand_written("about", elements), "about")
     site.add("atomic-weights", "Standard Atomic Weights", page_atomic_weights(elements, notes), "atomic-weights")
     site.add("isotopic-abundances", "Isotopic Abundances", page_isotopic_abundances(elements, notes), "isotopic-abundances")
-    body, twin = visualization.page(elements, data, notes, history_path, coverage_note(elements))
+    body, twin = visualization.page(elements, data, notes, coverage_note(elements))
     site.add("visualization", "Visualization", twin, "atomic-weights", html=body)
     for element in elements:
         path = f"elements/{element.page}"
@@ -922,10 +921,8 @@ def main(argv=None) -> int:
                     help='URL of the live SPARQL endpoint; "" leaves the query editor out')
     ap.add_argument("--wikidata", type=Path, default=WIKIDATA_CSV,
                     help="CSV with the Wikidata items, see wikidata_links.py (missing file: no Wikidata links)")
-    ap.add_argument("--history", type=Path, default=HISTORY_CSV,
-                    help="CIAAW's CSV of the standard atomic weights since 1902, see `make history` (missing file: no history)")
     args = ap.parse_args(argv)
-    reports = build(args.data, args.revision, args.out, args.sparql_endpoint, args.wikidata, history_path=args.history)
+    reports = build(args.data, args.revision, args.out, args.sparql_endpoint, args.wikidata)
     for name, ok in reports.items():
         print(f"{name}: {'conforms' if ok else 'DOES NOT CONFORM'}", file=sys.stderr)
     print(f"site written to {args.out}", file=sys.stderr)
