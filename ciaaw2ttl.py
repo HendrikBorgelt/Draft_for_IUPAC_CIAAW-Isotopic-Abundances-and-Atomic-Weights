@@ -22,7 +22,7 @@ Modelling (see hydrogen-example-v2.ttl and the draft in issue 20):
     (ciaaw:currentStandardAtomicWeight, ciaaw:currentAbundance), the full history
     (ciaaw:hasDeclaration) and derived shortcut values.
   * Every published value is its own ciaaw:*Declaration with a qudt:QuantityValue.
-  * Declaration IRIs are readable: ex:AW-H-standard-2009, ex:Abundance-H1. The year is taken
+  * Declaration IRIs are readable: ciaaw_draft:AW-H-standard-2009, ciaaw_draft:Abundance-H1. The year is taken
     from the supplement; without a year the IRI has none. If a previous run used the same IRI for
     a DIFFERENT value, a short hash of the new value is appended so the old declaration stays
     addressable. --iri-style hash always appends the hash instead (pure content addressing).
@@ -47,9 +47,11 @@ from bs4 import BeautifulSoup
 from rdflib import BNode, Graph, Literal, Namespace, OWL, RDF, RDFS, URIRef, XSD
 from rdflib.namespace import DCTERMS, SKOS
 
-DEFAULT_DATA_NS = "https://example.org/data/"
-# Elements are the resources with a page on the website, so their IRIs are the addresses of those pages.
-DEFAULT_ELEMENT_NS = "https://hendrikborgelt.github.io/Draft_for_IUPAC_CIAAW-Isotopic-Abundances-and-Atomic-Weights/elements/"
+SITE_URL = "https://hendrikborgelt.github.io/Draft_for_IUPAC_CIAAW-Isotopic-Abundances-and-Atomic-Weights/"
+# Every resource has a page on the website, so the IRIs are the addresses of those pages. GitHub Pages serves
+# id/H-1.html at id/H-1. Isotopes and declarations share one namespace, elements have their own.
+DEFAULT_DATA_NS = f"{SITE_URL}id/"
+DEFAULT_ELEMENT_NS = f"{SITE_URL}elements/"
 DEFAULT_VOCAB_NS = "https://example.org/ciaaw-draft#"
 QUDT = Namespace("http://qudt.org/schema/qudt/")
 UNIT = Namespace("http://qudt.org/vocab/unit/")
@@ -292,7 +294,7 @@ def build_graph(weights: list[WeightRow], abundances: list[AbundanceElement],
     if include_vocab:
         g.parse(data=VOCAB_TTL.replace("@@VOCAB@@", vocab_ns), format="turtle")
     for prefix, ns in [("dcterms", DCTERMS), ("skos", SKOS), ("qudt", QUDT), ("unit", UNIT), ("owl", OWL),
-                       ("adms", ADMS), ("chemrof", CHEMROF), ("chebi", CHEBI), ("ciaaw", CIAAW), ("ex", EX), ("element", ELEMENT)]:
+                       ("adms", ADMS), ("chemrof", CHEMROF), ("chebi", CHEBI), ("ciaaw", CIAAW), ("ciaaw_draft", EX), ("element", ELEMENT)]:
         g.bind(prefix, ns)
 
     def dec(s: str) -> Literal:

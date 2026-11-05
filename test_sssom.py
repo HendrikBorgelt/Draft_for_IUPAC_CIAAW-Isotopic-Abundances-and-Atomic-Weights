@@ -61,8 +61,8 @@ def test_every_curie_uses_a_prefix_of_the_curie_map(sssom):
 def test_elements_and_isotopes_map_to_wikidata_and_chebi(sssom):
     mappings = {(r["subject_id"], r["predicate_id"]): r["object_id"] for r in sssom[1]}
     assert mappings[("element:Hydrogen", "skos:exactMatch")] == "wd:Q556"
-    assert mappings[("ex:H-2", "skos:exactMatch")] == "wd:Q102296"
-    assert mappings[("ex:H-2", "skos:closeMatch")] == "CHEBI:29237"
+    assert mappings[("ciaaw_draft:H-2", "skos:exactMatch")] == "wd:Q102296"
+    assert mappings[("ciaaw_draft:H-2", "skos:closeMatch")] == "CHEBI:29237"
 
 
 def test_the_creators_come_from_the_authors_file(sssom):

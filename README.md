@@ -1,7 +1,7 @@
 # CIAAW isotopic abundances and atomic weights as RDF (draft)
 
 > **Prototype.** This is a suggestion for discussion, not an official CIAAW/IUPAC product, and neither has endorsed it.
-> The model and IRIs (`example.org`) are placeholders. We would like to work with the CIAAW
+> The model and IRIs are placeholders. We would like to work with the CIAAW
 > on this; please open an issue with comments or questions.
 > For values you intend to use, go to [ciaaw.org](https://ciaaw.org).
 
@@ -191,6 +191,18 @@ make test
 `make serve` builds `_site/` and serves it on <http://localhost:8000>. `make site` only builds
 it. To show other data, use for example `make site SITE_DATA=example-output.ttl`.
 
+Every resource has a page, and its IRI is the address of that page:
+
+| Prefix | Resources | Example IRI | Page | Turtle |
+|---|---|---|---|---|
+| `element:` | Elements | `element:Hydrogen` | `elements/Hydrogen` | `elements/Hydrogen.ttl` |
+| `ciaaw_draft:` | Isotopes and declarations | `ciaaw_draft:H-1` | `id/H-1` | `id/H-1.ttl` |
+
+GitHub Pages serves `id/H-1.html` at `id/H-1`, which is what makes these IRIs resolve. It cannot choose a
+format per request, so an IRI always opens the page. The page links to the Turtle, shows it, and names it in
+`<link rel="alternate">`, and software can also add `.ttl` to the IRI. `make serve` does not drop the `.html`,
+so on your own machine an IRI only resolves if you add it.
+
 The element pages link to Wikidata, for the element and for each isotope. The Q-numbers are in
 `site/wikidata.csv`, which is committed so that the build and the tests work offline. Refresh it
 with `make wikidata-links` (`wikidata_links.py`): elements are found by atomic number, isotopes by
@@ -312,7 +324,7 @@ The table adds four columns to the 12 DCTAP elements, all declared in `dctap.yam
 - **`ciaaw.ttl` is a snapshot.** It was made from the CIAAW pages on 5 November 2026 and does not follow their updates. To refresh it, run `make download` and `make ttl`, then `make wikidata-comparison` and `make bodr-comparison`, because the tests check that those match the data.
 - **Years and DOIs are only known for hydrogen.** All other declarations have no citation yet. Adding a year later also changes the declaration's IRI, so `supplement.csv` should be completed before anyone cites them.
 - **`example-output-next.ttl` contains an invented value.** It demonstrates a revision of hydrogen and is not a CIAAW value.
-- **All IRIs under `example.org` are placeholders** until a persistent home is agreed.
+- **All IRIs are placeholders** until a persistent home is agreed. The data IRIs resolve on GitHub Pages, but the vocabulary (`ciaaw:`) is still on `example.org` and does not resolve.
 - **Atomic masses and abridged values are modelled but not generated**, because the two source tables do not contain them.
 - **The ADMS status IRI has not been confirmed yet.** See the note in `ciaaw2ttl.py`.
 - **No licence has been chosen yet** for the code or the data.

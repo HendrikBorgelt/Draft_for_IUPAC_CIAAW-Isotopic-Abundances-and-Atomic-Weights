@@ -15,10 +15,11 @@ from urllib.parse import unquote
 import pyoxigraph as ox
 import pytest
 from bs4 import BeautifulSoup
-from rdflib import Graph, RDF
+from rdflib import Graph, RDF, URIRef
 from rdflib.compare import isomorphic
 
 import build_site as b
+import ciaaw2ttl as c
 import combine_sparql_examples as combine
 import tap2model as t
 
@@ -132,6 +133,51 @@ def test_the_tables_are_complete(site):
 
 def test_every_element_has_a_page(site):
     assert len(list((site / "elements").glob("*.html"))) == ELEMENTS
+
+
+def resource_iris(graph):
+    """Every IRI in the data on this site, with the file path its page and Turtle file should have."""
+    folders = {c.DEFAULT_DATA_NS: "id", c.DEFAULT_ELEMENT_NS: "elements"}
+    iris = {term for triple in graph for term in triple if isinstance(term, URIRef)}
+    return {iri: f"{folder}/{iri[len(namespace):]}" for iri in iris for namespace, folder in folders.items()
+            if iri.startswith(namespace)}
+
+
+def test_every_iri_in_the_data_has_a_page_and_a_turtle_file(site, graph):
+    """GitHub Pages serves id/H-1.html at id/H-1, so a page in the right place is what makes an IRI resolve."""
+    resources = resource_iris(graph)
+    assert len(resources) == ELEMENTS + ISOTOPES + WEIGHTS + ISOTOPES   # elements, isotopes and their declarations
+    for iri, path in resources.items():
+        assert (site / f"{path}.html").exists(), iri
+        assert (site / f"{path}.ttl").exists(), iri
+
+
+def test_the_data_does_not_use_the_placeholder_namespace_or_prefix():
+    text = text_of(DATA)
+    assert "example.org/data" not in text
+    assert not re.search(r"^@prefix ex:", text, flags=re.M)
+
+
+def test_every_turtle_file_is_about_its_resource(site, graph):
+    for iri, path in resource_iris(graph).items():
+        turtle = Graph().parse(site / f"{path}.ttl", format="turtle")
+        expected = {(p, o) for p, o in graph.predicate_objects(iri) if not isinstance(o, b.BNode)}
+        assert expected <= set(turtle.predicate_objects(iri)), iri
+
+
+def test_turtle_file_of_an_isotope_holds_its_value_and_element(site):
+    turtle = Graph().parse(site / "id" / "H-1.ttl", format="turtle")
+    element = URIRef(c.DEFAULT_ELEMENT_NS + "Hydrogen")
+    isotope = URIRef(c.DEFAULT_DATA_NS + "H-1")
+    assert (element, CIAAW.hasIsotope, isotope) in turtle
+    declaration = turtle.value(isotope, CIAAW.currentAbundance)
+    assert str(turtle.value(turtle.value(declaration, CIAAW.value), b.QUDT.upperBound)) == "0.99999"
+    assert (CIAAW["note-m"], b.SKOS.notation, None) in turtle       # the wording of the footnote comes along
+
+
+def test_turtle_files_say_they_are_a_prototype(site):
+    assert text_of(site / "id" / "H-1.ttl").startswith("# Prototype")
+    assert text_of(site / "elements" / "Hydrogen.ttl").startswith("# Prototype")
 
 
 def test_all_internal_links_resolve(site):

@@ -10,7 +10,7 @@ idea could fit into the existing website.
 
 - It is not an official CIAAW or IUPAC site, and neither body has endorsed it.
 - It is not a source of reference values. The numbers come from a converter that is still being tested.
-- The model is not final. IRIs under `example.org` are placeholders until a persistent home is agreed.
+- The model is not final. The IRIs are placeholders until a persistent home is agreed.
 
 ## Working with CIAAW
 

@@ -30,7 +30,7 @@ from pathlib import Path
 
 import markdown
 import pyoxigraph as ox
-from rdflib import Graph, RDF, RDFS, URIRef
+from rdflib import BNode, Graph, RDF, RDFS, URIRef
 from rdflib.namespace import DCTERMS, OWL, SKOS
 
 import ciaaw2ttl as c
@@ -69,7 +69,10 @@ QUERIES = HERE / "sparql" / "queries"
 EXAMPLES = HERE / "sparql" / "examples"
 WORKER_URL = "https://github.com/JervenBolleman/oxigraph-cloudflare-webworker"
 SPARQL_ENDPOINT = "https://ciaaw-draft.jerven-bolleman.workers.dev/sparql"
-SHORT_NAMES = {c.DEFAULT_DATA_NS: "ex:", str(c.CHEBI): "chebi:"}
+SHORT_NAMES = {c.DEFAULT_DATA_NS: "ciaaw_draft:", c.DEFAULT_ELEMENT_NS: "element:", str(c.CHEBI): "chebi:"}
+# The folders of the site that hold the page and the Turtle file of each resource.
+RESOURCE_FOLDERS = {"ciaaw_draft:": "id", "element:": "elements"}
+TURTLE_NOTICE = "# Prototype: a suggestion, not an official CIAAW or IUPAC record. Official values are at https://ciaaw.org\n\n"
 EDITOR_URL = "https://cdn.jsdelivr.net/npm/@sib-swiss/sparql-editor@0.2.14/dist/sparql-editor.js"
 SPARQL_EDITOR_MARK = "<!-- sparql-editor -->"
 
@@ -139,6 +142,10 @@ class Isotope:
     abundance: Declaration
     history: list[Declaration]
     matches: list[str]
+
+    @property
+    def page(self) -> str:
+        return local_name(self.iri)
 
 
 @dataclass
@@ -378,7 +385,7 @@ def page_isotopic_abundances(elements: list[Element], notes: dict[str, str]) -> 
         for index, isotope in enumerate(e.isotopes):
             lead = first if index == 0 else "| | | |"
             letters = note_links(e.abundance_notes) if index == 0 else ""
-            rows.append(f"{lead} {isotope.mass_number} | {isotope.abundance.text} | {letters} |")
+            rows.append(f"{lead} [{isotope.mass_number}](id/{isotope.page}.md) | {isotope.abundance.text} | {letters} |")
     table = "\n".join(["| *Z* | E | Element | A | Representative isotopic composition | Notes |",
                        "| --- | --- | --- | --- | --- | --- |", *rows])
     return (f"# Isotopic Abundances\n\n{coverage_note(elements)}\n"
@@ -386,16 +393,58 @@ def page_isotopic_abundances(elements: list[Element], notes: dict[str, str]) -> 
             f"longest-lived isotope of an element without stable isotopes.\n\n{table}\n\n{notes_section(notes)}")
 
 
-def declaration_table(history: list[Declaration]) -> str:
+def declaration_link(iri, folder: str | None) -> str:
+    """The name of a declaration. folder is where its page is, relative to this page; None means no link."""
+    name = local_name(iri)
+    return f"`{name}`" if folder is None else f"[`{name}`]({folder}{name}.md)"
+
+
+def declaration_status(d: Declaration, folder: str | None) -> str:
+    return f"Deprecated, see {declaration_link(d.replaced_by, folder)}" if d.deprecated else "Current"
+
+
+def declaration_table(history: list[Declaration], folder: str | None = None) -> str:
     lines = ["| Value | Year | Source | Status | Declaration |", "| --- | --- | --- | --- | --- |"]
     for d in history:
-        status = f"Deprecated, see `{local_name(d.replaced_by)}`" if d.deprecated else "Current"
-        lines.append(f"| {d.text} | {d.issued or '—'} | {source_links(d.sources)} | {status} | `{local_name(d.iri)}` |")
+        lines.append(f"| {d.text} | {d.issued or '—'} | {source_links(d.sources)} | {declaration_status(d, folder)} "
+                     f"| {declaration_link(d.iri, folder)} |")
     return "\n".join(lines)
 
 
+def turtle_section(name: str, turtle: str) -> str:
+    return f"## Turtle\n\nThis resource as a file: [{name}.ttl]({name}.ttl)\n\n```turtle\n{turtle}```\n"
+
+
+def page_isotope(e: Element, i: Isotope, notes: dict[str, str], links: dict, turtle: str) -> str:
+    facts = ["| Property | Value |", "| --- | --- |", f"| Element | [{e.name}](../elements/{e.page}.md) |",
+             f"| Mass number | {i.mass_number} |", f"| IRI | `{i.iri}` |"]
+    if i.matches:
+        facts.append(f"| ChEBI | {chebi_links(i.matches)} |")
+    if wikidata_link(links, e.z, i.mass_number):
+        facts.append(f"| Wikidata | {wikidata_link(links, e.z, i.mass_number)} |")
+    parts = [f"# {e.name}-{i.mass_number}\n", "\n".join(facts) + "\n",
+             "## Isotopic abundance\n", declaration_table(i.history, "") + "\n"]
+    if i.abundance.notes:
+        parts += [f"Notes: {note_links(i.abundance.notes)}\n", notes_section(notes, i.abundance.notes)]
+    parts.append(turtle_section(i.page, turtle))
+    return "\n".join(parts)
+
+
+def page_declaration(d: Declaration, title: str, about: str, notes: dict[str, str], turtle: str) -> str:
+    facts = ["| Property | Value |", "| --- | --- |", f"| About | {about} |", f"| Value | {d.text} |",
+             f"| Year | {d.issued or '—'} |", f"| Source | {source_links(d.sources)} |",
+             f"| Status | {declaration_status(d, '')} |", f"| IRI | `{d.iri}` |"]
+    if d.notes:
+        facts.append(f"| Notes | {note_links(d.notes)} |")
+    parts = [f"# {title}\n", "\n".join(facts) + "\n"]
+    if d.notes:
+        parts.append(notes_section(notes, d.notes))
+    parts.append(turtle_section(local_name(d.iri), turtle))
+    return "\n".join(parts)
+
+
 def page_element(e: Element, notes: dict[str, str], links: dict | None = None,
-                 references: dict | None = None) -> str:
+                 references: dict | None = None, turtle: str = "") -> str:
     links = links or {}
     facts = ["| Property | Value |", "| --- | --- |", f"| Symbol | {e.symbol} |", f"| Atomic number | {e.z} |",
              f"| IRI | `{e.iri}` |"]
@@ -408,7 +457,7 @@ def page_element(e: Element, notes: dict[str, str], links: dict | None = None,
     parts = [f"# {e.name}\n", "\n".join(facts) + "\n", "## Standard atomic weight\n"]
     if e.weight:
         letters = f"Notes: {note_links(e.weight.notes)}\n" if e.weight.notes else ""
-        parts += [declaration_table(e.history) + "\n", letters]
+        parts += [declaration_table(e.history, "../id/") + "\n", letters]
     else:
         parts.append("The table gives no standard atomic weight for this element.\n")
     parts.append("## Isotopes\n")
@@ -417,8 +466,8 @@ def page_element(e: Element, notes: dict[str, str], links: dict | None = None,
                 "| --- | --- | --- | --- | --- | --- | --- |"]
         for i in e.isotopes:
             d = i.abundance
-            rows.append(f"| {i.mass_number} | {d.text} | {d.issued or '—'} | {source_links(d.sources)} "
-                        f"| `{local_name(d.iri)}` | {chebi_links(i.matches) or '—'} "
+            rows.append(f"| [{i.mass_number}](../id/{i.page}.md) | {d.text} | {d.issued or '—'} | {source_links(d.sources)} "
+                        f"| {declaration_link(d.iri, '../id/')} | {chebi_links(i.matches) or '—'} "
                         f"| {wikidata_link(links, e.z, i.mass_number) or '—'} |")
         parts.append("\n".join(rows) + "\n")
         if e.abundance_notes:
@@ -430,6 +479,8 @@ def page_element(e: Element, notes: dict[str, str], links: dict | None = None,
         parts.append(notes_section(notes, used))
     if bib := bibliography(e, references or {}):
         parts.append(bib)
+    if turtle:
+        parts.append(turtle_section(e.page, turtle))
     parts.append("[All atomic weights](../atomic-weights.md) · [All isotopic abundances](../isotopic-abundances.md)\n")
     return "\n".join(parts)
 
@@ -466,10 +517,10 @@ def revision_diagram(g: Graph, element: URIRef, history: list[Declaration]) -> s
         return re.sub(r"\W", "_", local_name(d.iri))
 
     name = local_name(element)
-    lines = ["flowchart LR", f'    {name}["ex:{name}"]']
+    lines = ["flowchart LR", f'    {name}["{curie(element)}"]']
     for d in history:
         state = "deprecated" if d.deprecated else "current"
-        lines.append(f'    {node(d)}["ex:{local_name(d.iri)}<br/>{d.text}<br/>{state}"]')
+        lines.append(f'    {node(d)}["{curie(d.iri)}<br/>{d.text}<br/>{state}"]')
         lines.append(f'    {name} -- "ciaaw:hasDeclaration" --> {node(d)}')
         if not d.deprecated:
             lines.append(f'    {name} == "ciaaw:currentStandardAtomicWeight" ==> {node(d)}')
@@ -514,8 +565,13 @@ def page_downloads(out: Path, elements: list[Element]) -> str:
     return "\n".join([
         "# Downloads\n", coverage_note(elements),
         "Every format holds the same triples. The Turtle is the converter's output, and the others are translated "
-        "from it. All IRIs under `example.org` are placeholders.\n",
+        "from it. The IRIs are placeholders until a persistent home is agreed.\n",
         "## Current data\n", format_table(out, "data/ciaaw") + "\n",
+        "## Single resources\n",
+        "Every element, isotope and declaration has its own page and Turtle file, and its IRI opens that page. "
+        "For example, the page of [hydrogen-1](id/H-1.md) links to [H-1.ttl](id/H-1.ttl). GitHub Pages cannot "
+        "choose a format per request, so software should add `.ttl` to an IRI, or read the "
+        "`<link rel=\"alternate\">` of the page.\n",
         "## Mappings\n",
         "[ciaaw.sssom.tsv](data/ciaaw.sssom.tsv) maps the elements and isotopes of the current data to their "
         "[Wikidata](https://www.wikidata.org) items (`skos:exactMatch`, matched on atomic number and number of "
@@ -543,13 +599,15 @@ class Example:
     rows: list[list[str]]
 
 
-def short_term(term) -> str:
-    if term is None:
-        return ""
+def curie(iri) -> str:
     for namespace, prefix in SHORT_NAMES.items():
-        if term.value.startswith(namespace):
-            return prefix + term.value[len(namespace):]
-    return term.value
+        if str(iri).startswith(namespace):
+            return prefix + str(iri)[len(namespace):]
+    return str(iri)
+
+
+def short_term(term) -> str:
+    return "" if term is None else curie(term.value)
 
 
 def read_examples(turtle: Path) -> list[Example]:
@@ -567,9 +625,17 @@ def read_examples(turtle: Path) -> list[Example]:
     return examples
 
 
+def result_cell(value: str) -> str:
+    """A result with a page on this site links to it, like its IRI does in the query editor."""
+    for prefix, folder in RESOURCE_FOLDERS.items():
+        if value.startswith(prefix):
+            return f"[{value}]({folder}/{value.removeprefix(prefix)}.md)"
+    return value
+
+
 def result_table(example: Example) -> str:
     lines = ["| " + " | ".join(example.columns) + " |", "| " + " | ".join("---" for _ in example.columns) + " |"]
-    lines += ["| " + " | ".join(row) + " |" for row in example.rows]
+    lines += ["| " + " | ".join(result_cell(value) for value in row) + " |" for row in example.rows]
     return "\n".join(lines)
 
 
@@ -592,6 +658,8 @@ def page_sparql(examples: list[Example], endpoint: str, coverage: str = "") -> s
              f"It serves the [current data](data/ciaaw.ttl) and the example queries read-only, using [Oxigraph](https://github.com/oxigraph/oxigraph) "
              f"inside a Cloudflare Worker ([oxigraph-cloudflare-webworker]({WORKER_URL})). The "
              "[revision example](revision-example.md) is not loaded, so its invented value cannot appear in results.\n",
+             "Every element, isotope and declaration has its own page, and the IRIs in the results lead there. "
+             "Each page links to the Turtle file of that resource.\n",
              "## Decimals and trailing zeros\n",
              "Oxigraph stores decimals as numbers, so `162.500` comes back as `162.5` and `0.0000` as `0`. The value is "
              "the same, but the printed digits are not. Use `ciaaw:significantFigures` to restore them, or the "
@@ -639,8 +707,8 @@ class Site:
                         for key, label in items)
         return f'<nav id="breadcrumb" aria-label="Section"><ul>{links}</ul></nav>'
 
-    def add(self, path: str, title: str, text: str, section: str, editor: str = "") -> None:
-        """Write path.md and path.html from the same Markdown."""
+    def add(self, path: str, title: str, text: str, section: str, editor: str = "", turtle: bool = False) -> None:
+        """Write path.md and path.html from the same Markdown. turtle: the page has a Turtle file next to it."""
         depth = path.count("/")
         root = "../" * depth
         page = path.rsplit("/", 1)[-1]
@@ -653,9 +721,10 @@ class Site:
             scripts += (f'<script type="module" src="{EDITOR_URL}"></script>\n'
                         f'<script type="module" src="{root}static/sparql-editor.js"></script>')
         body = body.replace(SPARQL_EDITOR_MARK, editor)
+        head = f'<link rel="alternate" type="text/turtle" href="{page}.ttl">' if turtle else ""
         html = self.template.substitute(
             title=title, root=root, page=page, nav=self.nav(section, root), subnav=self.subnav(page, section, root),
-            body=body, issues=ISSUES_URL, repo=REPO_URL, markdown=f"{page}.md", scripts=scripts)
+            body=body, issues=ISSUES_URL, repo=REPO_URL, markdown=f"{page}.md", scripts=scripts, head=head)
         (self.out / f"{path}.html").write_text(html, encoding="utf-8", newline="\n")
 
 
@@ -671,6 +740,52 @@ def translate(graph: Graph, source: Path, stem: Path) -> None:
             target.write_text(graph.serialize(format=rdf_format, context=context, indent=2), encoding="utf-8", newline="\n")
         else:
             target.write_text(graph.serialize(format=rdf_format), encoding="utf-8", newline="\n")
+
+
+def resource_graph(g: Graph, iri: URIRef) -> Graph:
+    """What the Turtle file of a resource holds: its triples, its declarations and their footnotes, and what
+    points to it. Blank nodes are followed, so each value stays with its declaration."""
+    out = Graph(namespace_manager=g.namespace_manager)
+    todo = [iri, *g.objects(iri, CIAAW.hasDeclaration)]
+    todo += [note for node in list(todo) for note in g.objects(node, CIAAW.footnote)]
+    seen = set()
+    while todo:
+        node = todo.pop()
+        if node not in seen:
+            seen.add(node)
+            for predicate, value in g.predicate_objects(node):
+                out.add((node, predicate, value))
+                if isinstance(value, BNode):
+                    todo.append(value)
+    for subject, predicate in g.subject_predicates(iri):
+        out.add((subject, predicate, iri))
+    return out
+
+
+def write_turtle(out: Path, g: Graph, iri: URIRef, path: str) -> str:
+    """Write the Turtle file of a resource next to its page, and return the text to show on that page."""
+    text = TURTLE_NOTICE + resource_graph(g, iri).serialize(format="turtle").strip() + "\n"
+    target = out / f"{path}.ttl"
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text(text, encoding="utf-8", newline="\n")
+    return text
+
+
+def add_subpages(site: Site, g: Graph, e: Element, notes: dict[str, str], links: dict) -> None:
+    """The pages of the isotopes and declarations of an element. Their IRIs lead here."""
+    def add_declaration(d: Declaration, title: str, about: str, section: str) -> None:
+        path = f"id/{local_name(d.iri)}"
+        turtle = write_turtle(site.out, g, d.iri, path)
+        site.add(path, title, page_declaration(d, title, about, notes, turtle), section, turtle=True)
+
+    for d in e.history:
+        add_declaration(d, f"Standard atomic weight of {e.name}", f"[{e.name}](../elements/{e.page}.md)", "atomic-weights")
+    for i in e.isotopes:
+        name, path = f"{e.name}-{i.mass_number}", f"id/{i.page}"
+        turtle = write_turtle(site.out, g, i.iri, path)
+        site.add(path, name.capitalize(), page_isotope(e, i, notes, links, turtle), "isotopic-abundances", turtle=True)
+        for d in i.history:
+            add_declaration(d, f"Isotopic abundance of {name}", f"[{name}]({i.page}.md)", "isotopic-abundances")
 
 
 def sparql_editor(endpoint: str, examples: list[Example]) -> str:
@@ -724,7 +839,11 @@ def build(data_path: Path, revision_path: Path, out: Path, sparql_endpoint: str 
     site.add("atomic-weights", "Standard Atomic Weights", page_atomic_weights(elements, notes), "atomic-weights")
     site.add("isotopic-abundances", "Isotopic Abundances", page_isotopic_abundances(elements, notes), "isotopic-abundances")
     for element in elements:
-        site.add(f"elements/{element.page}", element.name.capitalize(), page_element(element, notes, links, references), "atomic-weights")
+        path = f"elements/{element.page}"
+        turtle = write_turtle(out, data, element.iri, path)
+        site.add(path, element.name.capitalize(), page_element(element, notes, links, references, turtle),
+                 "atomic-weights", turtle=True)
+        add_subpages(site, data, element, notes, links)
     site.add("model", "Data Model", page_model(tap, reports), "model")
     site.add("revision-example", "Revision Example", page_revision(revision), "model")
     site.add("downloads", "Downloads", page_downloads(out, elements), "downloads")

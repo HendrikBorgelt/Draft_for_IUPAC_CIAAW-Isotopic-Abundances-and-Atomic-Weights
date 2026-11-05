@@ -210,6 +210,65 @@ if __name__ == "__main__":
     raise SystemExit(pytest.main([__file__, "-q"]))
 
 
+# --- Subpages -------------------------------------------------------------------------------
+def test_isotope_page_shows_its_facts_and_links_to_its_turtle(site):
+    html = text_of(site / "id" / "H-1.html")
+    assert 'href="../elements/Hydrogen.html"' in html
+    assert 'href="H-1.ttl"' in html
+    assert "ciaaw_draft:Abundance-H1" in html                       # the Turtle is shown on the page
+    assert 'href="Abundance-H1.html"' in html
+    assert (site / "id" / "H-1.ttl").exists()
+
+
+def test_declaration_page_shows_the_value_and_what_it_is_about(site):
+    html = text_of(site / "id" / "AW-H-standard-2009.html")
+    assert "Standard atomic weight of hydrogen" in html
+    assert f"[1.007{NB}84,{NB}1.008{NB}11]" in html
+    assert 'href="../elements/Hydrogen.html"' in html
+
+
+def test_declaration_page_explains_its_footnotes(site):
+    html = text_of(site / "id" / "Abundance-Ar36.html")
+    for letter in ("g", "r"):
+        assert f'id="note-{letter}"' in html
+
+
+def test_resource_pages_tell_software_where_the_turtle_is(site):
+    for path, name in (("id/H-1", "H-1"), ("id/Abundance-H1", "Abundance-H1"), ("elements/Hydrogen", "Hydrogen")):
+        link = BeautifulSoup(text_of(site / f"{path}.html"), "html.parser").find("link", rel="alternate")
+        assert link["type"] == "text/turtle" and link["href"] == f"{name}.ttl"
+
+
+def test_other_pages_have_no_turtle_link(site):
+    assert BeautifulSoup(text_of(site / "atomic-weights.html"), "html.parser").find("link", rel="alternate") is None
+
+
+def test_tables_link_to_the_subpages(site):
+    assert 'href="id/H-1.html"' in text_of(site / "isotopic-abundances.html")
+    element = text_of(site / "elements" / "Hydrogen.html")
+    assert 'href="../id/H-1.html"' in element
+    assert 'href="../id/AW-H-standard-2009.html"' in element
+    assert 'href="../id/Abundance-H1.html"' in element
+
+
+def test_query_results_link_to_the_subpages(site):
+    html = text_of(site / "sparql.html")
+    assert '<a href="id/H-1.html">ciaaw_draft:H-1</a>' in html
+    assert '<a href="elements/Hydrogen.html">element:Hydrogen</a>' in html
+    assert '<a href="id/Abundance-H1.html">ciaaw_draft:Abundance-H1</a>' in html
+
+
+def test_invented_declaration_gets_no_page(site):
+    """The revision example is not in the current data, so its made-up value must not look like a real resource."""
+    assert not (site / "id" / "AW-H-standard-2027.html").exists()
+
+
+def test_revision_diagram_uses_the_prefixes(site):
+    text = text_of(site / "revision-example.md")
+    assert "element:Hydrogen" in text and "ciaaw_draft:AW-H-standard-2009" in text
+    assert '"ex:' not in text
+
+
 # --- Wikidata links -------------------------------------------------------------------------
 def test_element_page_links_to_wikidata_for_the_element_and_each_isotope(site):
     html = text_of(site / "elements" / "Hydrogen.html")

@@ -59,6 +59,11 @@ def test_every_prefix_the_data_declares_is_declared_for_the_examples(graph):
     assert data_prefixes <= {str(p) for p in declared}
 
 
+def test_every_prefix_is_attached_to_the_shared_node(graph):
+    """A prefix node that sh:declare does not list exists in the file, but the editor never sees it."""
+    assert set(graph.subjects(SH.prefix, None)) == set(graph.objects(None, SH.declare))
+
+
 def test_no_triple_is_lost_when_the_parts_are_joined(graph):
     """Joining the text keeps every triple. Triples are counted per part, since a set would merge repeats."""
     assert len(graph) == sum(len(Graph().parse(p, format="turtle")) for p in parts())

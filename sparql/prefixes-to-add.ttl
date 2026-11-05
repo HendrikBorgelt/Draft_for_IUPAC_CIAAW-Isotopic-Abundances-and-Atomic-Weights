@@ -8,8 +8,8 @@
 _:prefix_chebi sh:namespace "http://purl.obolibrary.org/obo/CHEBI_"^^xsd:anyURI;
   sh:prefix "chebi" .
 
-_:prefix_ex sh:namespace "https://example.org/data/"^^xsd:anyURI;
-  sh:prefix "ex" .
+_:prefix_ciaaw_draft sh:namespace "https://hendrikborgelt.github.io/Draft_for_IUPAC_CIAAW-Isotopic-Abundances-and-Atomic-Weights/id/"^^xsd:anyURI;
+  sh:prefix "ciaaw_draft" .
 
 _:prefix_element sh:namespace "https://hendrikborgelt.github.io/Draft_for_IUPAC_CIAAW-Isotopic-Abundances-and-Atomic-Weights/elements/"^^xsd:anyURI;
   sh:prefix "element" .
@@ -23,4 +23,4 @@ _:prefix_unit sh:namespace "http://qudt.org/vocab/unit/"^^xsd:anyURI;
 _:prefix_xsd sh:namespace "http://www.w3.org/2001/XMLSchema#"^^xsd:anyURI;
   sh:prefix "xsd" .
 
-_:sparql_examples_prefixes sh:declare _:prefix_chebi, _:prefix_ex, _:prefix_rdf, _:prefix_unit, _:prefix_xsd .
+_:sparql_examples_prefixes sh:declare _:prefix_chebi, _:prefix_ciaaw_draft, _:prefix_element, _:prefix_rdf, _:prefix_unit, _:prefix_xsd .

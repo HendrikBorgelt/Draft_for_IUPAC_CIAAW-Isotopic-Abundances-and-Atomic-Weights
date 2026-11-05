@@ -39,7 +39,7 @@ REPO = "https://github.com/HendrikBorgelt/Draft_for_IUPAC_CIAAW-Isotopic-Abundan
 CC0 = "https://creativecommons.org/publicdomain/zero/1.0/"
 
 CURIE_MAP = {
-    "ex": "https://example.org/data/",
+    "ciaaw_draft": "https://hendrikborgelt.github.io/Draft_for_IUPAC_CIAAW-Isotopic-Abundances-and-Atomic-Weights/id/",
     "element": "https://hendrikborgelt.github.io/Draft_for_IUPAC_CIAAW-Isotopic-Abundances-and-Atomic-Weights/elements/",
     "ciaaw": str(CIAAW),
     "chemrof": str(CHEMROF),

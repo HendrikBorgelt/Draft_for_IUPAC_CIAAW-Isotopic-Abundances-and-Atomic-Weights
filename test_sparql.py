@@ -26,7 +26,7 @@ EXAMPLES = HERE / "sparql" / "examples"
 SH = Namespace("http://www.w3.org/ns/shacl#")
 ENDPOINT = "https://another-endpoint.example/sparql"
 PREFIXES = """PREFIX ciaaw: <https://example.org/ciaaw-draft#>
-PREFIX ex: <https://example.org/data/>
+PREFIX ciaaw_draft: <https://hendrikborgelt.github.io/Draft_for_IUPAC_CIAAW-Isotopic-Abundances-and-Atomic-Weights/id/>
 PREFIX element: <https://hendrikborgelt.github.io/Draft_for_IUPAC_CIAAW-Isotopic-Abundances-and-Atomic-Weights/elements/>
 PREFIX qudt: <http://qudt.org/schema/qudt/>
 """
@@ -101,7 +101,7 @@ def test_oxigraph_normalises_decimals_but_significant_figures_survive(store):
 
 def test_zero_bounds_lose_their_printed_form_on_the_endpoint(store):
     """A known gap: 0.0000 and 0.000 both become 0, and zero has no significant figures recorded."""
-    query = PREFIXES + "SELECT ?lower WHERE { ex:Abundance-Ar36 ciaaw:value/qudt:lowerBound ?lower }"
+    query = PREFIXES + "SELECT ?lower WHERE { ciaaw_draft:Abundance-Ar36 ciaaw:value/qudt:lowerBound ?lower }"
     assert next(iter(store.query(query)))["lower"].value == "0"
     assert "qudt:lowerBound 0.0000" in text_of(DATA)              # the Turtle keeps the digits
 
@@ -174,7 +174,7 @@ def test_abundance_totals_are_close_to_one(examples):
 
 def test_terms_are_shortened(examples):
     subjects = [row[0] for row in examples["Matches to ChEBI"].rows]
-    assert "ex:H-1" in subjects
+    assert "ciaaw_draft:H-1" in subjects
     assert all(row[1].startswith("chebi:") for row in examples["Matches to ChEBI"].rows)
 
 
