@@ -4,7 +4,8 @@
 //
 //   node update_references.js example-output.ttl example-output-next.ttl 10.1186/1758-2946-3-37
 //
-// An argument that starts with "10." is a DOI to format, any other argument is a Turtle file to scan.
+// An argument that starts with "10." is a DOI to format, a .json argument is a comparison JSON to scan for the
+// "doi" of its sources, any other argument is a Turtle file to scan.
 //
 // DOIs are found in the Turtle as dcterms:source <https://doi.org/10.xxxx/yyyy>.
 
@@ -24,7 +25,9 @@ for (const file of process.argv.slice(2)) {
     dois.add(file.toUpperCase())
     continue
   }
-  for (const match of fs.readFileSync(file, 'utf8').matchAll(/doi\.org\/(10\.[^>\s"]+)/g)) {
+  // Turtle has <https://doi.org/10.x/y>, the JSON of the comparisons has "doi": "10.x/y"
+  const pattern = file.endsWith('.json') ? /"doi": "(10\.[^"]+)"/g : /doi\.org\/(10\.[^>\s"]+)/g
+  for (const match of fs.readFileSync(file, 'utf8').matchAll(pattern)) {
     dois.add(match[1].toUpperCase())
   }
 }

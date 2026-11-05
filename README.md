@@ -152,6 +152,11 @@ NOT-FOUND     argon-36        local ...  no Wikidata item
 ONLY-RESOURCE ...             Wikidata has an abundance, the local data has not
 ```
 
+Deprecated-rank statements are skipped. Each Wikidata value also comes with the sources of its references,
+the "stated in" (P248) item and its DOI (P356) if it has one, shown at the end of the line and as `sources` in the
+JSON. At the moment all the abundances in Wikidata cite NuDat (Q21234191), a database without a DOI, so the
+comparison page links that item instead. Sources with a DOI get a Bibliography on the page.
+
 Call `python3 check_wikidata.py --help` for `--strict` (exit 1 on differences) and
 `--sparql-json` (use saved results, no network), and
 `--json FILE` (also write the differences as JSON).
@@ -213,7 +218,7 @@ Each element page ends with a Bibliography of the DOIs in `dcterms:source` of it
 They are formatted as APA by [citation.js](https://citation.js.org), the way the author's blog does it:
 `make references` (`update_references.js`, needs Node.js; if the system npm fails use
 `make references NPM="node path/to/npm-cli.js"`) looks up the DOIs that are not yet in
-`site/references.json`. That file is committed, so the build and the tests work offline. A DOI that is
+`site/references.json`, including the DOIs of the sources in `site/*-comparison.json`. That file is committed, so the build and the tests work offline. A DOI that is
 not in it is listed as the bare DOI.
 
 Each push to `main` runs the tests and publishes the site through

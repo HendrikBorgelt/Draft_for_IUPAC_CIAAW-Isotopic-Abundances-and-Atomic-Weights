@@ -248,8 +248,11 @@ def read_references(path: Path) -> dict[str, str]:
 
 def bibliography(e: Element, references: dict[str, str]) -> str:
     """The sources of all declarations on an element page, formatted by citation.js, or "" without sources."""
-    dois = {s.removeprefix("https://doi.org/") for d in [*e.history, *(d for i in e.isotopes for d in i.history)]
-            for s in d.sources if s.startswith("https://doi.org/10.")}
+    return bibliography_section({s.removeprefix("https://doi.org/") for d in [*e.history, *(d for i in e.isotopes for d in i.history)]
+                                 for s in d.sources if s.startswith("https://doi.org/10.")}, references)
+
+
+def bibliography_section(dois: set[str], references: dict[str, str]) -> str:
     if not dois:
         return ""
     entries = sorted(((references.get(doi.upper(), doi), doi) for doi in dois), key=lambda r: r[0].lower())
@@ -303,6 +306,13 @@ def item_links(resource: Resource, ids: str) -> str:
     return " ".join(f"[{i}]({resource.item_url}{i})" if resource.item_url else i for i in ids.split("/") if i)
 
 
+def reference_links(resource: Resource, sources: list[dict]) -> str:
+    """The references of a value in the resource: the DOI if the source has one, else the source item."""
+    return " ".join(f"[{s['doi']}](https://doi.org/{s['doi']})" if s.get("doi")
+                    else f"[{s.get('label') or s['qid']}]({resource.item_url}{s['qid']})" if resource.item_url
+                    else s.get("label") or s["qid"] for s in sources)
+
+
 def read_comparison(resource: Resource) -> dict | None:
     return json.loads(resource.json.read_text(encoding="utf-8")) if resource.json.exists() else None
 
@@ -327,6 +337,12 @@ def page_comparison(resources: list[Resource], sample: bool = False) -> str:
         "[README]({{repo}}#readme).\n"]).replace("{{repo}}", REPO_URL)
 
 
+def resource_bibliography(result: dict) -> str:
+    """The references of the values in the resource that have a DOI, formatted by citation.js; "" if none."""
+    dois = {s["doi"] for d in result["differences"] for s in d.get("sources", []) if s.get("doi")}
+    return "\n" + bibliography_section(dois, read_references(REFERENCES_JSON)) if dois else ""
+
+
 def page_resource_comparison(resource: Resource, sample: bool = False) -> str:
     """The differences between the local abundances and one resource, from the JSON of its script."""
     intro = f"# Comparison with {resource.name}\n\n{resource.description}\n"
@@ -345,15 +361,18 @@ def page_resource_comparison(resource: Resource, sample: bool = False) -> str:
              f"{' Only a sample of the elements is on this site, so many isotopes are only in the resource.' if sample else ''}\n",
              "| Result | Count |", "| --- | --- |",
              *(f"| {title} | {counts.get(kind, 0)} |" for kind, title, _ in COMPARISON_KINDS)]
+    cited = any(d.get("sources") for d in result["differences"])
     for kind, title, text in COMPARISON_KINDS:
         rows = [d for d in result["differences"] if d["kind"] == kind]
         if not rows:
             continue
         parts += ["", f"## {title}\n", f"{text.format(name=resource.name)}\n",
-                  "| Isotope | Local | Value in resource | Item |", "| --- | --- | --- | --- |",
+                  "| Isotope | Local | Value in resource | Item |" + (" Source |" if cited else ""),
+                  "| --- | --- | --- | --- |" + (" --- |" if cited else ""),
                   *(f"| {d['name']} | {d['local'] or '—'} | {d['wikidata'] or '—'} | {item_links(resource, d['qid'])} |"
+                    + (f" {reference_links(resource, d.get('sources', [])) or '—'} |" if cited else "")
                     for d in rows)]
-    return "\n".join(parts) + "\n"
+    return "\n".join(parts) + resource_bibliography(result) + "\n"
 
 
 def wikidata_link(links: dict, z: int, a: int | None = None) -> str:

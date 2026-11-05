@@ -1,4 +1,5 @@
 """Tests for the static site.  Run with:  python -m pytest test_site.py"""
+import json
 import re
 from pathlib import Path
 from urllib.parse import unquote
@@ -358,3 +359,30 @@ def test_sssom_is_published_where_its_mapping_set_id_says(site):
 def test_downloads_page_links_to_the_sssom_file(site):
     html = text_of(site / "downloads.html")
     assert 'href="data/ciaaw.sssom.tsv"' in html and "SSSOM" in html
+
+
+def test_comparison_lists_the_sources_of_the_resource_values_and_cites_their_dois(tmp_path, monkeypatch):
+    references = tmp_path / "references.json"
+    references.write_text(json.dumps({"10.1/ABC": "Author, A. (2020). A paper."}), encoding="utf-8")
+    monkeypatch.setattr(b, "REFERENCES_JSON", references)
+    result = tmp_path / "result.json"
+    result.write_text(json.dumps({"generated": "2026-01-01", "source": "x.ttl", "local_isotopes": 1, "resource_items": 1,
+        "counts": {"DIFFERENT": 2}, "differences": [
+            {"kind": "DIFFERENT", "name": "a-1", "qid": "Q1", "local": "1", "wikidata": "2", "text": "",
+             "sources": [{"qid": "Q11", "label": "Article", "doi": "10.1/abc"}]},
+            {"kind": "DIFFERENT", "name": "b-1", "qid": "Q2", "local": "1", "wikidata": "3", "text": "",
+             "sources": [{"qid": "Q10", "label": "NuDat", "doi": ""}]}]}), encoding="utf-8")
+    resource = b.Resource("x", "Example", "https://example.org", result, "example", "Text.", "https://example.org/")
+    md = b.page_resource_comparison(resource)
+    assert "| Source |" in md
+    assert "[10.1/abc](https://doi.org/10.1/abc)" in md and "[NuDat](https://example.org/Q10)" in md
+    assert "## Bibliography" in md and "Author, A. (2020). A paper." in md
+
+
+def test_comparison_without_sources_has_no_source_column_or_bibliography(tmp_path):
+    result = tmp_path / "result.json"
+    result.write_text(json.dumps({"generated": "2026-01-01", "source": "x.ttl", "local_isotopes": 1, "resource_items": 1,
+        "counts": {"DIFFERENT": 1}, "differences": [
+            {"kind": "DIFFERENT", "name": "a-1", "qid": "Q1", "local": "1", "wikidata": "2", "text": ""}]}), encoding="utf-8")
+    md = b.page_resource_comparison(b.Resource("x", "Example", "https://example.org", result, "example", "Text."))
+    assert "Source" not in md and "Bibliography" not in md

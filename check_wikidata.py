@@ -21,7 +21,8 @@ Usage:
 
 The JSON (used by the "Wikidata Comparison" page of the site) has the keys generated, source,
 local_isotopes, resource_items, counts and differences; each difference has kind, name, qid, local,
-wikidata and text.
+wikidata, text and sources. The sources are the "stated in" (P248) of the references of the Wikidata value,
+each with qid, label and doi (the DOI, P356, of the source item, empty if it has none).
 """
 
 from __future__ import annotations
@@ -50,18 +51,29 @@ Q_PERCENT = WD + "Q11229"
 Q_ONE = WD + "Q199"
 P_ATOMIC_NUMBER = "P1086"
 P_NEUTRONS = "P1148"
+P_STATED_IN = "P248"
+P_DOI = "P356"
 OWL_DEPRECATED = URIRef("http://www.w3.org/2002/07/owl#deprecated")
 
+# One row per statement and source. Deprecated statements are skipped: Wikidata marks them as not to be used.
+# The source is the "stated in" (P248) of the reference; its DOI is the item's DOI (P356), if it has one.
 QUERY = f"""
-SELECT ?item ?label ?z ?n ?amount ?lower ?upper ?unit WHERE {{
+SELECT ?item ?label ?z ?n ?statement ?amount ?lower ?upper ?unit ?source ?sourceLabel ?doi WHERE {{
   ?item wdt:{P_ATOMIC_NUMBER} ?z ; wdt:{P_NEUTRONS} ?n .
   ?item rdfs:label ?label . FILTER(LANG(?label) = "en")
   OPTIONAL {{
-    ?item p:{P_ABUNDANCE}/psv:{P_ABUNDANCE} ?v .
+    ?item p:{P_ABUNDANCE} ?statement .
+    ?statement wikibase:rank ?rank ; psv:{P_ABUNDANCE} ?v .
+    FILTER(?rank != wikibase:DeprecatedRank)
     ?v wikibase:quantityAmount ?amount .
     OPTIONAL {{ ?v wikibase:quantityLowerBound ?lower }}
     OPTIONAL {{ ?v wikibase:quantityUpperBound ?upper }}
     OPTIONAL {{ ?v wikibase:quantityUnit ?unit }}
+    OPTIONAL {{
+      ?statement prov:wasDerivedFrom/pr:{P_STATED_IN} ?source .
+      OPTIONAL {{ ?source rdfs:label ?sourceLabel . FILTER(LANG(?sourceLabel) = "en") }}
+      OPTIONAL {{ ?source wdt:{P_DOI} ?doi }}
+    }}
   }}
 }}
 """
@@ -88,22 +100,35 @@ def fetch_wikidata(path: Path | None) -> list[dict]:
 
 
 def group_wikidata(bindings: list[dict]) -> dict[str, dict]:
-    """Wikidata item IRI -> {qid, label, zn: {(Z, N)}, values: [(amount, lower, upper)] in percent}."""
+    """Wikidata item IRI -> {qid, label, zn: {(Z, N)}, values: [(amount, lower, upper)] in percent,
+    sources: one list per value of {qid, label, doi}}. A statement with several sources comes in several rows."""
     items: dict[str, dict] = {}
+    seen: dict[str, dict] = {}                      # statement -> its sources, so that its value is added once
     for b in bindings:
-        item = items.setdefault(b["item"], {"qid": b["item"].rsplit("/", 1)[-1], "label": b["label"], "zn": set(), "values": []})
+        item = items.setdefault(b["item"], {"qid": b["item"].rsplit("/", 1)[-1], "label": b["label"], "zn": set(),
+                                            "values": [], "sources": []})
         item["zn"].add((int(Decimal(b["z"])), int(Decimal(b["n"]))))
         if "amount" not in b:
             continue
-        scale = Decimal(100) if b.get("unit") == Q_ONE else Decimal(1)
-        if b.get("unit") not in (None, Q_PERCENT, Q_ONE):
-            item.setdefault("odd_units", set()).add(b["unit"])
-        lower, upper = b.get("lower"), b.get("upper")
-        item["values"].append((
-            Decimal(b["amount"]) * scale,
-            Decimal(lower) * scale if lower is not None else None,
-            Decimal(upper) * scale if upper is not None else None,
-        ))
+        statement = b.get("statement") or f"{b['item']}#{len(item['values'])}"
+        if statement not in seen:
+            scale = Decimal(100) if b.get("unit") == Q_ONE else Decimal(1)
+            if b.get("unit") not in (None, Q_PERCENT, Q_ONE):
+                item.setdefault("odd_units", set()).add(b["unit"])
+            lower, upper = b.get("lower"), b.get("upper")
+            item["values"].append((
+                Decimal(b["amount"]) * scale,
+                Decimal(lower) * scale if lower is not None else None,
+                Decimal(upper) * scale if upper is not None else None,
+            ))
+            seen[statement] = {}
+            item["sources"].append(seen[statement])
+        if "source" in b:
+            qid = b["source"].rsplit("/", 1)[-1]
+            source = seen[statement].setdefault(qid, {"qid": qid, "label": b.get("sourceLabel", ""), "doi": ""})
+            source["doi"] = source["doi"] or b.get("doi", "")
+    for item in items.values():
+        item["sources"] = [list(s.values()) for s in item["sources"]]
     return items
 
 
@@ -172,8 +197,16 @@ def same(entry: dict, value: tuple) -> bool:
     return lower is not None and upper is not None and (amount - lower, upper - amount) == (unc, unc)
 
 
-def row(kind: str, name: str, text: str, qid: str = "", local: str = "", wikidata: str = "") -> dict:
-    return {"kind": kind, "name": name, "qid": qid, "local": local, "wikidata": wikidata, "text": text}
+def row(kind: str, name: str, text: str, qid: str = "", local: str = "", wikidata: str = "",
+        sources: list[dict] | None = None) -> dict:
+    """A difference; sources are the references (qid, label, doi) of the value in the resource."""
+    return {"kind": kind, "name": name, "qid": qid, "local": local, "wikidata": wikidata, "text": text,
+            "sources": sources or []}
+
+
+def unique_sources(lists: list[list[dict]]) -> list[dict]:
+    """The sources of several values, each source once."""
+    return list({s["qid"]: s for sources in lists for s in sources}.values())
 
 
 def compare(local: list[dict], wikidata: dict[str, dict]):
@@ -190,7 +223,8 @@ def compare(local: list[dict], wikidata: dict[str, dict]):
         if candidates:
             used = with_values or candidates
             item = {"qid": "/".join(c["qid"] for c in used), "values": [v for c in used for v in c["values"]],
-                    "odd_units": {u for c in used for u in c.get("odd_units", ())}}
+                    "odd_units": {u for c in used for u in c.get("odd_units", ())},
+                    "sources": [s for c in used for s in c["sources"]]}
             matched.update(c["qid"] for c in used)
         if item is None:
             yield row("NOT-FOUND", entry["name"], f"local {show(entry)}  no Wikidata item", local=show(entry))
@@ -200,13 +234,14 @@ def compare(local: list[dict], wikidata: dict[str, dict]):
             yield row("NO-VALUE", entry["name"], f"local {show(entry)}  {where} has no abundance", where, show(entry))
         elif not any(same(entry, v) for v in item["values"]):
             theirs = " | ".join(show_wd(v) for v in item["values"])
-            yield row("DIFFERENT", entry["name"], f"local {show(entry)}  {where} wikidata {theirs}", where, show(entry), theirs)
+            yield row("DIFFERENT", entry["name"], f"local {show(entry)}  {where} wikidata {theirs}", where, show(entry), theirs,
+                      unique_sources(item["sources"]))
         for unit in sorted(item.get("odd_units", ())):
-            yield row("UNIT", entry["name"], f"{where} abundance has unexpected unit {unit}", where, show(entry), unit)
+            yield row("UNIT", entry["name"], f"{where} abundance has unexpected unit {unit}", where, show(entry), unit, unique_sources(item["sources"]))
     for item in wikidata.values():
         if item["values"] and item["qid"] not in matched:
             yield row("ONLY-RESOURCE", item["label"], f"{item['qid']} wikidata {show_wd(item['values'][0])}  not in local data",
-                      item["qid"], "", show_wd(item["values"][0]))
+                      item["qid"], "", show_wd(item["values"][0]), item["sources"][0])
 
 
 def main(argv=None) -> int:
@@ -226,7 +261,8 @@ def main(argv=None) -> int:
     differences = list(compare(local, wikidata))
     for d in differences:
         counts[d["kind"]] = counts.get(d["kind"], 0) + 1
-        print(f"{d['kind']:<14}{d['name']:<16}{d['text']}")
+        cited = ", ".join(s["doi"] or f"{s['label']} ({s['qid']})" for s in d["sources"])
+        print(f"{d['kind']:<14}{d['name']:<16}{d['text']}{'  source ' + cited if cited else ''}")
     if args.json:
         args.json.parent.mkdir(parents=True, exist_ok=True)
         args.json.write_text(json.dumps({

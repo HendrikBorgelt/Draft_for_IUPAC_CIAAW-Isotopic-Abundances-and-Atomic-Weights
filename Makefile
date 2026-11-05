@@ -123,7 +123,7 @@ NPM ?= npm
 RESOURCE_DOIS ?= 10.1186/1758-2946-3-37
 
 references: node_modules
-	node update_references.js $(SITE_DATA) $(SITE_REVISION) $(RESOURCE_DOIS)
+	node update_references.js $(SITE_DATA) $(SITE_REVISION) $(wildcard site/*-comparison.json) $(RESOURCE_DOIS)
 
 node_modules: package.json
 	$(NPM) install
