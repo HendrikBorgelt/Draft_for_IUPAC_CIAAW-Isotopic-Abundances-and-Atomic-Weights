@@ -42,7 +42,8 @@ We want to develop this together with the Commission. Decisions about the conten
 | `check_bodr.py`, `site/bodr-comparison.json` | The comparison with BODR, shown in the Comparison section |
 | `wikidata_links.py`, `site/wikidata.csv` | The Wikidata items linked from the element pages |
 | `test_*.py`, `fixtures/` | Tests and their small hand-built input tables |
-| `example-output*.ttl` | Example results |
+| `ciaaw.ttl` | The full data, published on the site and loaded by the SPARQL endpoint |
+| `example-output*.ttl` | Small example results, used by the tests and the revision example |
 | `Makefile` | Runs the steps below |
 | `AUTHORS` | The people who worked on the hackathon, with their ORCID |
 
@@ -72,7 +73,7 @@ flowchart LR
 3. **Check `supplement.csv`** (`subject,role,year,doi,chebi`). Roles are `standard`,
    `abundance` and `match` (a `skos:closeMatch` to ChEBI). An element symbol with role
    `abundance` applies to all its isotopes.
-4. **Run `make ttl`**. The result is `build/ciaaw.ttl`. The script reports unparsable cells as
+4. **Run `make ttl`**. The result is `ciaaw.ttl`. The script reports unparsable cells as
    `ERROR` lines and exits non-zero; use `--lenient` when calling it directly to ignore that.
    Expect 118 elements, 289 isotopes, and 26 warnings for elements 93 to 118, which the abundance
    table does not list. Check any other warning: a wrong sum means that isotopes went missing,
@@ -89,7 +90,7 @@ the test fixtures.
 To keep the history of changed values, pass the Turtle of the earlier release:
 
 ```
-make ttl PREVIOUS=ciaaw-2022.ttl
+make ttl PREVIOUS=ciaaw.ttl
 ```
 
 Declarations whose value changed are kept, flagged `owl:deprecated`, and linked with
@@ -109,7 +110,7 @@ exported yet.
 ## Comparing with Wikidata
 
 `make check-wikidata` queries Wikidata with SPARQL (items with atomic number P1086 and number of
-neutrons P1148, with natural abundance P2374) and compares the current abundances in `build/ciaaw.ttl` with them, in
+neutrons P1148, with natural abundance P2374) and compares the current abundances in `ciaaw.ttl` with them, in
 percent. Isotopes are matched by atomic number Z and neutron number N (mass number = Z + N). Differences go
 to STDOUT, a summary to STDERR:
 
@@ -150,11 +151,12 @@ make test
 | `test_check_bodr.py` | The comparison with BODR, on a small isotopes file |
 | `test_site.py` | The pages, the watermark, links, and that every RDF format holds the same triples |
 | `test_sparql.py` | The example queries on Oxigraph, the SPARQL page and the deployment setup |
+| `test_published_data.py` | `ciaaw.ttl` and the site built from it, including that nothing is out of date |
 
 ## The site
 
 `make serve` builds `_site/` and serves it on <http://localhost:8000>. `make site` only builds
-it. To show your own data, use `make site SITE_DATA=build/ciaaw.ttl`.
+it. To show other data, use for example `make site SITE_DATA=example-output.ttl`.
 
 The element pages link to Wikidata, for the element and for each isotope. The Q-numbers are in
 `site/wikidata.csv`, which is committed so that the build and the tests work offline. Refresh it
@@ -221,9 +223,10 @@ Things to know:
   `text/turtle`. Without one, the endpoint answers with error 400.
 - **New data is not picked up straight away.** The worker loads the Turtle once per instance, so
   it can keep serving older data after the site changes, until it restarts or is redeployed.
-- **The free Cloudflare plan allows 10 ms of CPU per request.** The current 8 elements load in
-  about 1 ms. The real 118-element file took about 10 ms in native Oxigraph, and the worker's
-  WebAssembly build will be slower, so the full dataset will probably need a paid plan.
+- **CPU limits have not been a problem so far.** The free Cloudflare plan allows 10 ms of CPU per
+  request, but the running worker has answered queries that used about 460 ms. Loading the full
+  data takes roughly 15 ms, only when a worker starts. The plan of the running worker is not
+  known, so keep example queries cheap: `test_published_data.py` checks this.
 - **Only the current data is loaded.** The revision example is left out, so its invented value
   cannot appear in results.
 
@@ -237,7 +240,7 @@ Things to know:
 | `make ttl` | `python ciaaw2ttl.py --weights data/atomic-weights.htm --abundances data/isotopic-abundances.htm --supplement supplement.csv -o ciaaw.ttl` |
 | `make test` | `python -m pytest -q` |
 | `make model` | `python tap2model.py` |
-| `make validate` | `python tap2model.py --validate example-output.ttl example-output-next.ttl` |
+| `make validate` | `python tap2model.py --validate ciaaw.ttl example-output-next.ttl` |
 | `make site` | `python build_site.py` |
 
 For `make download`, save the two pages from your browser as described in step 2 above.
@@ -264,7 +267,7 @@ The table adds four columns to the 12 DCTAP elements, all declared in `dctap.yam
 
 ## Current limits
 
-- **The site shows 8 of the 118 elements.** It is built from `example-output.ttl`, which came from a small hand-built copy of the tables. `make ttl` builds the full data locally, but it is not published.
+- **`ciaaw.ttl` is a snapshot.** It was made from the CIAAW pages on 5 November 2026 and does not follow their updates. To refresh it, run `make download` and `make ttl`, then `make wikidata-comparison` and `make bodr-comparison`, because the tests check that those match the data.
 - **Years and DOIs are only known for hydrogen.** All other declarations have no citation yet. Adding a year later also changes the declaration's IRI, so `supplement.csv` should be completed before anyone cites them.
 - **`example-output-next.ttl` contains an invented value.** It demonstrates a revision of hydrogen and is not a CIAAW value.
 - **All IRIs under `example.org` are placeholders** until a persistent home is agreed.

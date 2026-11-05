@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Build the static prototype site for GitHub Pages.
 
-  python build_site.py [--data example-output.ttl] [--revision example-output-next.ttl] [--out _site]
+  python build_site.py [--data ciaaw.ttl] [--revision example-output-next.ttl] [--out _site]
                        [--sparql-endpoint URL] [--wikidata site/wikidata.csv]
 
 Every page is written as Markdown first. The HTML page is rendered from that same Markdown and wrapped
@@ -304,7 +304,7 @@ def read_comparison(resource: Resource) -> dict | None:
     return json.loads(resource.json.read_text(encoding="utf-8")) if resource.json.exists() else None
 
 
-def page_comparison(resources: list[Resource]) -> str:
+def page_comparison(resources: list[Resource], sample: bool = False) -> str:
     """The overview: one row per resource, with the counts of what differs."""
     rows = []
     for r in resources:
@@ -319,12 +319,12 @@ def page_comparison(resources: list[Resource]) -> str:
         "which one is right.\n",
         "| Resource | Compared on | Different values | No value | Not found |", "| --- | --- | --- | --- | --- |",
         *rows, "",
-        "Only a sample of the elements is on this site, so the results are only a demonstration. Each comparison "
-        "is a script that writes JSON, which the pages are built from, see the [README]({{repo}}#readme).\n"]).replace(
-        "{{repo}}", REPO_URL)
+        ("Only a sample of the elements is on this site, so the results are only a demonstration. " if sample else "")
+        + "Each comparison is a script that writes JSON, which the pages are built from, see the "
+        "[README]({{repo}}#readme).\n"]).replace("{{repo}}", REPO_URL)
 
 
-def page_resource_comparison(resource: Resource) -> str:
+def page_resource_comparison(resource: Resource, sample: bool = False) -> str:
     """The differences between the local abundances and one resource, from the JSON of its script."""
     intro = f"# Comparison with {resource.name}\n\n{resource.description}\n"
     if resource.doi:
@@ -338,8 +338,8 @@ def page_resource_comparison(resource: Resource) -> str:
     parts = [intro,
              f"Compared on {result['generated']}: {result['local_isotopes']} isotopes in `{result['source']}`, "
              f"{result.get('resource_items', result.get('wikidata_items'))} items in {resource.name}"
-             f"{' (' + result['resource_version'] + ')' if result.get('resource_version') else ''}. Only a sample of the elements is on this site, "
-             "so many isotopes are only in the resource.\n",
+             f"{' (' + result['resource_version'] + ')' if result.get('resource_version') else ''}."
+             f"{' Only a sample of the elements is on this site, so many isotopes are only in the resource.' if sample else ''}\n",
              "| Result | Count |", "| --- | --- |",
              *(f"| {title} | {counts.get(kind, 0)} |" for kind, title, _ in COMPARISON_KINDS)]
     for kind, title, text in COMPARISON_KINDS:
@@ -708,16 +708,17 @@ def build(data_path: Path, revision_path: Path, out: Path, sparql_endpoint: str 
     site.add("revision-example", "Revision Example", page_revision(revision), "model")
     site.add("downloads", "Downloads", page_downloads(out, elements), "downloads")
     resources = RESOURCES if resources is None else resources
-    site.add("comparison", "Comparison", page_comparison(resources), "comparison")
+    sample = len(elements) < ELEMENT_COUNT
+    site.add("comparison", "Comparison", page_comparison(resources, sample), "comparison")
     for resource in resources:
-        site.add(resource.key, f"Comparison with {resource.name}", page_resource_comparison(resource), "comparison")
+        site.add(resource.key, f"Comparison with {resource.name}", page_resource_comparison(resource, sample), "comparison")
     site.add("sparql", "SPARQL", page_sparql(read_examples(data_path), sparql_endpoint, coverage_note(elements)), "downloads")
     return reports
 
 
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--data", type=Path, default=HERE / "example-output.ttl", help="Turtle shown as the current data")
+    ap.add_argument("--data", type=Path, default=HERE / "ciaaw.ttl", help="Turtle shown as the current data")
     ap.add_argument("--revision", type=Path, default=HERE / "example-output-next.ttl",
                     help="Turtle for the revision example")
     ap.add_argument("--out", type=Path, default=HERE / "_site")

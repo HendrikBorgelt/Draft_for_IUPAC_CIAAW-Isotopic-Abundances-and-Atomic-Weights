@@ -15,11 +15,12 @@ SUPPLEMENT  ?= supplement.csv
 # e.g. make ttl PREVIOUS=example-output.ttl
 PREVIOUS    ?=
 
-TTL         ?= $(BUILD_DIR)/ciaaw.ttl
+# The full data. It is committed, so that the site can be built without downloading anything.
+TTL         ?= ciaaw.ttl
 QS          ?= $(BUILD_DIR)/quickstatements.csv
 
-# Data shown on the site. Use SITE_DATA=build/ciaaw.ttl after `make ttl`.
-SITE_DATA     ?= example-output.ttl
+# Data shown on the site. The revision example is a small sample with an invented value.
+SITE_DATA     ?= $(TTL)
 SITE_REVISION ?= example-output-next.ttl
 
 WEIGHTS_URL    ?= https://ciaaw.org/atomic-weights.htm
@@ -64,12 +65,10 @@ download:
 	curl -fsSL -o $(WEIGHTS) $(WEIGHTS_URL)
 	curl -fsSL -o $(ABUNDANCES) $(ABUNDANCES_URL)
 
-ttl: $(TTL)
-
-$(TTL): ciaaw2ttl.py $(WEIGHTS) $(ABUNDANCES) $(SUPPLEMENT) $(PREVIOUS)
-	@mkdir -p $(dir $@)
+ttl: $(WEIGHTS) $(ABUNDANCES)
+	@mkdir -p $(dir $(TTL))
 	$(PYTHON) ciaaw2ttl.py --weights $(WEIGHTS) --abundances $(ABUNDANCES) \
-		--supplement $(SUPPLEMENT) $(if $(PREVIOUS),--previous $(PREVIOUS)) -o $@
+		--supplement $(SUPPLEMENT) $(if $(PREVIOUS),--previous $(PREVIOUS)) -o $(TTL)
 
 example:
 	@mkdir -p $(BUILD_DIR)
@@ -82,6 +81,7 @@ example:
 quickstatements: $(QS)
 
 $(QS): ttl2quickstatements.py $(TTL)
+	@mkdir -p $(dir $@)
 	$(PYTHON) ttl2quickstatements.py $(TTL) -o $@
 
 check-wikidata: $(TTL)

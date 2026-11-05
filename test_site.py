@@ -12,12 +12,13 @@ import build_site as b
 
 HERE = Path(__file__).parent
 NB = b.NBSP
+SAMPLE = ["--data", str(HERE / "example-output.ttl")]            # small and fast; test_published_data.py has the rest
 
 
 @pytest.fixture(scope="module")
 def site(tmp_path_factory):
     out = tmp_path_factory.mktemp("site") / "_site"
-    assert b.main(["--out", str(out)]) == 0
+    assert b.main([*SAMPLE, "--out", str(out)]) == 0
     return out
 
 
@@ -224,7 +225,7 @@ def test_wikidata_csv_covers_all_elements_and_has_the_isotopes_of_the_site():
 
 def test_site_builds_without_the_wikidata_csv(tmp_path):
     out = tmp_path / "_site"
-    assert b.main(["--out", str(out), "--wikidata", str(tmp_path / "missing.csv")]) == 0
+    assert b.main([*SAMPLE, "--out", str(out), "--wikidata", str(tmp_path / "missing.csv")]) == 0
     assert "wikidata.org" not in text_of(out / "elements" / "Hydrogen.md")
 
 

@@ -19,6 +19,7 @@ import build_site as b
 
 HERE = Path(__file__).parent
 DATA = HERE / "example-output.ttl"
+SAMPLE = ["--data", str(DATA)]
 QUERY_FILES = sorted((HERE / "sparql" / "queries").glob("*.rq"))
 ENDPOINT = "https://another-endpoint.example/sparql"
 PREFIXES = """PREFIX ciaaw: <https://example.org/ciaaw-draft#>
@@ -46,7 +47,7 @@ def examples():
 
 def build(tmp_path_factory, endpoint):
     out = tmp_path_factory.mktemp("site") / "_site"
-    assert b.main(["--out", str(out), "--sparql-endpoint", endpoint]) == 0
+    assert b.main([*SAMPLE, "--out", str(out), "--sparql-endpoint", endpoint]) == 0
     return out
 
 
@@ -202,7 +203,7 @@ def test_page_says_the_endpoint_holds_a_sample(live_site):
 def test_default_build_uses_the_running_endpoint(tmp_path, monkeypatch):
     monkeypatch.delenv("SPARQL_ENDPOINT", raising=False)
     out = tmp_path / "_site"
-    assert b.main(["--out", str(out)]) == 0
+    assert b.main([*SAMPLE, "--out", str(out)]) == 0
     form = BeautifulSoup(text_of(out / "sparql.html"), "html.parser").find(id="sparql-form")
     assert form["data-endpoint"] == b.SPARQL_ENDPOINT
     assert b.SPARQL_ENDPOINT.endswith("/sparql")                  # the root of the worker answers with 404
@@ -212,7 +213,7 @@ def test_empty_environment_variable_keeps_the_running_endpoint(tmp_path, monkeyp
     """GitHub Actions turns an unset repository variable into an empty value."""
     monkeypatch.setenv("SPARQL_ENDPOINT", "")
     out = tmp_path / "_site"
-    assert b.main(["--out", str(out)]) == 0
+    assert b.main([*SAMPLE, "--out", str(out)]) == 0
     assert b.SPARQL_ENDPOINT in text_of(out / "sparql.md")
 
 
@@ -223,7 +224,7 @@ def test_markdown_page_has_no_form_markup(live_site):
 
 def test_endpoint_url_is_escaped(tmp_path):
     out = tmp_path / "_site"
-    assert b.main(["--out", str(out), "--sparql-endpoint", 'https://x.test/"><script>alert(1)</script>']) == 0
+    assert b.main([*SAMPLE, "--out", str(out), "--sparql-endpoint", 'https://x.test/"><script>alert(1)</script>']) == 0
     form = BeautifulSoup(text_of(out / "sparql.html"), "html.parser").find(id="sparql-form")
     assert form["data-endpoint"] == 'https://x.test/"><script>alert(1)</script>'
     assert form.find("script") is None
@@ -232,7 +233,7 @@ def test_endpoint_url_is_escaped(tmp_path):
 def test_endpoint_can_come_from_the_environment(tmp_path, monkeypatch):
     monkeypatch.setenv("SPARQL_ENDPOINT", ENDPOINT)
     out = tmp_path / "_site"
-    assert b.main(["--out", str(out)]) == 0
+    assert b.main([*SAMPLE, "--out", str(out)]) == 0
     assert ENDPOINT in text_of(out / "sparql.md")
 
 
