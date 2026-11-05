@@ -43,6 +43,7 @@ We want to develop this together with the Commission. Decisions about the conten
 | `test_*.py`, `fixtures/` | Tests and their small hand-built input tables |
 | `example-output*.ttl` | Example results |
 | `Makefile` | Runs the steps below |
+| `AUTHORS` | The people who worked on the hackathon, with their ORCID |
 
 ## How it fits together
 

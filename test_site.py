@@ -257,3 +257,10 @@ def test_comparison_page_lists_the_differences_and_is_in_the_navigation(site):
 def test_comparison_page_without_the_json(tmp_path):
     page = b.page_wikidata_comparison(tmp_path / "missing.json")
     assert "has not been generated yet" in page
+
+
+def test_about_page_lists_the_authors_with_their_orcid(site):
+    html = text_of(site / "about.html")
+    for line in (HERE / "AUTHORS").read_text(encoding="utf-8").splitlines():
+        name, orcid = line.rsplit(" <", 1)
+        assert name in html and f'href="{orcid.rstrip(">")}"' in html
