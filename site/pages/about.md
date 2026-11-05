@@ -29,7 +29,7 @@ This prototype was made at a hackathon by:
 | Egon Willighagen | Maastricht University | [0000-0001-7542-0286](https://orcid.org/0000-0001-7542-0286) | [egonw](https://github.com/egonw) |
 | Jerven Bolleman | SIB Swiss Institute of Bioinformatics | [0000-0002-7449-1266](https://orcid.org/0000-0002-7449-1266) | [JervenBolleman](https://github.com/JervenBolleman) |
 | Miranda Carlsson | Idiap Research Institute | [0009-0009-9304-6641](https://orcid.org/0009-0009-9304-6641) | — |
-| Dani Metilli | Delft University of Technology | [0000-0002-5512-2158](https://orcid.org/0000-0002-5512-2158) | — |
+| Dani Metilli | Delft University of Technology | [0000-0002-5512-2158](https://orcid.org/0000-0002-5512-2158) | [nbdani](https://github.com/nbdani) |
 
 ## How you can help
 
