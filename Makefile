@@ -34,7 +34,7 @@ WORKER_NAME ?= ciaaw-sparql-prototype
 SPARQL_DATA ?= https://hendrikborgelt.github.io/Draft_for_IUPAC_CIAAW-Isotopic-Abundances-and-Atomic-Weights/data/ciaaw.ttl
 SPARQL_ENDPOINT ?=
 
-.PHONY: help install download ttl example quickstatements check-wikidata test model validate site serve sparql-dev sparql-deploy clean
+.PHONY: help install download ttl example quickstatements check-wikidata wikidata-links test model validate site serve sparql-dev sparql-deploy clean
 
 help:
 	@echo "make install         install the Python dependencies"
@@ -43,6 +43,7 @@ help:
 	@echo "make example         create the example Turtle in $(BUILD_DIR) from the test fixtures, offline"
 	@echo "make quickstatements create $(QS) from the Turtle"
 	@echo "make check-wikidata compare the abundances in $(TTL) with Wikidata"
+	@echo "make wikidata-links refresh site/wikidata.csv, the Wikidata items linked from the element pages"
 	@echo "make test            run all tests"
 	@echo "make model           regenerate the SHACL shapes and diagrams from the DCTAP"
 	@echo "make validate        check the site data against the SHACL shapes"
@@ -82,6 +83,9 @@ $(QS): ttl2quickstatements.py $(TTL)
 
 check-wikidata: $(TTL)
 	$(PYTHON) check_wikidata.py $(TTL)
+
+wikidata-links:
+	$(PYTHON) wikidata_links.py
 
 test:
 	$(PYTHON) -m pytest -q

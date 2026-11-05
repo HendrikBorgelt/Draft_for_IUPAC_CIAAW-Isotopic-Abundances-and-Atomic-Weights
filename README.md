@@ -37,6 +37,7 @@ We want to develop this together with the Commission. Decisions about the conten
 | `model/` | The data model, see [below](#the-data-model) |
 | `build_site.py`, `site/` | Static site for GitHub Pages |
 | `sparql/queries/` | Example SPARQL queries, shown on the site |
+| `wikidata_links.py`, `site/wikidata.csv` | The Wikidata items linked from the element pages |
 | `test_*.py`, `fixtures/` | Tests and their small hand-built input tables |
 | `example-output*.ttl` | Example results |
 | `Makefile` | Runs the steps below |
@@ -135,6 +136,12 @@ make test
 
 `make serve` builds `_site/` and serves it on <http://localhost:8000>. `make site` only builds
 it. To show your own data, use `make site SITE_DATA=build/ciaaw.ttl`.
+
+The element pages link to Wikidata, for the element and for each isotope. The Q-numbers are in
+`site/wikidata.csv`, which is committed so that the build and the tests work offline. Refresh it
+with `make wikidata-links` (`wikidata_links.py`): elements are found by atomic number, isotopes by
+atomic number and number of neutrons. When Wikidata has several items for one isotope, the one with a
+natural abundance is used, and the script reports these cases.
 
 Each push to `main` runs the tests and publishes the site through
 [pages.yml](.github/workflows/pages.yml). Pull requests run the tests and build the site

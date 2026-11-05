@@ -207,3 +207,22 @@ def test_build_fails_when_data_does_not_conform(tmp_path):
 
 if __name__ == "__main__":
     raise SystemExit(pytest.main([__file__, "-q"]))
+
+
+# --- Wikidata links -------------------------------------------------------------------------
+def test_element_page_links_to_wikidata_for_the_element_and_each_isotope(site):
+    html = text_of(site / "elements" / "Hydrogen.html")
+    assert 'href="https://www.wikidata.org/wiki/Q556"' in html        # hydrogen
+    assert 'href="https://www.wikidata.org/wiki/Q102296"' in html     # deuterium, A = 2
+
+
+def test_wikidata_csv_covers_all_elements_and_has_the_isotopes_of_the_site():
+    links = b.read_wikidata(b.WIKIDATA_CSV)
+    assert all((z, None) in links for z in range(1, b.ELEMENT_COUNT + 1))
+    assert (1, 2) in links and (6, 13) in links
+
+
+def test_site_builds_without_the_wikidata_csv(tmp_path):
+    out = tmp_path / "_site"
+    assert b.main(["--out", str(out), "--wikidata", str(tmp_path / "missing.csv")]) == 0
+    assert "wikidata.org" not in text_of(out / "elements" / "Hydrogen.md")

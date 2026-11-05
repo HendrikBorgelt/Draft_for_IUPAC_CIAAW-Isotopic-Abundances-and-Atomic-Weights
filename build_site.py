@@ -2,7 +2,7 @@
 """Build the static prototype site for GitHub Pages.
 
   python build_site.py [--data example-output.ttl] [--revision example-output-next.ttl] [--out _site]
-                       [--sparql-endpoint URL]
+                       [--sparql-endpoint URL] [--wikidata site/wikidata.csv]
 
 Every page is written as Markdown first. The HTML page is rendered from that same Markdown and wrapped
 in site/template.html, so both versions always say the same thing. The Turtle is published unchanged,
@@ -15,6 +15,7 @@ that is the engine behind the endpoint. A live query form appears once an endpoi
 from __future__ import annotations
 
 import argparse
+import csv
 import os
 import re
 import shutil
@@ -39,6 +40,8 @@ REPO_URL = "https://github.com/HendrikBorgelt/Draft_for_IUPAC_CIAAW-Isotopic-Abu
 ISSUES_URL = f"{REPO_URL}/issues"
 MERMAID_URL = "https://cdn.jsdelivr.net/npm/mermaid@12.2.0/dist/mermaid.esm.min.mjs"
 ELEMENT_COUNT = 118
+WIKIDATA_CSV = SITE_SRC / "wikidata.csv"
+WIKIDATA_ENTITY = "https://www.wikidata.org/wiki/"
 NBSP = " "
 
 CIAAW = c.Namespace(c.DEFAULT_VOCAB_NS)
@@ -223,6 +226,19 @@ def source_links(sources: list[str]) -> str:
     return " ".join(f"[{s.removeprefix('https://doi.org/')}]({s})" for s in sources) or "—"
 
 
+def read_wikidata(path: Path) -> dict[tuple[int, int | None], str]:
+    """(Z, None) -> Q-number of an element, (Z, A) -> Q-number of an isotope; see wikidata_links.py."""
+    if not path.exists():
+        return {}
+    with path.open(newline="", encoding="utf-8") as f:
+        return {(int(r["z"]), int(r["a"]) if r["a"] else None): r["qid"] for r in csv.DictReader(f)}
+
+
+def wikidata_link(links: dict, z: int, a: int | None = None) -> str:
+    qid = links.get((z, a))
+    return f"[{qid}]({WIKIDATA_ENTITY}{qid})" if qid else ""
+
+
 def chebi_links(matches: list[str]) -> str:
     return " ".join(f"[CHEBI:{m.rsplit('_', 1)[-1]}]({m})" for m in matches)
 
@@ -263,11 +279,14 @@ def declaration_table(history: list[Declaration]) -> str:
     return "\n".join(lines)
 
 
-def page_element(e: Element, notes: dict[str, str]) -> str:
+def page_element(e: Element, notes: dict[str, str], links: dict | None = None) -> str:
+    links = links or {}
     facts = ["| Property | Value |", "| --- | --- |", f"| Symbol | {e.symbol} |", f"| Atomic number | {e.z} |",
              f"| IRI | `{e.iri}` |"]
     if e.matches:
         facts.append(f"| ChEBI | {chebi_links(e.matches)} |")
+    if wikidata_link(links, e.z):
+        facts.append(f"| Wikidata | {wikidata_link(links, e.z)} |")
     if e.longest_lived:
         facts.append(f"| Longest-lived isotope | {e.longest_lived} |")
     parts = [f"# {e.name}\n", "\n".join(facts) + "\n", "## Standard atomic weight\n"]
@@ -278,12 +297,13 @@ def page_element(e: Element, notes: dict[str, str]) -> str:
         parts.append("The table gives no standard atomic weight for this element.\n")
     parts.append("## Isotopes\n")
     if e.isotopes:
-        rows = ["| A | Representative isotopic composition | Year | Source | Declaration | ChEBI |",
-                "| --- | --- | --- | --- | --- | --- |"]
+        rows = ["| A | Representative isotopic composition | Year | Source | Declaration | ChEBI | Wikidata |",
+                "| --- | --- | --- | --- | --- | --- | --- |"]
         for i in e.isotopes:
             d = i.abundance
             rows.append(f"| {i.mass_number} | {d.text} | {d.issued or '—'} | {source_links(d.sources)} "
-                        f"| `{local_name(d.iri)}` | {chebi_links(i.matches) or '—'} |")
+                        f"| `{local_name(d.iri)}` | {chebi_links(i.matches) or '—'} "
+                        f"| {wikidata_link(links, e.z, i.mass_number) or '—'} |")
         parts.append("\n".join(rows) + "\n")
         if e.abundance_notes:
             parts.append(f"Notes: {note_links(e.abundance_notes)}\n")
@@ -526,7 +546,8 @@ def hand_written(name: str, elements: list[Element]) -> str:
             .replace("{{repo}}", REPO_URL))
 
 
-def build(data_path: Path, revision_path: Path, out: Path, sparql_endpoint: str = "") -> dict[str, bool]:
+def build(data_path: Path, revision_path: Path, out: Path, sparql_endpoint: str = "",
+          wikidata_path: Path = WIKIDATA_CSV) -> dict[str, bool]:
     if out.exists():
         shutil.rmtree(out)
     out.mkdir(parents=True)
@@ -548,13 +569,14 @@ def build(data_path: Path, revision_path: Path, out: Path, sparql_endpoint: str 
 
     elements = read_elements(data)
     notes = footnotes(data)
+    links = read_wikidata(wikidata_path)
     site = Site(out, sparql_endpoint)
     site.add("index", "Home", hand_written("index", elements), "index")
     site.add("about", "About", hand_written("about", elements), "about")
     site.add("atomic-weights", "Standard Atomic Weights", page_atomic_weights(elements, notes), "atomic-weights")
     site.add("isotopic-abundances", "Isotopic Abundances", page_isotopic_abundances(elements, notes), "isotopic-abundances")
     for element in elements:
-        site.add(f"elements/{element.page}", element.name.capitalize(), page_element(element, notes), "atomic-weights")
+        site.add(f"elements/{element.page}", element.name.capitalize(), page_element(element, notes, links), "atomic-weights")
     site.add("model", "Data Model", page_model(tap, reports), "model")
     site.add("revision-example", "Revision Example", page_revision(revision), "model")
     site.add("downloads", "Downloads", page_downloads(out, elements), "downloads")
@@ -570,8 +592,10 @@ def main(argv=None) -> int:
     ap.add_argument("--out", type=Path, default=HERE / "_site")
     ap.add_argument("--sparql-endpoint", default=os.environ.get("SPARQL_ENDPOINT", ""),
                     help="URL of the live SPARQL endpoint; without it the query form is left out")
+    ap.add_argument("--wikidata", type=Path, default=WIKIDATA_CSV,
+                    help="CSV with the Wikidata items, see wikidata_links.py (missing file: no Wikidata links)")
     args = ap.parse_args(argv)
-    reports = build(args.data, args.revision, args.out, args.sparql_endpoint)
+    reports = build(args.data, args.revision, args.out, args.sparql_endpoint, args.wikidata)
     for name, ok in reports.items():
         print(f"{name}: {'conforms' if ok else 'DOES NOT CONFORM'}", file=sys.stderr)
     print(f"site written to {args.out}", file=sys.stderr)
