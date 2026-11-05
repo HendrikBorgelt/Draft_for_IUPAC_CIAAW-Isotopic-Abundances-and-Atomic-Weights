@@ -16,7 +16,6 @@ import pyoxigraph as ox
 import pytest
 from bs4 import BeautifulSoup
 from rdflib import Graph, RDF, URIRef
-from rdflib.compare import isomorphic
 
 import build_site as b
 import check_wikidata_weights
@@ -200,9 +199,27 @@ def test_all_internal_links_resolve(site):
                 assert (page.parent / unquote(target)).exists(), f"{page.name}: {target}"
 
 
+def canonical(path, rdf_format):
+    """The triples of a file, with blank nodes relabelled so that files can be compared.
+
+    rdflib's isomorphic() does the same, but needs minutes for each file because of the blank nodes in the full data.
+    """
+    dataset = ox.Dataset(ox.parse(path=str(path), format=rdf_format))
+    dataset.canonicalize(ox.CanonicalizationAlgorithm.RDFC_1_0)
+    return {str(quad) for quad in dataset}
+
+
+@pytest.fixture(scope="module")
+def canonical_data():
+    return canonical(DATA, ox.RdfFormat.TURTLE)
+
+
 @pytest.mark.parametrize("label, extension, rdf_format, media_type", b.FORMATS)
-def test_every_format_holds_the_same_triples(site, graph, label, extension, rdf_format, media_type):
-    assert isomorphic(graph, Graph().parse(site / "data" / f"ciaaw.{extension}", format=rdf_format)), label
+def test_every_format_holds_the_same_triples(site, graph, canonical_data, label, extension, rdf_format, media_type):
+    path = site / "data" / f"ciaaw.{extension}"
+    triples = canonical(path, ox.RdfFormat.from_media_type(media_type))
+    assert triples == canonical_data and len(triples) == len(graph), label
+    assert len(Graph().parse(path, format=rdf_format)) == len(graph), label   # rdflib can read it too
 
 
 @pytest.mark.parametrize("resource", b.RESOURCES, ids=lambda r: r.key)
