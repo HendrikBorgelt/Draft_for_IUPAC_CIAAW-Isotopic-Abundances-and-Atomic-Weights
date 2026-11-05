@@ -99,6 +99,23 @@ exported yet.
 Note: `ttl2quickstatements.py` is not in this repository yet, so this target fails until the
 script is added.
 
+## Comparing with Wikidata
+
+`make check-wikidata` queries Wikidata with SPARQL (items with atomic number P1086 and number of
+neutrons P1148, with natural abundance P2374) and compares the current abundances in `build/ciaaw.ttl` with them, in
+percent. Isotopes are matched by atomic number Z and neutron number N (mass number = Z + N). Differences go
+to STDOUT, a summary to STDERR:
+
+```
+DIFFERENT     hydrogen-2      local [0.001, 0.028]  Q2 wikidata 0.0115
+NO-VALUE      helium-3        local 0.0002~0.0002  Q3 has no abundance
+NOT-FOUND     argon-36        local ...  no Wikidata item
+ONLY-WIKIDATA ...             Wikidata has an abundance, the local data has not
+```
+
+Call `python3 check_wikidata.py --help` for `--strict` (exit 1 on differences) and
+`--sparql-json` (use saved results, no network).
+
 ## Tests
 
 ```

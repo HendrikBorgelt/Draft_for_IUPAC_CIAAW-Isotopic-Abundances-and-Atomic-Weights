@@ -25,7 +25,7 @@ SITE_REVISION ?= example-output-next.ttl
 WEIGHTS_URL    ?= https://ciaaw.org/atomic-weights.htm
 ABUNDANCES_URL ?= https://ciaaw.org/isotopic-abundances.htm
 
-.PHONY: help install download ttl example quickstatements test model validate site serve clean
+.PHONY: help install download ttl example quickstatements check-wikidata test model validate site serve clean
 
 help:
 	@echo "make install         install the Python dependencies"
@@ -33,6 +33,7 @@ help:
 	@echo "make ttl             create $(TTL) from the saved CIAAW pages"
 	@echo "make example         create the example Turtle in $(BUILD_DIR) from the test fixtures, offline"
 	@echo "make quickstatements create $(QS) from the Turtle"
+	@echo "make check-wikidata compare the abundances in $(TTL) with Wikidata"
 	@echo "make test            run all tests"
 	@echo "make model           regenerate the SHACL shapes and diagrams from the DCTAP"
 	@echo "make validate        check the site data against the SHACL shapes"
@@ -67,6 +68,9 @@ quickstatements: $(QS)
 
 $(QS): ttl2quickstatements.py $(TTL)
 	$(PYTHON) ttl2quickstatements.py $(TTL) -o $@
+
+check-wikidata: $(TTL)
+	$(PYTHON) check_wikidata.py $(TTL)
 
 test:
 	$(PYTHON) -m pytest -q
