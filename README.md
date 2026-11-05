@@ -32,6 +32,7 @@ We want to develop this together with the Commission. Decisions about the conten
 | `ciaaw2ttl.py` | CIAAW HTML tables → Turtle |
 | `supplement.csv` | What the tables lack: report year, DOI, ChEBI matches |
 | `ttl2quickstatements.py` | Turtle → QuickStatements CSV for Wikidata (isotope abundances only) |
+| `ttl2sssom.py` | Turtle → SSSOM mappings of the elements and isotopes to Wikidata and ChEBI |
 | `check_wikidata.py` | Compares the abundances in the Turtle with Wikidata |
 | `tap2model.py` | DCTAP → SHACL shapes and UML diagrams |
 | `model/` | The data model, see [below](#the-data-model) |
@@ -120,6 +121,23 @@ without unit, because that is how Wikidata stores P2374 (0.0107 for carbon-13), 
 Atomic weights and half-lives are not exported: Wikidata has no agreed property for an interval of standard
 atomic weights.
 
+## Mappings (SSSOM)
+
+`make sssom` writes `build/ciaaw.sssom.tsv`, the mappings of the elements and isotopes to other resources as an
+[SSSOM](https://mapping-commons.github.io/sssom/) mapping set (SSSOM/TSV: a YAML header in comment lines, then
+one row per mapping). `ttl2sssom.py` writes:
+
+| Mapping | Predicate | Justification |
+|---|---|---|
+| Element or isotope → Wikidata item, from `site/wikidata.csv` (found by atomic number, and number of neutrons for isotopes) | `skos:exactMatch` | `semapv:UnspecifiedMatching`, with the rule in `curation_rule_text` |
+| Element or isotope → ChEBI, the `skos:closeMatch` in the Turtle (from `supplement.csv`) | `skos:closeMatch` | `semapv:ManualMappingCuration` |
+
+Each row has the labels and categories of both sides. The header has the required `mapping_set_id` and `license`,
+the `curie_map`, and the ORCIDs of the [AUTHORS](AUTHORS) as `creator_id`. The license is CC0 for the mappings
+only, not for the CIAAW values; change it with `--license`. The `mapping_set_id` is the address where the file
+would be published on the site, which does not exist yet. Other options are `--mapping-set-version` and
+`--wikidata`.
+
 ## Comparing with Wikidata
 
 `make check-wikidata` queries Wikidata with SPARQL (items with atomic number P1086 and number of
@@ -163,6 +181,7 @@ make test
 | `test_model.py` | The DCTAP, and that each SHACL rule rejects data broken on purpose |
 | `test_check_bodr.py` | The comparison with BODR, on a small isotopes file |
 | `test_quickstatements.py` | The QuickStatements export: properties, units, no duplicate items |
+| `test_sssom.py` | The SSSOM header and table, the CURIEs, and the mappings of hydrogen |
 | `test_site.py` | The pages, the watermark, links, and that every RDF format holds the same triples |
 | `test_sparql.py` | The example queries on Oxigraph, the SPARQL page and the deployment setup |
 | `test_published_data.py` | `ciaaw.ttl` and the site built from it, including that nothing is out of date |
@@ -260,6 +279,7 @@ Things to know:
 | `make install` | `python -m pip install -r requirements.txt` |
 | `make ttl` | `python ciaaw2ttl.py --weights data/atomic-weights.htm --abundances data/isotopic-abundances.htm --supplement supplement.csv -o ciaaw.ttl` |
 | `make quickstatements` | `python ttl2quickstatements.py ciaaw.ttl -o quickstatements.csv` |
+| `make sssom` | `python ttl2sssom.py ciaaw.ttl -o ciaaw.sssom.tsv` |
 | `make test` | `python -m pytest -q` |
 | `make model` | `python tap2model.py` |
 | `make validate` | `python tap2model.py --validate ciaaw.ttl example-output-next.ttl` |

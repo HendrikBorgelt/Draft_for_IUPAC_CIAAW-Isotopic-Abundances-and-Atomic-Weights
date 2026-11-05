@@ -18,6 +18,7 @@ PREVIOUS    ?=
 # The full data. It is committed, so that the site can be built without downloading anything.
 TTL         ?= ciaaw.ttl
 QS          ?= $(BUILD_DIR)/quickstatements.csv
+SSSOM       ?= $(BUILD_DIR)/ciaaw.sssom.tsv
 
 # Optional: JSON of check_wikidata.py --json, then QuickStatements also adds the abundance to Wikidata items
 # that have none, e.g. make quickstatements QS_COMPARISON=build/wikidata-comparison.json
@@ -47,7 +48,7 @@ SPARQL_EXAMPLES_JAR  ?= $(BUILD_DIR)/sparql-examples-utils-$(SPARQL_EXAMPLES_UTI
 SPARQL_EXAMPLES_URL  ?= https://github.com/sib-swiss/sparql-examples-utils/releases/download/v$(SPARQL_EXAMPLES_UTILS_VERSION)/sparql-examples-utils-$(SPARQL_EXAMPLES_UTILS_VERSION)-uber.jar
 SPARQL_EXAMPLES_BASE ?= https://hendrikborgelt.github.io/Draft_for_IUPAC_CIAAW-Isotopic-Abundances-and-Atomic-Weights/sparql/queries/
 
-.PHONY: help install download ttl example quickstatements check-wikidata wikidata-links wikidata-comparison bodr-comparison references test model validate sparql-examples print-sparql-examples-version site serve sparql-dev sparql-deploy clean
+.PHONY: help install download ttl example quickstatements sssom check-wikidata wikidata-links wikidata-comparison bodr-comparison references test model validate sparql-examples print-sparql-examples-version site serve sparql-dev sparql-deploy clean
 
 help:
 	@echo "make install         install the Python dependencies"
@@ -55,6 +56,7 @@ help:
 	@echo "make ttl             create $(TTL) from the saved CIAAW pages"
 	@echo "make example         create the example Turtle in $(BUILD_DIR) from the test fixtures, offline"
 	@echo "make quickstatements create $(QS) from the Turtle"
+	@echo "make sssom            create $(SSSOM), the mappings to Wikidata and ChEBI, from the Turtle"
 	@echo "make check-wikidata compare the abundances in $(TTL) with Wikidata"
 	@echo "make wikidata-links refresh site/wikidata.csv, the Wikidata items linked from the element pages"
 	@echo "make wikidata-comparison compare $(SITE_DATA) with Wikidata, for the site (site/wikidata-comparison.json)"
@@ -96,6 +98,11 @@ quickstatements: $(QS)
 $(QS): ttl2quickstatements.py site/wikidata.csv $(TTL) $(QS_COMPARISON)
 	@mkdir -p $(dir $@)
 	$(PYTHON) ttl2quickstatements.py $(TTL) $(if $(QS_COMPARISON),--comparison $(QS_COMPARISON)) -o $@
+
+sssom: $(SSSOM)
+
+$(SSSOM): ttl2sssom.py site/wikidata.csv AUTHORS $(TTL)
+	$(PYTHON) ttl2sssom.py $(TTL) -o $@
 
 check-wikidata: $(TTL)
 	$(PYTHON) check_wikidata.py $(TTL)
