@@ -318,16 +318,23 @@ def test_comparison_overview_lists_the_resources_and_is_in_the_navigation(site):
 
 def test_comparison_page_for_a_resource_lists_the_differences(site):
     html = text_of(site / "wikidata-comparison.html")
-    assert "Comparison with Wikidata" in html and "Different values" in html
+    assert "Comparison: Wikidata abundances" in html and "Different values" in html
     assert "argon-36" in html and 'href="https://www.wikidata.org/wiki/Q2019992"' in html
-    assert [a.get_text() for a in BeautifulSoup(html, "html.parser").select("#breadcrumb a")] == ["Overview", "Wikidata", "BODR"]
+    assert [a.get_text() for a in BeautifulSoup(html, "html.parser").select("#breadcrumb a")] == ["Overview", "Wikidata abundances", "Wikidata atomic weights", "BODR"]
+
+
+def test_wikidata_weights_comparison_page_lists_elements_with_their_sources(site):
+    html = text_of(site / "wikidata-weights-comparison.html")
+    assert "Comparison: Wikidata atomic weights" in html and "Only in the resource" in html
+    assert "<th>Element</th>" in html and "<th>Source</th>" in html
+    assert 'href="https://www.wikidata.org/wiki/Q1054"' in html and "PubChem" in html
 
 
 def test_bodr_comparison_page_cites_the_article(site):
     html = text_of(site / "bodr-comparison.html")
     assert "Comparison with BODR" in html and "Blue Obelisk" in html
     assert 'href="https://doi.org/10.1186/1758-2946-3-37"' in html and "dysprosium-156" in html
-    assert [a.get_text() for a in BeautifulSoup(html, "html.parser").select("#breadcrumb a")] == ["Overview", "Wikidata", "BODR"]
+    assert [a.get_text() for a in BeautifulSoup(html, "html.parser").select("#breadcrumb a")] == ["Overview", "Wikidata abundances", "Wikidata atomic weights", "BODR"]
 
 
 def test_comparison_page_without_the_json(tmp_path):

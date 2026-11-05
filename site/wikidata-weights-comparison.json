@@ -1,0 +1,347 @@
+{
+  "generated": "2026-11-05",
+  "source": "ciaaw.ttl",
+  "local_isotopes": 84,
+  "resource_items": 174,
+  "counts": {
+    "ONLY-RESOURCE": 34
+  },
+  "differences": [
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "technetium",
+      "qid": "Q1054",
+      "local": "",
+      "wikidata": "97.907",
+      "text": "Q1054 wikidata 97.907  not in local data",
+      "sources": [
+        {
+          "qid": "Q278487",
+          "label": "PubChem",
+          "doi": ""
+        }
+      ]
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "promethium",
+      "qid": "Q1809",
+      "local": "",
+      "wikidata": "144.9127559 [144.9127526, 144.9127592]",
+      "text": "Q1809 wikidata 144.9127559 [144.9127526, 144.9127592]  not in local data",
+      "sources": []
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "polonium",
+      "qid": "Q979",
+      "local": "",
+      "wikidata": "208.9824308 [208.9824288, 208.9824328]",
+      "text": "Q979 wikidata 208.9824308 [208.9824288, 208.9824328]  not in local data",
+      "sources": []
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "astatine",
+      "qid": "Q999",
+      "local": "",
+      "wikidata": "209.9871479 [209.9871396, 209.9871562]",
+      "text": "Q999 wikidata 209.9871479 [209.9871396, 209.9871562]  not in local data",
+      "sources": []
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "radon",
+      "qid": "Q1133",
+      "local": "",
+      "wikidata": "222.0175782 [222.0175757, 222.0175807]",
+      "text": "Q1133 wikidata 222.0175782 [222.0175757, 222.0175807]  not in local data",
+      "sources": []
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "francium",
+      "qid": "Q671",
+      "local": "",
+      "wikidata": "223.019736 [223.0197335, 223.0197385]",
+      "text": "Q671 wikidata 223.019736 [223.0197335, 223.0197385]  not in local data",
+      "sources": []
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "radium",
+      "qid": "Q1128",
+      "local": "",
+      "wikidata": "226.0254103 [226.0254078, 226.0254128]",
+      "text": "Q1128 wikidata 226.0254103 [226.0254078, 226.0254128]  not in local data",
+      "sources": []
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "actinium",
+      "qid": "Q1121",
+      "local": "",
+      "wikidata": "227.028",
+      "text": "Q1121 wikidata 227.028  not in local data",
+      "sources": [
+        {
+          "qid": "Q278487",
+          "label": "PubChem",
+          "doi": ""
+        }
+      ]
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "neptunium",
+      "qid": "Q1105",
+      "local": "",
+      "wikidata": "237.0481736 [237.0481717, 237.0481755]",
+      "text": "Q1105 wikidata 237.0481736 [237.0481717, 237.0481755]  not in local data",
+      "sources": []
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "plutonium",
+      "qid": "Q1102",
+      "local": "",
+      "wikidata": "244.0642053 [244.0641997, 244.0642109]",
+      "text": "Q1102 wikidata 244.0642053 [244.0641997, 244.0642109]  not in local data",
+      "sources": []
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "americium",
+      "qid": "Q1872",
+      "local": "",
+      "wikidata": "243",
+      "text": "Q1872 wikidata 243  not in local data",
+      "sources": [
+        {
+          "qid": "Q55823721",
+          "label": "RCSB protein data bank",
+          "doi": ""
+        }
+      ]
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "curium",
+      "qid": "Q1876",
+      "local": "",
+      "wikidata": "247.07",
+      "text": "Q1876 wikidata 247.07  not in local data",
+      "sources": [
+        {
+          "qid": "Q278487",
+          "label": "PubChem",
+          "doi": ""
+        }
+      ]
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "berkelium",
+      "qid": "Q1882",
+      "local": "",
+      "wikidata": "247.0703073 [247.0703014, 247.0703132]",
+      "text": "Q1882 wikidata 247.0703073 [247.0703014, 247.0703132]  not in local data",
+      "sources": []
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "californium",
+      "qid": "Q1888",
+      "local": "",
+      "wikidata": "251.0795886 [251.0795838, 251.0795934]",
+      "text": "Q1888 wikidata 251.0795886 [251.0795838, 251.0795934]  not in local data",
+      "sources": []
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "einsteinium",
+      "qid": "Q1892",
+      "local": "",
+      "wikidata": "252.08298 [252.082926, 252.083034]",
+      "text": "Q1892 wikidata 252.08298 [252.082926, 252.083034]  not in local data",
+      "sources": []
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "fermium",
+      "qid": "Q1896",
+      "local": "",
+      "wikidata": "257.095",
+      "text": "Q1896 wikidata 257.095  not in local data",
+      "sources": [
+        {
+          "qid": "Q278487",
+          "label": "PubChem",
+          "doi": ""
+        }
+      ]
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "mendelevium",
+      "qid": "Q1898",
+      "local": "",
+      "wikidata": "258.0984315 [258.0984265, 258.0984365]",
+      "text": "Q1898 wikidata 258.0984315 [258.0984265, 258.0984365]  not in local data",
+      "sources": []
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "nobelium",
+      "qid": "Q1901",
+      "local": "",
+      "wikidata": "259.10103 [259.10092, 259.10114]",
+      "text": "Q1901 wikidata 259.10103 [259.10092, 259.10114]  not in local data",
+      "sources": []
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "lawrencium",
+      "qid": "Q1905",
+      "local": "",
+      "wikidata": "266.11983 [266.11927, 266.12039]",
+      "text": "Q1905 wikidata 266.11983 [266.11927, 266.12039]  not in local data",
+      "sources": []
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "rutherfordium",
+      "qid": "Q1226",
+      "local": "",
+      "wikidata": "267.12179 [267.12117, 267.12241]",
+      "text": "Q1226 wikidata 267.12179 [267.12117, 267.12241]  not in local data",
+      "sources": []
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "dubnium",
+      "qid": "Q1232",
+      "local": "",
+      "wikidata": "268.12567 [268.1251, 268.12624]",
+      "text": "Q1232 wikidata 268.12567 [268.1251, 268.12624]  not in local data",
+      "sources": []
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "seaborgium",
+      "qid": "Q1234",
+      "local": "",
+      "wikidata": "267.12436 [267.12406, 267.12466]",
+      "text": "Q1234 wikidata 267.12436 [267.12406, 267.12466]  not in local data",
+      "sources": []
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "bohrium",
+      "qid": "Q1249",
+      "local": "",
+      "wikidata": "270.13336 [270.13305, 270.13367]",
+      "text": "Q1249 wikidata 270.13336 [270.13305, 270.13367]  not in local data",
+      "sources": []
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "hassium",
+      "qid": "Q1252",
+      "local": "",
+      "wikidata": "271.13717 [271.13685, 271.13749]",
+      "text": "Q1252 wikidata 271.13717 [271.13685, 271.13749]  not in local data",
+      "sources": []
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "meitnerium",
+      "qid": "Q1258",
+      "local": "",
+      "wikidata": "278.15631 [278.15563, 278.15699]",
+      "text": "Q1258 wikidata 278.15631 [278.15563, 278.15699]  not in local data",
+      "sources": []
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "darmstadtium",
+      "qid": "Q1266",
+      "local": "",
+      "wikidata": "281.16451 [281.16392, 281.1651]",
+      "text": "Q1266 wikidata 281.16451 [281.16392, 281.1651]  not in local data",
+      "sources": []
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "roentgenium",
+      "qid": "Q1272",
+      "local": "",
+      "wikidata": "282.16912 [282.1684, 282.16984]",
+      "text": "Q1272 wikidata 282.16912 [282.1684, 282.16984]  not in local data",
+      "sources": []
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "copernicium",
+      "qid": "Q1278",
+      "local": "",
+      "wikidata": "285.17712 [285.17652, 285.17772]",
+      "text": "Q1278 wikidata 285.17712 [285.17652, 285.17772]  not in local data",
+      "sources": []
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "nihonium",
+      "qid": "Q1301",
+      "local": "",
+      "wikidata": "286.18221 [286.18149, 286.18293]",
+      "text": "Q1301 wikidata 286.18221 [286.18149, 286.18293]  not in local data",
+      "sources": []
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "flerovium",
+      "qid": "Q1302",
+      "local": "",
+      "wikidata": "289.191",
+      "text": "Q1302 wikidata 289.191  not in local data",
+      "sources": []
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "moscovium",
+      "qid": "Q1303",
+      "local": "",
+      "wikidata": "290.19598 [290.19525, 290.19671]",
+      "text": "Q1303 wikidata 290.19598 [290.19525, 290.19671]  not in local data",
+      "sources": []
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "livermorium",
+      "qid": "Q1304",
+      "local": "",
+      "wikidata": "293.20449 [293.20389, 293.20509]",
+      "text": "Q1304 wikidata 293.20449 [293.20389, 293.20509]  not in local data",
+      "sources": []
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "tennessine",
+      "qid": "Q1306",
+      "local": "",
+      "wikidata": "294.21046 [294.20972, 294.2112]",
+      "text": "Q1306 wikidata 294.21046 [294.20972, 294.2112]  not in local data",
+      "sources": []
+    },
+    {
+      "kind": "ONLY-RESOURCE",
+      "name": "oganesson",
+      "qid": "Q1307",
+      "local": "",
+      "wikidata": "294.21392 [294.21321, 294.21463]",
+      "text": "Q1307 wikidata 294.21392 [294.21321, 294.21463]  not in local data",
+      "sources": []
+    }
+  ]
+}

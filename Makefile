@@ -48,7 +48,7 @@ SPARQL_EXAMPLES_JAR  ?= $(BUILD_DIR)/sparql-examples-utils-$(SPARQL_EXAMPLES_UTI
 SPARQL_EXAMPLES_URL  ?= https://github.com/sib-swiss/sparql-examples-utils/releases/download/v$(SPARQL_EXAMPLES_UTILS_VERSION)/sparql-examples-utils-$(SPARQL_EXAMPLES_UTILS_VERSION)-uber.jar
 SPARQL_EXAMPLES_BASE ?= https://hendrikborgelt.github.io/Draft_for_IUPAC_CIAAW-Isotopic-Abundances-and-Atomic-Weights/sparql/queries/
 
-.PHONY: help install download ttl example quickstatements sssom check-wikidata wikidata-links wikidata-comparison bodr-comparison references test model validate sparql-examples print-sparql-examples-version site serve sparql-dev sparql-deploy clean
+.PHONY: help install download ttl example quickstatements sssom check-wikidata check-wikidata-weights wikidata-links wikidata-comparison wikidata-weights-comparison bodr-comparison references test model validate sparql-examples print-sparql-examples-version site serve sparql-dev sparql-deploy clean
 
 help:
 	@echo "make install         install the Python dependencies"
@@ -57,9 +57,11 @@ help:
 	@echo "make example         create the example Turtle in $(BUILD_DIR) from the test fixtures, offline"
 	@echo "make quickstatements create $(QS) from the Turtle"
 	@echo "make sssom            create $(SSSOM), the mappings to Wikidata and ChEBI, from the Turtle"
+	@echo "make check-wikidata-weights compare the standard atomic weights in $(TTL) with the mass in Wikidata"
 	@echo "make check-wikidata compare the abundances in $(TTL) with Wikidata"
 	@echo "make wikidata-links refresh site/wikidata.csv, the Wikidata items linked from the element pages"
 	@echo "make wikidata-comparison compare $(SITE_DATA) with Wikidata, for the site (site/wikidata-comparison.json)"
+	@echo "make wikidata-weights-comparison compare the atomic weights in $(SITE_DATA) with Wikidata (site/wikidata-weights-comparison.json)"
 	@echo "make bodr-comparison compare $(SITE_DATA) with the bodr package, for the site (site/bodr-comparison.json)"
 	@echo "make references refresh site/references.json, the formatted sources for the Bibliography"
 	@echo "make test            run all tests"
@@ -107,8 +109,14 @@ $(SSSOM): ttl2sssom.py site/wikidata.csv AUTHORS $(TTL)
 check-wikidata: $(TTL)
 	$(PYTHON) check_wikidata.py $(TTL)
 
+check-wikidata-weights: $(TTL)
+	$(PYTHON) check_wikidata_weights.py $(TTL)
+
 wikidata-comparison:
 	$(PYTHON) check_wikidata.py $(SITE_DATA) --json site/wikidata-comparison.json > /dev/null
+
+wikidata-weights-comparison:
+	$(PYTHON) check_wikidata_weights.py $(SITE_DATA) --json site/wikidata-weights-comparison.json > /dev/null
 
 bodr-comparison:
 	$(PYTHON) check_bodr.py $(SITE_DATA) --json site/bodr-comparison.json > /dev/null

@@ -19,6 +19,7 @@ from rdflib import Graph, RDF, URIRef
 from rdflib.compare import isomorphic
 
 import build_site as b
+import check_wikidata_weights
 import ciaaw2ttl as c
 import combine_sparql_examples as combine
 import tap2model as t
@@ -118,7 +119,7 @@ def test_site_defaults_to_the_full_data(site):
 
 def test_no_page_calls_it_a_sample(site):
     for name in ("index", "atomic-weights", "isotopic-abundances", "downloads", "sparql", "comparison",
-                 "wikidata-comparison", "bodr-comparison"):
+                 "wikidata-comparison", "wikidata-weights-comparison", "bodr-comparison"):
         assert "sample of" not in text_of(site / f"{name}.md").replace("A small sample after", ""), name
         assert "Only a sample" not in text_of(site / f"{name}.md"), name
 
@@ -194,10 +195,11 @@ def test_every_format_holds_the_same_triples(site, graph, label, extension, rdf_
 
 
 @pytest.mark.parametrize("resource", b.RESOURCES, ids=lambda r: r.key)
-def test_comparisons_are_up_to_date_with_the_data(resource):
+def test_comparisons_are_up_to_date_with_the_data(resource, graph):
     result = json.loads(text_of(resource.json))
     assert result["source"] == DATA.name
-    assert result["local_isotopes"] == ISOTOPES
+    assert result["local_isotopes"] == (len(check_wikidata_weights.local_weights(graph)) if resource.subject == "element"
+                                        else ISOTOPES)
 
 
 def test_combined_file_holds_the_full_data_and_the_examples(tmp_path, graph):

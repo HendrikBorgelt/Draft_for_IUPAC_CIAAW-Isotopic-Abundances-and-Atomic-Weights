@@ -272,6 +272,10 @@ class Resource:
     description: str
     item_url: str = ""  # prefix of the identifiers in the "Item" column; without it they are not linked
     doi: str = ""       # article to cite for the resource, formatted from references.json
+    label: str = ""                     # name in the navigation and the overview, if not the name
+    subject: str = "isotope"            # what is compared: one row per subject
+    value: str = "abundance"            # the compared value, as in "the resource has no natural abundance"
+    texts: dict | None = None            # explanation of a kind in COMPARISON_KINDS that differs from the default
 
 
 RESOURCES = [
@@ -279,7 +283,17 @@ RESOURCES = [
              "wikidata-comparison",
              "Isotopic abundances in this data compared with the natural abundance (P2374) of the isotopes in "
              "[Wikidata](https://www.wikidata.org), matched on atomic number and number of neutrons. Values are in "
-             "percent. The comparison is made by `check_wikidata.py`.", WIKIDATA_ENTITY),
+             "percent. The comparison is made by `check_wikidata.py`.", WIKIDATA_ENTITY, label="Wikidata abundances"),
+    Resource("wikidata-weights-comparison", "Wikidata", "https://www.wikidata.org",
+             SITE_SRC / "wikidata-weights-comparison.json", "wikidata-weights-comparison",
+             "Standard atomic weights in this data compared with the mass (P2067, in dalton) of the chemical elements "
+             "in [Wikidata](https://www.wikidata.org), matched on the atomic number. A weight agrees if the Wikidata "
+             "value is inside the local interval or within the local uncertainty, or if the bounds of a rounded "
+             "Wikidata value contain the local weight. The comparison is made by `check_wikidata_weights.py`.",
+             WIKIDATA_ENTITY, label="Wikidata atomic weights", subject="element", value="mass",
+             texts={"ONLY-RESOURCE": "{name} has a mass for the element, the local data has no standard atomic weight "
+                                     "for it. CIAAW gives none for these elements (no stable isotopes, or not "
+                                     "assessed)."}),
     Resource("bodr-comparison", "BODR", "https://github.com/egonw/bodr", SITE_SRC / "bodr-comparison.json",
              "bodr-comparison",
              "Isotopic abundances in this data compared with the relative abundances in the isotopes file of the "
@@ -289,15 +303,15 @@ RESOURCES = [
              doi="10.1186/1758-2946-3-37"),
 ]
 
-SUBNAV["comparison"] = [("comparison", "Overview"), *((r.key, r.name) for r in RESOURCES)]
+SUBNAV["comparison"] = [("comparison", "Overview"), *((r.key, r.label or r.name) for r in RESOURCES)]
 
 # kind in the JSON, title, explanation ({name} is the resource)
 COMPARISON_KINDS = [
-    ("DIFFERENT", "Different values", "{name} has an abundance for the isotope, and it differs from the local one."),
-    ("NO-VALUE", "No value", "The isotope is in {name}, but without a natural abundance."),
-    ("NOT-FOUND", "Not found", "{name} has no item for this isotope."),
-    ("UNIT", "Unexpected unit", "The abundance in {name} is not a percentage or a plain number."),
-    ("ONLY-RESOURCE", "Only in the resource", "{name} has an abundance, the local data has no such isotope."),
+    ("DIFFERENT", "Different values", "{name} has {value} for the {subject}, and it differs from the local one."),
+    ("NO-VALUE", "No value", "The {subject} is in {name}, but without a {value}."),
+    ("NOT-FOUND", "Not found", "{name} has no item for this {subject}."),
+    ("UNIT", "Unexpected unit", "The {value} in {name} has an unexpected unit."),
+    ("ONLY-RESOURCE", "Only in the resource", "{name} has a {value}, the local data has no such {subject}."),
 ]
 
 
@@ -324,11 +338,11 @@ def page_comparison(resources: list[Resource], sample: bool = False) -> str:
         result = read_comparison(r)
         counts = result["counts"] if result else {}
         cells = " | ".join(str(counts.get(kind, 0)) if result else "—" for kind, _, _ in COMPARISON_KINDS[:3])
-        rows.append(f"| [{r.name}]({r.key}.md) | {result['generated'] if result else 'not generated'} | {cells} |")
+        rows.append(f"| [{r.label or r.name}]({r.key}.md) | {result['generated'] if result else 'not generated'} | {cells} |")
     return "\n".join([
         "# Comparison\n",
-        "The isotopic abundances in this data are compared with other resources, to find values that differ and "
-        "isotopes that are missing on one side. A difference is a reason to look at both sides, not a verdict on "
+        "The isotopic abundances and the standard atomic weights in this data are compared with other resources, to "
+        "find values that differ and isotopes or elements that are missing on one side. A difference is a reason to look at both sides, not a verdict on "
         "which one is right.\n",
         "| Resource | Compared on | Different values | No value | Not found |", "| --- | --- | --- | --- | --- |",
         *rows, "",
@@ -345,7 +359,8 @@ def resource_bibliography(result: dict) -> str:
 
 def page_resource_comparison(resource: Resource, sample: bool = False) -> str:
     """The differences between the local abundances and one resource, from the JSON of its script."""
-    intro = f"# Comparison with {resource.name}\n\n{resource.description}\n"
+    intro = f"# Comparison with {resource.name}\n\n{resource.description}\n" if not resource.label else \
+        f"# Comparison: {resource.label}\n\n{resource.description}\n"
     if resource.doi:
         cited = read_references(REFERENCES_JSON).get(resource.doi.upper(), resource.doi)
         intro += (f'\n<div class="csl-bib-body">\n<div class="csl-entry">{cited} '
@@ -355,10 +370,10 @@ def page_resource_comparison(resource: Resource, sample: bool = False) -> str:
         return intro + f"\n> The comparison has not been generated yet. Run `make {resource.command}`.\n"
     counts = result["counts"]
     parts = [intro,
-             f"Compared on {result['generated']}: {result['local_isotopes']} isotopes in `{result['source']}`, "
+             f"Compared on {result['generated']}: {result['local_isotopes']} {resource.subject}s in `{result['source']}`, "
              f"{result.get('resource_items', result.get('wikidata_items'))} items in {resource.name}"
              f"{' (' + result['resource_version'] + ')' if result.get('resource_version') else ''}."
-             f"{' Only a sample of the elements is on this site, so many isotopes are only in the resource.' if sample else ''}\n",
+             f"{' Only a sample of the elements is on this site, so many {resource.subject}s are only in the resource.' if sample else ''}\n",
              "| Result | Count |", "| --- | --- |",
              *(f"| {title} | {counts.get(kind, 0)} |" for kind, title, _ in COMPARISON_KINDS)]
     cited = any(d.get("sources") for d in result["differences"])
@@ -366,8 +381,8 @@ def page_resource_comparison(resource: Resource, sample: bool = False) -> str:
         rows = [d for d in result["differences"] if d["kind"] == kind]
         if not rows:
             continue
-        parts += ["", f"## {title}\n", f"{text.format(name=resource.name)}\n",
-                  "| Isotope | Local | Value in resource | Item |" + (" Source |" if cited else ""),
+        parts += ["", f"## {title}\n", f"{(resource.texts or {}).get(kind, text).format(name=resource.name, value=resource.value, subject=resource.subject)}\n",
+                  f"| {resource.subject.capitalize()} | Local | Value in resource | Item |" + (" Source |" if cited else ""),
                   "| --- | --- | --- | --- |" + (" --- |" if cited else ""),
                   *(f"| {d['name']} | {d['local'] or '—'} | {d['wikidata'] or '—'} | {item_links(resource, d['qid'])} |"
                     + (f" {reference_links(resource, d.get('sources', [])) or '—'} |" if cited else "")
@@ -870,7 +885,7 @@ def build(data_path: Path, revision_path: Path, out: Path, sparql_endpoint: str 
     sample = len(elements) < ELEMENT_COUNT
     site.add("comparison", "Comparison", page_comparison(resources, sample), "comparison")
     for resource in resources:
-        site.add(resource.key, f"Comparison with {resource.name}", page_resource_comparison(resource, sample), "comparison")
+        site.add(resource.key, f"Comparison with {resource.label or resource.name}", page_resource_comparison(resource, sample), "comparison")
     examples = read_examples(data_path)
     site.add("sparql", "SPARQL", page_sparql(examples, sparql_endpoint, coverage_note(elements)), "sparql",
              editor=sparql_editor(sparql_endpoint, examples))

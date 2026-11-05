@@ -34,6 +34,7 @@ We want to develop this together with the Commission. Decisions about the conten
 | `ttl2quickstatements.py` | Turtle → QuickStatements CSV for Wikidata (isotope abundances only) |
 | `ttl2sssom.py` | Turtle → SSSOM mappings of the elements and isotopes to Wikidata and ChEBI |
 | `check_wikidata.py` | Compares the abundances in the Turtle with Wikidata |
+| `check_wikidata_weights.py` | Compares the standard atomic weights in the Turtle with the mass of the elements in Wikidata |
 | `tap2model.py` | DCTAP → SHACL shapes and UML diagrams |
 | `model/` | The data model, see [below](#the-data-model) |
 | `build_site.py`, `site/` | Static site for GitHub Pages |
@@ -41,6 +42,7 @@ We want to develop this together with the Commission. Decisions about the conten
 | `sparql/examples/` | The same queries as sparql-examples Turtle, made by `make sparql-examples` |
 | `update_references.js`, `site/references.json` | The formatted sources for the Bibliography |
 | `check_wikidata.py`, `site/wikidata-comparison.json` | The comparison with Wikidata, shown in the Comparison section of the site |
+| `check_wikidata_weights.py`, `site/wikidata-weights-comparison.json` | The comparison of the atomic weights with Wikidata, also in the Comparison section |
 | `check_bodr.py`, `site/bodr-comparison.json` | The comparison with BODR, shown in the Comparison section |
 | `wikidata_links.py`, `site/wikidata.csv` | The Wikidata items linked from the element pages |
 | `test_*.py`, `fixtures/` | Tests and their small hand-built input tables |
@@ -213,6 +215,17 @@ The element pages link to Wikidata, for the element and for each isotope. The Q-
 with `make wikidata-links` (`wikidata_links.py`): elements are found by atomic number, isotopes by
 atomic number and number of neutrons. When Wikidata has several items for one isotope, the one with a
 natural abundance is used, and the script reports these cases.
+
+### Atomic weights
+
+`make check-wikidata-weights` does the same for the standard atomic weights: the current
+`ciaaw:StandardAtomicWeightDeclaration` of each element against the mass (P2067, in dalton) of the Wikidata items
+that are chemical elements (Q11344), matched on the atomic number. A weight agrees if the Wikidata value lies in the
+local interval or within the local uncertainty, or if the bounds of a rounded Wikidata value (15.999 with
+[15.998, 16]) contain the local weight. The output has the same kinds and the same sources (P248, with the DOI
+from P356 if the source has one) as the abundance comparison. `make wikidata-weights-comparison` writes
+`site/wikidata-weights-comparison.json` for the site. Mind that CIAAW gives no weight for elements without a stable
+isotope, so for those Wikidata is "only in the resource". The local data has no masses of single isotopes.
 
 Each element page ends with a Bibliography of the DOIs in `dcterms:source` of its declarations.
 They are formatted as APA by [citation.js](https://citation.js.org), the way the author's blog does it:

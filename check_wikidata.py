@@ -88,11 +88,11 @@ def percent(fraction: Decimal) -> Decimal:
     return fraction.scaleb(2)
 
 
-def fetch_wikidata(path: Path | None) -> list[dict]:
+def fetch_wikidata(path: Path | None, query: str = QUERY) -> list[dict]:
     if path:
         data = json.loads(path.read_text(encoding="utf-8"))
     else:
-        url = ENDPOINT + "?" + urllib.parse.urlencode({"query": QUERY, "format": "json"})
+        url = ENDPOINT + "?" + urllib.parse.urlencode({"query": query, "format": "json"})
         req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT, "Accept": "application/sparql-results+json"})
         with urllib.request.urlopen(req, timeout=120) as resp:
             data = json.load(resp)
