@@ -5,7 +5,7 @@
 
 The history is the table "Historical Atomic Weights" of ciaaw.org (historical/IUPAC-TSAW.csv): every standard
 atomic weight the Commission recommended, with its year and DOI. Each element with a current standard atomic
-weight gets one declaration per earlier recommendation, named ex:AW-<symbol>-standard-<year>. The newest
+weight gets one declaration per earlier recommendation, named ciaaw_draft:AW-<symbol>-standard-<year>. The newest
 recommendation is the current declaration, which is already in the Turtle. It only gets its year and DOI, and
 the script stops if its value differs from the current value.
 
