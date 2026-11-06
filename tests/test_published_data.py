@@ -1,0 +1,249 @@
+"""Tests for ciaaw.ttl, the full data that the site publishes, and for the site built from it.
+
+Run with:  python -m pytest tests/test_published_data.py
+
+The other test files use the small example-output.ttl. These tests would have caught the parser bug
+that lost isotopes on the real CIAAW pages, and they notice when generated pages go out of date.
+"""
+import json
+import re
+import time
+from decimal import Decimal
+from urllib.parse import unquote
+
+import pyoxigraph as ox
+import pytest
+from bs4 import BeautifulSoup
+from rdflib import Graph, RDF, URIRef
+
+from ciaaw_draft.paths import DATA_DIR, ROOT
+from ciaaw_draft.website import build_site as b
+from ciaaw_draft.compare import check_wikidata_weights
+from ciaaw_draft.convert import ciaaw2ttl as c
+from ciaaw_draft.website import combine_sparql_examples as combine
+from ciaaw_draft.schema import tap2model as t
+
+DATA = DATA_DIR / "ciaaw.ttl"
+CIAAW = b.CIAAW
+CHEMROF = b.CHEMROF
+ELEMENTS, ISOTOPES, WEIGHTS = 118, 289, 84
+
+
+@pytest.fixture(scope="module")
+def graph():
+    return Graph().parse(DATA, format="turtle")
+
+
+@pytest.fixture(scope="module")
+def elements(graph):
+    return b.read_elements(graph)
+
+
+@pytest.fixture(scope="module")
+def site(tmp_path_factory):
+    out = tmp_path_factory.mktemp("site") / "_site"
+    assert b.main(["--out", str(out)]) == 0                       # the defaults, as in the published site
+    return out
+
+
+def text_of(path):
+    return path.read_text(encoding="utf-8")
+
+
+# --- the data -----------------------------------------------------------------------------
+def test_the_data_is_complete(graph):
+    assert len(set(graph.subjects(RDF.type, CHEMROF.ChemicalElement))) == ELEMENTS
+    assert len(set(graph.subjects(RDF.type, CHEMROF.Isotope))) == ISOTOPES
+    assert len(set(graph.subject_objects(CIAAW.currentStandardAtomicWeight))) == WEIGHTS
+
+
+def test_every_atomic_number_is_there_once(elements):
+    assert [e.z for e in elements] == list(range(1, ELEMENTS + 1))
+
+
+def test_no_element_lost_its_isotopes_to_a_neighbour(elements):
+    """The symptom of the parser bug: vanadium's isotopes ended up under titanium."""
+    by_symbol = {e.symbol: e for e in elements}
+    assert [i.mass_number for i in by_symbol["Ti"].isotopes] == [46, 47, 48, 49, 50]
+    assert [i.mass_number for i in by_symbol["V"].isotopes] == [50, 51]
+    assert [i.mass_number for i in by_symbol["U"].isotopes] == [234, 235, 238]
+
+
+def test_the_abundance_table_stops_at_uranium(elements):
+    assert max(e.z for e in elements if e.isotopes) == 92
+    assert not any(e.isotopes or e.longest_lived for e in elements if e.z > 92)
+
+
+def test_the_data_conforms_without_warnings(graph):
+    conforms, report, text = t.validate_graph(graph)
+    assert conforms, text
+    assert list(report.subjects(RDF.type, t.SH.ValidationResult)) == []
+
+
+def test_abundances_given_as_values_add_up_to_one(elements):
+    for e in elements:
+        values = [i.abundance.text.replace(b.NBSP, "") for i in e.isotopes]
+        if values and not any(v.startswith("[") for v in values):
+            total = sum(Decimal(v.split("(")[0]) for v in values)
+            assert abs(total - 1) <= Decimal("0.0005"), e.symbol
+
+
+def test_no_invented_value_in_the_published_data():
+    assert "1.00785" not in text_of(DATA)
+
+
+# --- the example queries ------------------------------------------------------------------
+def test_example_queries_stay_cheap_on_the_full_data():
+    """The endpoint has a small CPU budget. An early version of query 7 took over 200 ms."""
+    store = ox.Store()
+    store.load(DATA.read_bytes(), format=ox.RdfFormat.TURTLE)
+    for path in sorted(b.QUERIES.glob("*.rq")):
+        query = path.read_text(encoding="utf-8")
+        best = 1000.0
+        for _ in range(3):
+            start = time.perf_counter()
+            rows = store.query(query).serialize(format=ox.QueryResultsFormat.JSON)
+            best = min(best, (time.perf_counter() - start) * 1000)
+        assert rows and best < 100, f"{path.name} took {best:.0f} ms"
+
+
+# --- the site built from it ---------------------------------------------------------------
+def test_site_defaults_to_the_full_data(site):
+    assert (site / "data" / "ciaaw.ttl").read_bytes() == DATA.read_bytes()
+    make = text_of(ROOT / "Makefile")
+    assert re.search(r"^TTL\s*\?= data/ciaaw\.ttl$", make, flags=re.M)
+    assert re.search(r"^SITE_DATA\s*\?= \$\(TTL\)$", make, flags=re.M)
+
+
+def test_no_page_calls_it_a_sample(site):
+    for name in ("index", "atomic-weights", "isotopic-abundances", "downloads", "sparql", "comparison",
+                 "wikidata-comparison", "wikidata-weights-comparison", "bodr-comparison"):
+        assert "sample of" not in text_of(site / f"{name}.md").replace("A small sample after", ""), name
+        assert "Only a sample" not in text_of(site / f"{name}.md"), name
+
+
+def test_the_tables_are_complete(site):
+    weights = BeautifulSoup(text_of(site / "atomic-weights.html"), "html.parser")
+    abundances = BeautifulSoup(text_of(site / "isotopic-abundances.html"), "html.parser")
+    assert len(weights.select("tbody tr")) == ELEMENTS
+    assert len(abundances.select("tbody tr")) == ISOTOPES + 8      # plus 8 elements with only a longest-lived isotope
+    assert "neptunium" not in abundances.get_text()
+
+
+def test_every_element_has_a_page(site):
+    assert len(list((site / "elements").glob("*.html"))) == ELEMENTS
+
+
+def resource_iris(graph):
+    """Every IRI in the data on this site, with the file path its page and Turtle file should have."""
+    folders = {c.DEFAULT_DATA_NS: "id", c.DEFAULT_ELEMENT_NS: "elements"}
+    iris = {term for triple in graph for term in triple if isinstance(term, URIRef)}
+    return {iri: f"{folder}/{iri[len(namespace):]}" for iri in iris for namespace, folder in folders.items()
+            if iri.startswith(namespace)}
+
+
+def test_every_iri_in_the_data_has_a_page_and_a_turtle_file(site, graph):
+    """GitHub Pages serves id/H-1.html at id/H-1, so a page in the right place is what makes an IRI resolve."""
+    resources = resource_iris(graph)
+    declarations = {s for p in (CIAAW.ofElement, CIAAW.ofIsotope) for s in graph.subjects(p, None)}
+    assert len(resources) == ELEMENTS + ISOTOPES + len(declarations)
+    for iri, path in resources.items():
+        assert (site / f"{path}.html").exists(), iri
+        assert (site / f"{path}.ttl").exists(), iri
+
+
+def test_every_current_standard_atomic_weight_has_a_year_and_a_source(graph):
+    """CIAAW's historical table gives both. It has no DOI yet for the three values revised in 2024."""
+    without_source = set()
+    for element, declaration in graph.subject_objects(CIAAW.currentStandardAtomicWeight):
+        assert graph.value(declaration, b.DCTERMS.issued) is not None, element
+        if graph.value(declaration, b.DCTERMS.source) is None:
+            without_source.add(str(graph.value(element, CHEMROF.symbol)))
+    assert without_source == {"Zr", "Gd", "Lu"}
+
+
+def test_the_data_does_not_use_the_placeholder_namespace_or_prefix():
+    text = text_of(DATA)
+    assert "example.org/data" not in text
+    assert not re.search(r"^@prefix ex:", text, flags=re.M)
+
+
+def test_every_turtle_file_is_about_its_resource(site, graph):
+    for iri, path in resource_iris(graph).items():
+        turtle = Graph().parse(site / f"{path}.ttl", format="turtle")
+        expected = {(p, o) for p, o in graph.predicate_objects(iri) if not isinstance(o, b.BNode)}
+        assert expected <= set(turtle.predicate_objects(iri)), iri
+
+
+def test_turtle_file_of_an_isotope_holds_its_value_and_element(site):
+    turtle = Graph().parse(site / "id" / "H-1.ttl", format="turtle")
+    element = URIRef(c.DEFAULT_ELEMENT_NS + "Hydrogen")
+    isotope = URIRef(c.DEFAULT_DATA_NS + "H-1")
+    assert (element, CIAAW.hasIsotope, isotope) in turtle
+    declaration = turtle.value(isotope, CIAAW.currentAbundance)
+    assert str(turtle.value(turtle.value(declaration, CIAAW.value), b.QUDT.upperBound)) == "0.99999"
+    assert (CIAAW["note-m"], b.SKOS.notation, None) in turtle       # the wording of the footnote comes along
+
+
+def test_turtle_files_say_they_are_a_prototype(site):
+    assert text_of(site / "id" / "H-1.ttl").startswith("# Prototype")
+    assert text_of(site / "elements" / "Hydrogen.ttl").startswith("# Prototype")
+
+
+def test_all_internal_links_resolve(site):
+    for page in site.rglob("*.html"):
+        for link in BeautifulSoup(text_of(page), "html.parser").find_all("a", href=True):
+            target = link["href"].partition("#")[0]
+            if target and not re.match(r"[a-z]+:", target):
+                assert (page.parent / unquote(target)).exists(), f"{page.name}: {target}"
+
+
+def canonical(path, rdf_format):
+    """The triples of a file, with blank nodes relabelled so that files can be compared.
+
+    rdflib's isomorphic() does the same, but needs minutes for each file because of the blank nodes in the full data.
+    """
+    dataset = ox.Dataset(ox.parse(path=str(path), format=rdf_format))
+    dataset.canonicalize(ox.CanonicalizationAlgorithm.RDFC_1_0)
+    return {str(quad) for quad in dataset}
+
+
+@pytest.fixture(scope="module")
+def canonical_data():
+    return canonical(DATA, ox.RdfFormat.TURTLE)
+
+
+@pytest.mark.parametrize("label, extension, rdf_format, media_type", b.FORMATS)
+def test_every_format_holds_the_same_triples(site, graph, canonical_data, label, extension, rdf_format, media_type):
+    path = site / "data" / f"ciaaw.{extension}"
+    triples = canonical(path, ox.RdfFormat.from_media_type(media_type))
+    assert triples == canonical_data and len(triples) == len(graph), label
+    assert len(Graph().parse(path, format=rdf_format)) == len(graph), label   # rdflib can read it too
+
+
+@pytest.mark.parametrize("resource", b.RESOURCES, ids=lambda r: r.key)
+def test_comparisons_are_up_to_date_with_the_data(resource, graph):
+    result = json.loads(text_of(resource.json))
+    assert result["source"] == DATA.name
+    assert result["local_isotopes"] == (len(check_wikidata_weights.local_weights(graph)) if resource.subject == "element"
+                                        else ISOTOPES)
+
+
+def test_combined_file_holds_the_full_data_and_the_examples(tmp_path, graph):
+    combined = tmp_path / "combined.ttl"
+    assert combine.main(["-o", str(combined)]) == 0               # the defaults, as in make site
+    store = ox.Store()
+    store.load(combined.read_bytes(), format=ox.RdfFormat.TURTLE)
+    assert len(store) > len(graph)
+    count = "SELECT (COUNT(DISTINCT ?e) AS ?n) WHERE { ?e a <https://w3id.org/chemrof/ChemicalElement> }"
+    assert next(iter(store.query(count)))["n"].value == str(ELEMENTS)
+
+
+def test_every_cited_doi_has_a_formatted_reference(graph):
+    cached = b.read_references(b.REFERENCES_JSON)
+    dois = {str(o).removeprefix("https://doi.org/").upper() for o in graph.objects(None, b.DCTERMS.source)}
+    assert dois and dois <= set(cached)
+
+
+if __name__ == "__main__":
+    raise SystemExit(pytest.main([__file__, "-q"]))
