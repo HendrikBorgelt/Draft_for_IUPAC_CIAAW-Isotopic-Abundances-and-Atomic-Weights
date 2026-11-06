@@ -29,28 +29,28 @@ We want to develop this together with the Commission. Decisions about the conten
 
 | File | Purpose |
 |---|---|
-| `ciaaw2ttl.py` | CIAAW HTML tables → Turtle |
-| `supplement.csv` | What the tables lack: report year, DOI, ChEBI matches |
-| `ttl2quickstatements.py` | Turtle → QuickStatements CSV for Wikidata (isotope abundances only) |
-| `ttl2sssom.py` | Turtle → SSSOM mappings of the elements and isotopes to Wikidata and ChEBI |
-| `historical2ttl.py`, `historical/` | Adds the historical standard atomic weights from [ciaaw.org](https://www.ciaaw.org/historical-atomic-weights.htm) to the Turtle |
-| `check_wikidata.py` | Compares the abundances in the Turtle with Wikidata |
-| `check_wikidata_weights.py` | Compares the standard atomic weights in the Turtle with the mass of the elements in Wikidata |
-| `tap2model.py` | DCTAP → SHACL shapes and UML diagrams |
-| `construct.py`, `model/ontology.rq`, `model/ciaaw.owl` | The OWL ontology, generated via SPARQL CONSTRUCT |
+| `ciaaw_draft/convert/ciaaw2ttl.py` | CIAAW HTML tables → Turtle |
+| `data/supplement.csv` | What the tables lack: report year, DOI, ChEBI matches |
+| `ciaaw_draft/convert/ttl2quickstatements.py` | Turtle → QuickStatements CSV for Wikidata (isotope abundances only) |
+| `ciaaw_draft/convert/ttl2sssom.py` | Turtle → SSSOM mappings of the elements and isotopes to Wikidata and ChEBI |
+| `ciaaw_draft/convert/historical2ttl.py`, `data/historical/` | Adds the historical standard atomic weights from [ciaaw.org](https://www.ciaaw.org/historical-atomic-weights.htm) to the Turtle |
+| `ciaaw_draft/compare/check_wikidata.py` | Compares the abundances in the Turtle with Wikidata |
+| `ciaaw_draft/compare/check_wikidata_weights.py` | Compares the standard atomic weights in the Turtle with the mass of the elements in Wikidata |
+| `ciaaw_draft/schema/tap2model.py` | DCTAP → SHACL shapes and UML diagrams |
+| `ciaaw_draft/schema/construct.py`, `model/ontology.rq`, `model/ciaaw.owl` | The OWL ontology, generated via SPARQL CONSTRUCT |
 | `model/` | The data model, see [below](#the-data-model) |
-| `build_site.py`, `site/` | Static site for GitHub Pages |
+| `ciaaw_draft/website/build_site.py`, `site/` | Static site for GitHub Pages |
 | `sparql/queries/` | Example SPARQL queries, shown on the SPARQL tab and published as `.rq` files |
 | `sparql/examples/` | The same queries as sparql-examples Turtle, made by `make sparql-examples` |
-| `update_references.js`, `site/references.json` | The formatted sources for the Bibliography |
-| `check_wikidata.py`, `site/wikidata-comparison.json` | The comparison with Wikidata, shown in the Comparison section of the site |
-| `check_wikidata_weights.py`, `site/wikidata-weights-comparison.json` | The comparison of the atomic weights with Wikidata, also in the Comparison section |
-| `check_bodr.py`, `site/bodr-comparison.json` | The comparison with BODR, shown in the Comparison section |
-| `wikidata_links.py`, `site/wikidata.csv` | The Wikidata items linked from the element pages |
-| `visualization.py` | The Visualization tab: periodic table of the weights, their history since 1902, isotopic compositions |
-| `test_*.py`, `fixtures/` | Tests and their small hand-built input tables |
-| `ciaaw.ttl` | The full data, published on the site and loaded by the SPARQL endpoint |
-| `example-output*.ttl` | Small example results, used by the tests and the revision example |
+| `scripts/update_references.js`, `site/references.json` | The formatted sources for the Bibliography |
+| `ciaaw_draft/compare/check_wikidata.py`, `site/wikidata-comparison.json` | The comparison with Wikidata, shown in the Comparison section of the site |
+| `ciaaw_draft/compare/check_wikidata_weights.py`, `site/wikidata-weights-comparison.json` | The comparison of the atomic weights with Wikidata, also in the Comparison section |
+| `ciaaw_draft/compare/check_bodr.py`, `site/bodr-comparison.json` | The comparison with BODR, shown in the Comparison section |
+| `ciaaw_draft/compare/wikidata_links.py`, `site/wikidata.csv` | The Wikidata items linked from the element pages |
+| `ciaaw_draft/website/visualization.py` | The Visualization tab: periodic table of the weights, their history since 1902, isotopic compositions |
+| `tests/test_*.py`, `tests/fixtures/` | Tests and their small hand-built input tables |
+| `data/ciaaw.ttl` | The full data, published on the site and loaded by the SPARQL endpoint |
+| `data/example-output*.ttl` | Small example results, used by the tests and the revision example |
 | `Makefile` | Runs the steps below |
 | `AUTHORS` | The people who worked on the hackathon, with their ORCID |
 
@@ -77,10 +77,10 @@ flowchart LR
    are (or save them yourself from the browser):
    - <https://ciaaw.org/atomic-weights.htm> → `data/atomic-weights.htm`
    - <https://ciaaw.org/isotopic-abundances.htm> → `data/isotopic-abundances.htm`
-3. **Check `supplement.csv`** (`subject,role,year,doi,chebi`). Roles are `standard`,
+3. **Check `data/supplement.csv`** (`subject,role,year,doi,chebi`). Roles are `standard`,
    `abundance` and `match` (a `skos:closeMatch` to ChEBI). An element symbol with role
    `abundance` applies to all its isotopes.
-4. **Run `make ttl`**. The result is `ciaaw.ttl`. The script reports unparsable cells as
+4. **Run `make ttl`**. The result is `data/ciaaw.ttl`. The script reports unparsable cells as
    `ERROR` lines and exits non-zero; use `--lenient` when calling it directly to ignore that.
    Expect 118 elements, 289 isotopes, and 26 warnings for elements 93 to 118, which the abundance
    table does not list. Check any other warning: a wrong sum means that isotopes went missing,
@@ -97,13 +97,13 @@ the test fixtures.
 To keep the history of changed values, pass the Turtle of the earlier release:
 
 ```
-make ttl PREVIOUS=ciaaw.ttl
+make ttl PREVIOUS=data/ciaaw.ttl
 ```
 
 Declarations whose value changed are kept, flagged `owl:deprecated`, and linked with
 `dcterms:isReplacedBy` / `dcterms:replaces`.
 
-`make ttl` also adds the historical standard atomic weights from `historical/IUPAC-TSAW.csv`, the table of
+`make ttl` also adds the historical standard atomic weights from `data/historical/IUPAC-TSAW.csv`, the table of
 [ciaaw.org](https://www.ciaaw.org/historical-atomic-weights.htm) (`https://www.ciaaw.org/data/IUPAC-TSAW.csv`).
 Each earlier recommendation becomes a declaration, chained to the next one like the superseded values above. The
 script stops if the newest recommendation differs from the current value. Rows marked `n/a` are left out, because
@@ -113,7 +113,7 @@ is left out too.
 ### Options
 
 Other options of `ciaaw2ttl.py` (`--iri-style hash`, `--data-ns`, `--vocab-ns`, `--no-vocab`)
-are described by `python3 ciaaw2ttl.py --help`. Call the script directly to use them.
+are described by `python3 -m ciaaw_draft.convert.ciaaw2ttl --help`. Call the script directly to use them.
 
 ## Wikidata (optional)
 
@@ -169,7 +169,7 @@ the "stated in" (P248) item and its DOI (P356) if it has one, shown at the end o
 JSON. At the moment all the abundances in Wikidata cite NuDat (Q21234191), a database without a DOI, so the
 comparison page links that item instead. Sources with a DOI get a Bibliography on the page.
 
-Call `python3 check_wikidata.py --help` for `--strict` (exit 1 on differences) and
+Call `python3 -m ciaaw_draft.compare.check_wikidata --help` for `--strict` (exit 1 on differences) and
 `--sparql-json` (use saved results, no network), and
 `--json FILE` (also write the differences as JSON).
 
@@ -194,19 +194,19 @@ make test
 
 | Test file | What it covers |
 |---|---|
-| `test_ciaaw2ttl.py` | Reading the tables, number handling, the deprecation chain |
-| `test_model.py` | The DCTAP, and that each SHACL rule rejects data broken on purpose |
-| `test_check_bodr.py` | The comparison with BODR, on a small isotopes file |
-| `test_quickstatements.py` | The QuickStatements export: properties, units, no duplicate items |
-| `test_sssom.py` | The SSSOM header and table, the CURIEs, and the mappings of hydrogen |
-| `test_site.py` | The pages, the watermark, links, and that every RDF format holds the same triples |
-| `test_sparql.py` | The example queries on Oxigraph, the SPARQL page and the deployment setup |
-| `test_published_data.py` | `ciaaw.ttl` and the site built from it, including that nothing is out of date |
+| `tests/test_ciaaw2ttl.py` | Reading the tables, number handling, the deprecation chain |
+| `tests/test_model.py` | The DCTAP, and that each SHACL rule rejects data broken on purpose |
+| `tests/test_check_bodr.py` | The comparison with BODR, on a small isotopes file |
+| `tests/test_quickstatements.py` | The QuickStatements export: properties, units, no duplicate items |
+| `tests/test_sssom.py` | The SSSOM header and table, the CURIEs, and the mappings of hydrogen |
+| `tests/test_site.py` | The pages, the watermark, links, and that every RDF format holds the same triples |
+| `tests/test_sparql.py` | The example queries on Oxigraph, the SPARQL page and the deployment setup |
+| `tests/test_published_data.py` | `ciaaw.ttl` and the site built from it, including that nothing is out of date |
 
 ## The site
 
 `make serve` builds `_site/` and serves it on <http://localhost:8000>. `make site` only builds
-it. To show other data, use for example `make site SITE_DATA=example-output.ttl`.
+it. To show other data, use for example `make site SITE_DATA=data/example-output.ttl`.
 
 Every resource has a page, and its IRI is the address of that page:
 
@@ -276,7 +276,7 @@ It uses
 a Cloudflare Worker that loads `data/combined.ttl` from the published site into an in-memory
 Oxigraph store. That file holds the data and the example queries, and `make site` writes it. If
 it is missing, every query fails with error 502. The site finds the endpoint through
-`SPARQL_ENDPOINT` in `build_site.py`.
+`SPARQL_ENDPOINT` in `ciaaw_draft/website/build_site.py`.
 
 The Turtle in `sparql/examples` comes from the `.rq` files with
 [sparql-examples-utils](https://github.com/sib-swiss/sparql-examples-utils). Run `make sparql-examples`
@@ -304,7 +304,7 @@ The running endpoint is deployed separately from this repository. To deploy from
    redeploys the worker, which makes it load the new data.
 
 A token for another Cloudflare account creates a separate worker at a different address, so
-`SPARQL_ENDPOINT` in `build_site.py` then has to change too.
+`SPARQL_ENDPOINT` in `ciaaw_draft/website/build_site.py` then has to change too.
 
 Things to know:
 
@@ -329,14 +329,14 @@ Things to know:
 | Target | Command |
 |---|---|
 | `make install` | `python -m pip install -r requirements.txt` |
-| `make ttl` | `python ciaaw2ttl.py --weights data/atomic-weights.htm --abundances data/isotopic-abundances.htm --supplement supplement.csv -o ciaaw.ttl` |
-| `make quickstatements` | `python ttl2quickstatements.py ciaaw.ttl -o quickstatements.csv` |
-| `make sssom` | `python ttl2sssom.py ciaaw.ttl -o ciaaw.sssom.tsv` |
+| `make ttl` | `python -m ciaaw_draft.convert.ciaaw2ttl --weights data/atomic-weights.htm --abundances data/isotopic-abundances.htm --supplement data/supplement.csv -o data/ciaaw.ttl` |
+| `make quickstatements` | `python -m ciaaw_draft.convert.ttl2quickstatements data/ciaaw.ttl -o quickstatements.csv` |
+| `make sssom` | `python -m ciaaw_draft.convert.ttl2sssom data/ciaaw.ttl -o ciaaw.sssom.tsv` |
 | `make test` | `python -m pytest -q` |
-| `make model` | `python tap2model.py` |
-| `make validate` | `python tap2model.py --validate ciaaw.ttl example-output-next.ttl` |
-| `make ontology` | `python construct.py model/ontology.rq ciaaw.ttl -o model/ciaaw.owl` |
-| `make site` | `python build_site.py` and `python combine_sparql_examples.py -o _site/data/combined.ttl` |
+| `make model` | `python -m ciaaw_draft.schema.tap2model` |
+| `make validate` | `python -m ciaaw_draft.schema.tap2model --validate data/ciaaw.ttl data/example-output-next.ttl` |
+| `make ontology` | `python -m ciaaw_draft.schema.construct model/ontology.rq data/ciaaw.ttl -o model/ciaaw.owl` |
+| `make site` | `python -m ciaaw_draft.website.build_site` and `python -m ciaaw_draft.website.combine_sparql_examples -o _site/data/combined.ttl` |
 
 For `make download`, save the two pages from your browser as described in step 2 above.
 
@@ -374,5 +374,5 @@ The table adds four columns to the 12 DCTAP elements, all declared in `dctap.yam
 - **`example-output-next.ttl` contains an invented value.** It demonstrates a revision of hydrogen and is not a CIAAW value.
 - **All IRIs are placeholders** until a persistent home is agreed. The data IRIs resolve on GitHub Pages. The vocabulary (`ciaaw:`) and shape namespaces are under the same address, but the site has no page behind `ciaaw-draft` yet, so those IRIs do not resolve.
 - **Atomic masses and abridged values are modelled but not generated**, because the two source tables do not contain them.
-- **The ADMS status IRI has not been confirmed yet.** See the note in `ciaaw2ttl.py`.
+- **The ADMS status IRI has not been confirmed yet.** See the note in `ciaaw_draft/namespaces.py`.
 - **No licence has been chosen yet** for the code or the data.
