@@ -202,6 +202,7 @@ make test
 | `tests/test_site.py` | The pages, the watermark, links, and that every RDF format holds the same triples |
 | `tests/test_sparql.py` | The example queries on Oxigraph, the SPARQL page and the deployment setup |
 | `tests/test_published_data.py` | `ciaaw.ttl` and the site built from it, including that nothing is out of date |
+| `tests/test_visualization.py` | The marks of each kind of value in the timeline, and the details on hover and focus |
 
 ## The site
 
@@ -233,6 +234,13 @@ the relative uncertainty of each standard atomic weight, by the year of the curr
 values recommended since 1902; the element chosen in the table, with its history as a timeline; a chart of how
 many weights changed in each year; and the isotopic composition of every element as a segmented bar. The page
 is HTML and CSS without JavaScript, and its Markdown twin holds the same figures as tables.
+
+In the timeline, each value holds until the next one, and the three kinds of value look different: an interval is
+a band edged by its bounds, without a line; a value with a standard uncertainty is a line with a dot and a whisker,
+over a fainter band as wide as the uncertainty; and a value given without an uncertainty, as in most of the older
+tables, is a line with a hollow dot. A key below the chart names them. Hovering over the time a value held shows
+the value, its kind, the years it held and the report, and so does a click or the keyboard, which keeps the details
+open. The chart of changes per year shows the number for each year in the same way.
 
 The history is the chain of declarations of each element in the data, which `historical2ttl.py` adds from
 CIAAW's table of every standard atomic weight recommended since 1902 (© CIAAW 2016–2024, reproduced under
