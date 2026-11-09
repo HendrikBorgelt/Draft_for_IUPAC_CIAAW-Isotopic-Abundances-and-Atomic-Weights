@@ -21,7 +21,8 @@ It is **not** an official CIAAW or IUPAC site. For values you intend to use, go 
 
 - **Every value can be cited.** Each published value is a separate declaration with its own IRI.
 - **History is kept.** A changed value creates a new declaration. The old one stays available and links to its replacement.
-- **Precision is preserved.** Numbers are stored as exact decimals, with significant figures recorded separately.
+- **Provenance is recorded.** Every element, isotope and value names the documents it was read from, and every value the report in which CIAAW published it.
+- **Precision is preserved.** Numbers are stored as exact decimals, next to the value as CIAAW prints it, which keeps every digit.
 - **Data can be checked.** The SHACL shapes test the published data automatically.
 
 ## Tell us what you think

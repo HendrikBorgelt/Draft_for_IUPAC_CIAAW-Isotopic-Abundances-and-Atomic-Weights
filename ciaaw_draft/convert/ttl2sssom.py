@@ -28,7 +28,7 @@ from pathlib import Path
 from rdflib import Graph, RDF, RDFS
 from rdflib.namespace import SKOS
 
-from ciaaw_draft.namespaces import CHEMROF, CIAAW, DEFAULT_DATA_NS, DEFAULT_ELEMENT_NS, SITE_URL
+from ciaaw_draft.namespaces import CIAAW, NS, SITE_URL
 from ciaaw_draft.paths import ROOT, SITE_SRC
 
 WIKIDATA_CSV = SITE_SRC / "wikidata.csv"
@@ -38,10 +38,9 @@ REPO = "https://github.com/HendrikBorgelt/Draft_for_IUPAC_CIAAW-Isotopic-Abundan
 CC0 = "https://creativecommons.org/publicdomain/zero/1.0/"
 
 CURIE_MAP = {
-    "ciaaw_draft": DEFAULT_DATA_NS,
-    "element": DEFAULT_ELEMENT_NS,
+    "elements": str(NS.elements),
+    "isotopes": str(NS.isotopes),
     "ciaaw": str(CIAAW),
-    "chemrof": str(CHEMROF),
     "wd": "http://www.wikidata.org/entity/",
     "CHEBI": "http://purl.obolibrary.org/obo/CHEBI_",
     "skos": "http://www.w3.org/2004/02/skos/core#",
@@ -85,12 +84,12 @@ def read_authors(path: Path) -> list[str]:
 
 
 def rows(g: Graph, wikidata: dict):
-    for element in sorted(g.subjects(RDF.type, CHEMROF.ChemicalElement), key=lambda e: int(g.value(e, CHEMROF.atomic_number))):
-        z = int(g.value(element, CHEMROF.atomic_number))
+    for element in sorted(g.subjects(RDF.type, CIAAW.ChemicalElement), key=lambda e: int(g.value(e, CIAAW.hasAtomicNumber))):
+        z = int(g.value(element, CIAAW.hasAtomicNumber))
         label = str(g.value(element, RDFS.label))
-        entities = [("element", element, label, (z, None), "chemrof:ChemicalElement")]
-        entities += [("isotope", i, f"{label}-{g.value(i, CIAAW.massNumber)}", (z, int(g.value(i, CIAAW.massNumber))),
-                      "chemrof:Isotope") for i in sorted(g.objects(element, CIAAW.hasIsotope), key=lambda i: int(g.value(i, CIAAW.massNumber)))]
+        entities = [("element", element, label, (z, None), "ciaaw:ChemicalElement")]
+        entities += [("isotope", i, f"{label}-{g.value(i, CIAAW.hasMassNumber)}", (z, int(g.value(i, CIAAW.hasMassNumber))),
+                      "ciaaw:Isotope") for i in sorted(g.objects(element, CIAAW.hasIsotope), key=lambda i: int(g.value(i, CIAAW.hasMassNumber)))]
         for kind, node, name, key, category in entities:
             if key in wikidata:
                 qid, wd_label = wikidata[key]

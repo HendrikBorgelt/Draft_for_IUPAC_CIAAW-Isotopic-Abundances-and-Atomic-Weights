@@ -17,7 +17,7 @@ of the item if it has one. Differences are written to STDOUT, one per line, in t
     UNIT            ...        the mass is not in dalton
     ONLY-RESOURCE   ...        Wikidata has a mass for an element that is not in the local data
 
-Only the current, non-deprecated standard atomic weight declaration is checked.
+Only the current standard atomic weight declaration is checked, not the superseded ones.
 
 Usage:
     python -m ciaaw_draft.compare.check_wikidata_weights data/ciaaw.ttl
@@ -37,9 +37,9 @@ from datetime import date
 from decimal import Decimal
 from pathlib import Path
 
-from rdflib import Graph, Literal, RDF, RDFS
+from rdflib import Graph, RDF, RDFS
 
-from ciaaw_draft.compare.check_wikidata import (CHEMROF, CIAAW, OWL_DEPRECATED, P_ATOMIC_NUMBER, P_DOI, P_STATED_IN, QUDT, WD,
+from ciaaw_draft.compare.check_wikidata import (CIAAW, P_ATOMIC_NUMBER, P_DOI, P_STATED_IN, WD, superseded,
                             fetch_wikidata, row, show, show_wd, unique_sources)
 
 P_MASS = "P2067"
@@ -102,18 +102,18 @@ def group_wikidata(bindings: list[dict]) -> dict[int, dict]:
 def local_weights(g: Graph) -> list[dict]:
     """The current standard atomic weight of every element: name, Z and either amount ~ uncertainty or lower/upper."""
     out = []
-    for element in sorted(g.subjects(RDF.type, CHEMROF.ChemicalElement), key=str):
-        z, label = g.value(element, CHEMROF.atomic_number), g.value(element, RDFS.label)
-        decl = g.value(element, CIAAW.currentStandardAtomicWeight)
-        if z is None or label is None or decl is None or g.value(decl, OWL_DEPRECATED) == Literal(True):
+    for element in sorted(g.subjects(RDF.type, CIAAW.ChemicalElement), key=str):
+        z, label = g.value(element, CIAAW.hasAtomicNumber), g.value(element, RDFS.label)
+        decl = g.value(element, CIAAW.hasCurrentStandardAtomicWeight)
+        if z is None or label is None or decl is None or superseded(g, decl):
             continue
-        value = g.value(decl, CIAAW.value)
+        value = decl
         if value is None:
             continue
-        num, lo, hi = (g.value(value, QUDT[p]) for p in ("numericValue", "lowerBound", "upperBound"))
+        num, lo, hi = (g.value(value, CIAAW[p]) for p in ("hasValue", "hasLowerBound", "hasUpperBound"))
         entry = {"name": str(label), "z": int(z)}
         if num is not None:
-            unc = g.value(value, QUDT.standardUncertainty)
+            unc = g.value(value, CIAAW.hasStandardUncertainty)
             entry["amount"], entry["uncertainty"] = num.toPython(), unc.toPython() if unc is not None else None
         elif lo is not None and hi is not None:
             entry["lower"], entry["upper"] = lo.toPython(), hi.toPython()

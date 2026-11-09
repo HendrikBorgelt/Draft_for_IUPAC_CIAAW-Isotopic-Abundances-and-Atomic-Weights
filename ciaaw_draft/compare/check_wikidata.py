@@ -12,7 +12,7 @@ Abundances are compared in percent. Differences are written to STDOUT, one per l
     NO-VALUE    ...  the Wikidata item has no abundance
     NOT-FOUND   ...  no Wikidata item matches the local isotope
 
-Only the current, non-deprecated abundance declaration is checked (as in ttl2quickstatements.py).
+Only the current abundance declaration is checked, not the superseded ones (as in ttl2quickstatements.py).
 
 Usage:
     python -m ciaaw_draft.compare.check_wikidata data/ciaaw.ttl
@@ -36,11 +36,16 @@ import urllib.request
 from decimal import Decimal
 from pathlib import Path
 
-from rdflib import Graph, Literal, RDF, RDFS, URIRef
+from rdflib import Graph, RDF, RDFS
 
-from ciaaw_draft.namespaces import CHEMROF, CIAAW, QUDT
+from ciaaw_draft.namespaces import CIAAW, STATUS_SUPERSEDED
 
 P_ABUNDANCE = "P2374"
+
+
+def superseded(g: Graph, decl) -> bool:
+    """A declaration that a later one replaced. The current pointers never lead to one, but older data may."""
+    return str(g.value(decl, CIAAW.hasStatus)) == STATUS_SUPERSEDED
 
 ENDPOINT = "https://query.wikidata.org/sparql"
 USER_AGENT = "ciaaw-draft-check-wikidata/0.1 (https://github.com/; egon.willighagen@gmail.com)"
@@ -51,7 +56,6 @@ P_ATOMIC_NUMBER = "P1086"
 P_NEUTRONS = "P1148"
 P_STATED_IN = "P248"
 P_DOI = "P356"
-OWL_DEPRECATED = URIRef("http://www.w3.org/2002/07/owl#deprecated")
 
 # One row per statement and source. Deprecated statements are skipped: Wikidata marks them as not to be used.
 # The source is the "stated in" (P248) of the reference; its DOI is the item's DOI (P356), if it has one.
@@ -132,24 +136,24 @@ def group_wikidata(bindings: list[dict]) -> dict[str, dict]:
 
 def local_isotopes(g: Graph) -> list[dict]:
     """Current abundance of every isotope, in percent: label, (Z, N), and the expected value."""
-    element_of = {i: e for e in g.subjects(RDF.type, CHEMROF.ChemicalElement) for i in g.objects(e, CIAAW.hasIsotope)}
+    element_of = {i: e for e in g.subjects(RDF.type, CIAAW.ChemicalElement) for i in g.objects(e, CIAAW.hasIsotope)}
     out = []
-    for isotope in sorted(g.subjects(RDF.type, CHEMROF.Isotope), key=str):
-        mass_number = g.value(isotope, CIAAW.massNumber)
-        decl = g.value(isotope, CIAAW.currentAbundance)
+    for isotope in sorted(g.subjects(RDF.type, CIAAW.Isotope), key=str):
+        mass_number = g.value(isotope, CIAAW.hasMassNumber)
+        decl = g.value(isotope, CIAAW.hasCurrentAbundance)
         label = g.value(element_of[isotope], RDFS.label) if isotope in element_of else None
         element = str(label) if label is not None else None
         if mass_number is None or decl is None or element is None or isotope not in element_of:
             continue
-        if g.value(decl, OWL_DEPRECATED) == Literal(True):
+        if superseded(g, decl):
             continue
-        value = g.value(decl, CIAAW.value)
+        value = decl
         if value is None:
             continue
-        num = g.value(value, QUDT.numericValue)
-        lo = g.value(value, QUDT.lowerBound)
-        hi = g.value(value, QUDT.upperBound)
-        z = g.value(element_of[isotope], CHEMROF.atomic_number)
+        num = g.value(value, CIAAW.hasValue)
+        lo = g.value(value, CIAAW.hasLowerBound)
+        hi = g.value(value, CIAAW.hasUpperBound)
+        z = g.value(element_of[isotope], CIAAW.hasAtomicNumber)
         a = int(mass_number)
         entry = {
             "name": f"{element}-{mass_number}",
@@ -157,7 +161,7 @@ def local_isotopes(g: Graph) -> list[dict]:
         }
         if num is not None:
             amount = percent(num.toPython())
-            unc = g.value(value, QUDT.standardUncertainty)
+            unc = g.value(value, CIAAW.hasStandardUncertainty)
             entry["amount"] = amount
             entry["uncertainty"] = percent(unc.toPython()) if unc is not None else None
         elif lo is not None and hi is not None:

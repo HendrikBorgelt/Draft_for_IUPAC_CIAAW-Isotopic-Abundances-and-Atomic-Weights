@@ -3,14 +3,14 @@
 
   python -m ciaaw_draft.convert.historical2ttl --current data/ciaaw.ttl --history data/historical/IUPAC-TSAW.csv -o data/ciaaw.ttl
 
-The history is the table "Historical Atomic Weights" of ciaaw.org (historical/IUPAC-TSAW.csv): every standard
+The history is the table "Historical Atomic Weights" of ciaaw.org (data/historical/IUPAC-TSAW.csv): every standard
 atomic weight the Commission recommended, with its year and DOI. Each element with a current standard atomic
-weight gets one declaration per earlier recommendation, named ciaaw_draft:AW-<symbol>-standard-<year>. The newest
-recommendation is the current declaration, which is already in the Turtle. It only gets its year and DOI, and
-the script stops if its value differs from the current value.
+weight gets one declaration per earlier recommendation, named weights:<symbol>-<year>. The newest recommendation
+is the current declaration, which is already in the Turtle. It gets its year and report, and its year becomes part
+of its IRI. The script stops if its value differs from the current value.
 
-Declarations are chained as ciaaw2ttl.py chains them after a new release: an older declaration is flagged
-owl:deprecated and adms:status deprecated, and dcterms:isReplacedBy and dcterms:replaces link it to the next one.
+The declarations are chained as in the SI Reference Point: every earlier one has the status "superseded", the year
+in which the next one replaced it, and ciaaw:hasNextDeclaration and ciaaw:hasPreviousDeclaration link the two.
 Running the script again adds nothing new.
 
 Rows with "n/a" are not declarations: they record that no value was recommended (protactinium in 1987, for
@@ -25,19 +25,13 @@ import csv
 import hashlib
 import re
 import sys
-from decimal import Decimal
 from pathlib import Path
 
-from rdflib import BNode, Graph, Literal, Namespace, RDF, URIRef, XSD
-from rdflib.namespace import DCTERMS, OWL
+from rdflib import Graph, Literal, RDF, RDFS, URIRef, XSD
 
 from ciaaw_draft.convert import ciaaw2ttl as c
-
-from ciaaw_draft.namespaces import ADMS, ADMS_DEPRECATED
+from ciaaw_draft.namespaces import HISTORY_TABLE, PROV, STATUS_SUPERSEDED, Namespaces, SITE_URL
 from ciaaw_draft.paths import DATA_DIR
-
-CIAAW = Namespace(c.DEFAULT_VOCAB_NS)
-EX = Namespace(c.DEFAULT_DATA_NS)
 
 
 def doi_of(cell: str) -> str | None:
@@ -69,91 +63,83 @@ def read_history(path: Path) -> dict[str, list[tuple[int, str, str]]]:
     return history
 
 
-def add_value(g: Graph, decl, parsed: c.Parsed) -> None:
-    """The same value encoding as ciaaw2ttl.py, so a historical value compares with a current one."""
-    q = BNode()
-    g.add((decl, CIAAW.value, q))
-    g.add((q, RDF.type, c.QUDT.QuantityValue))
-    g.add((q, c.QUDT.hasUnit, c.UNIT.UNITLESS))
-
-    def dec(s: str) -> Literal:
-        return Literal(s, datatype=XSD.decimal)
-
-    if parsed.kind == "interval":
-        g.add((q, c.QUDT.lowerBound, dec(parsed.lower)))
-        g.add((q, c.QUDT.upperBound, dec(parsed.upper)))
-        for prop, num in ((CIAAW.significantFiguresLower, parsed.lower), (CIAAW.significantFiguresUpper, parsed.upper)):
-            if (n := c.sig_figs(num)) is not None:
-                g.add((q, prop, Literal(n)))
-    elif parsed.kind == "value":
-        g.add((q, c.QUDT.numericValue, dec(parsed.value)))
-        g.add((q, c.QUDT.standardUncertainty, dec(parsed.uncertainty)))
-        g.add((q, CIAAW.significantFigures, Literal(c.sig_figs(parsed.value))))
-        g.add((q, CIAAW.significantFiguresUncertainty, Literal(len(parsed.uncertainty_digits))))
-    elif parsed.kind == "exact":
-        g.add((q, c.QUDT.numericValue, dec(parsed.value)))
+def rename(g: Graph, old: URIRef, new: URIRef) -> None:
+    """Give a resource a new IRI wherever it occurs."""
+    for p, o in list(g.predicate_objects(old)):
+        g.remove((old, p, o))
+        g.add((new, p, o))
+    for s, p in list(g.subject_predicates(old)):
+        g.remove((s, p, old))
+        g.add((s, p, new))
 
 
-def value_numbers(parsed: c.Parsed) -> frozenset:
-    """The numbers of a value, as numbers, so that 107.8682 and 107.868200 compare equal."""
-    if parsed.kind == "interval":
-        items = [("lowerBound", parsed.lower), ("upperBound", parsed.upper)]
-    elif parsed.kind == "value":
-        items = [("numericValue", parsed.value), ("standardUncertainty", parsed.uncertainty)]
-    else:
-        items = [("numericValue", parsed.value)]
-    return frozenset((name, Decimal(text)) for name, text in items)
+def add_report(ns: Namespaces, g: Graph, decl, doi: str) -> None:
+    report, triples = c.report_triples(ns, doi)
+    for triple in triples:
+        g.add(triple)
+    g.add((decl, ns.ciaaw.hasDefiningReport, report))
 
 
-def graph_numbers(g: Graph, decl) -> frozenset:
-    q = g.value(decl, CIAAW.value)
-    numbers = set()
-    for name in ("lowerBound", "upperBound", "numericValue", "standardUncertainty"):
-        v = g.value(q, c.QUDT[name]) if q is not None else None
-        if v is not None:
-            numbers.add((name, Decimal(str(v))))
-    return frozenset(numbers)
-
-
-def add_history(g: Graph, rows_by_symbol: dict[str, list[tuple[int, str, str]]]) -> list[str]:
+def add_history(g: Graph, rows_by_symbol: dict[str, list[tuple[int, str, str]]], base: str = SITE_URL) -> list[str]:
     """Adds the declarations to g. Returns the symbols that were left out."""
+    ns = Namespaces(base)
+    CIAAW = ns.ciaaw
     left_out = []
-    for element in sorted(g.subjects(RDF.type, c.CHEMROF.ChemicalElement), key=str):
-        symbol = str(g.value(element, c.CHEMROF.symbol))
+    for element in sorted(g.subjects(RDF.type, CIAAW.ChemicalElement), key=str):
+        symbol = str(g.value(element, CIAAW.hasSymbol))
+        name = str(g.value(element, RDFS.label))
         rows = rows_by_symbol.get(symbol)
         if not rows:
             continue
-        current = g.value(element, CIAAW.currentStandardAtomicWeight)
+        current = g.value(element, CIAAW.hasCurrentStandardAtomicWeight)
         if current is None:
             left_out.append(symbol)
             continue
         latest_year, latest_printed, latest_doi = rows[-1]
-        if graph_numbers(g, current) != value_numbers(c.parse_quantity(latest_printed)):
+        if c.graph_numbers(ns, g, current) != c.numbers(c.parse_quantity(latest_printed)):
             raise ValueError(f"{symbol}: the newest recommendation {latest_printed!r} is not the current value")
-        if g.value(current, DCTERMS.issued) is None:
-            g.add((current, DCTERMS.issued, Literal(str(latest_year), datatype=XSD.gYear)))
-        if g.value(current, DCTERMS.source) is None and latest_doi:
-            g.add((current, DCTERMS.source, URIRef(f"https://doi.org/{latest_doi}")))
+        if g.value(current, CIAAW.hasStartValidity) is None:
+            g.add((current, CIAAW.hasStartValidity, Literal(str(latest_year), datatype=XSD.gYear)))
+            g.set((current, RDFS.label, Literal(f"standard atomic weight of {name}, {latest_year}", lang="en")))
+        if g.value(current, CIAAW.hasDefiningReport) is None and latest_doi:
+            add_report(ns, g, current, latest_doi)
+        g.add((current, PROV.wasDerivedFrom, HISTORY_TABLE))
+        dated = ns.weights[f"{symbol}-{g.value(current, CIAAW.hasStartValidity)}"]
+        if current == ns.weights[symbol] and (dated, None, None) not in g:
+            rename(g, current, dated)
+            current = dated
 
         chain = []
         for year, printed, doi in rows[:-1]:
-            decl = EX[f"AW-{symbol}-standard-{year}"]
+            decl = ns.weights[f"{symbol}-{year}"]
             if (decl, RDF.type, None) not in g:
                 g.add((decl, RDF.type, CIAAW.StandardAtomicWeightDeclaration))
-                g.add((decl, CIAAW.ofElement, element))
-                add_value(g, decl, c.parse_quantity(printed))
-                g.add((decl, DCTERMS.issued, Literal(str(year), datatype=XSD.gYear)))
+                g.add((decl, RDFS.label, Literal(f"standard atomic weight of {name}, {year}", lang="en")))
+                g.add((decl, CIAAW.isDeclarationOf, element))
+                for triple in c.value_triples(ns, decl, c.parse_quantity(printed)):
+                    g.add(triple)
+                g.add((decl, CIAAW.hasStartValidity, Literal(str(year), datatype=XSD.gYear)))
+                g.add((decl, PROV.wasDerivedFrom, HISTORY_TABLE))
                 if doi:
-                    g.add((decl, DCTERMS.source, URIRef(f"https://doi.org/{doi}")))
+                    add_report(ns, g, decl, doi)
                 g.add((element, CIAAW.hasDeclaration, decl))
             chain.append(decl)
         chain.append(current)
 
         for older, newer in zip(chain, chain[1:]):
-            g.add((older, OWL.deprecated, Literal(True)))
-            g.add((older, ADMS.status, ADMS_DEPRECATED))
-            g.add((older, DCTERMS.isReplacedBy, newer))
-            g.add((newer, DCTERMS.replaces, older))
+            g.set((older, CIAAW.hasStatus, Literal(STATUS_SUPERSEDED)))
+            g.set((older, CIAAW.hasEndValidity, g.value(newer, CIAAW.hasStartValidity)))
+            g.set((older, CIAAW.hasNextDeclaration, newer))
+            g.set((newer, CIAAW.hasPreviousDeclaration, older))
+    if (URIRef(str(ns.weights)), None, None) in g:
+        g.add((URIRef(str(ns.weights)), PROV.wasDerivedFrom, HISTORY_TABLE))
+        for triple in c.source_triples(ns, HISTORY_TABLE):
+            g.add(triple)
+    if (URIRef(str(ns.reports)), None, None) not in g and any(g.subjects(RDF.type, CIAAW.Report)):
+        for triple in c.header_triples(ns, "reports", [HISTORY_TABLE]):
+            g.add(triple)
+    elif (URIRef(str(ns.reports)), None, None) in g:
+        g.add((URIRef(str(ns.reports)), PROV.wasDerivedFrom, HISTORY_TABLE))
     return left_out
 
 
@@ -161,14 +147,15 @@ def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--current", required=True, type=Path, help="Turtle with the current data, from ciaaw2ttl.py")
     ap.add_argument("--history", type=Path, default=DATA_DIR / "historical" / "IUPAC-TSAW.csv")
+    ap.add_argument("--base", default=SITE_URL, help="address under which all namespaces of the data lie")
     ap.add_argument("-o", "--output", required=True, type=Path)
     args = ap.parse_args(argv)
 
     current_text = args.current.read_text(encoding="utf-8")
     g = Graph()
     g.parse(data=current_text, format="turtle")
-    g.bind("adms", ADMS)
-    left_out = add_history(g, read_history(args.history))
+    Namespaces(args.base).bind(g)
+    left_out = add_history(g, read_history(args.history), args.base)
 
     comments = [line for line in current_text.splitlines() if line.startswith("#") and not line.startswith("# history:")]
     digest = hashlib.sha256(args.history.read_bytes()).hexdigest()

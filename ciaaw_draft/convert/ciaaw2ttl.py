@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Convert the CIAAW tables into Turtle that follows the draft declaration model (issue 20).
+"""Convert the CIAAW tables into Turtle that follows the draft vocabulary in model/ontology.ttl.
 
 Inputs (saved from the CIAAW website, used as they are):
   --weights     https://ciaaw.org/atomic-weights.htm        (standard atomic weights)
@@ -10,27 +10,31 @@ Optional:
                 subject = element symbol (H) or isotope (H-1); an element symbol with role
                 "abundance" applies to all isotopes of that element.
                 role "match" uses the chebi column (number only) -> skos:closeMatch.
-  --previous    Turtle file written by an earlier run. Declarations whose value changed are kept,
-                flagged owl:deprecated and linked with dcterms:isReplacedBy / dcterms:replaces.
+  --previous    Turtle file written by an earlier run. Declarations whose value changed are kept with the status
+                "superseded" and linked to the new declaration with ciaaw:hasNextDeclaration and
+                ciaaw:hasPreviousDeclaration.
 
 Example:
-  python -m ciaaw_draft.convert.ciaaw2ttl --weights atomic-weights.htm --abundances isotopic-abundances.htm \
-      --supplement supplement.csv --previous ciaaw-2022.ttl -o ciaaw-2024.ttl
+  python -m ciaaw_draft.convert.ciaaw2ttl --weights atomic-weights.htm --abundances isotopic-abundances.htm \\
+      --supplement data/supplement.csv --previous ciaaw-2022.ttl -o ciaaw-2024.ttl
 
-Modelling (see hydrogen-example-v2.ttl and the draft in issue 20):
-  * Element and isotope nodes keep a stable IRI and only carry pointers
-    (ciaaw:currentStandardAtomicWeight, ciaaw:currentAbundance), the full history
-    (ciaaw:hasDeclaration) and derived shortcut values.
-  * Every published value is its own ciaaw:*Declaration with a qudt:QuantityValue.
-  * Declaration IRIs are readable: ciaaw_draft:AW-H-standard-2009, ciaaw_draft:Abundance-H1. The year is taken
-    from the supplement; without a year the IRI has none. If a previous run used the same IRI for
-    a DIFFERENT value, a short hash of the new value is appended so the old declaration stays
+Modelling, after the SI Digital Framework of the BIPM (see README.md and issue #11):
+  * Each kind of resource has its own namespace: elements:Hydrogen, isotopes:H-1, weights:H-2009,
+    abundances:H-1, reports:PAC-REP-10-09-14, footnotes:g, bodies:CIAAW.
+  * Element and isotope nodes keep a stable IRI. They hold their identifying facts, a pointer to the current
+    declaration (ciaaw:hasCurrentStandardAtomicWeight, ciaaw:hasCurrentAbundance) and the full history
+    (ciaaw:hasDeclaration).
+  * Every published value is a declaration of its own, holding its numbers directly (no blank nodes): an interval,
+    a value with its standard uncertainty, or a value alone, and always the value as CIAAW prints it
+    (ciaaw:hasValueAsString), which keeps the trailing zeros. Numbers are xsd:decimal text, never floats.
+  * Declarations have a status (current or superseded), the year they were recommended, the report they come
+    from, and the declaration before and after them.
+  * prov:wasDerivedFrom names the document every element, isotope and declaration was read from. Each namespace
+    has a header (owl:Ontology) with the version, the sources and the rights statement.
+  * The year of a declaration is part of its IRI when it is known (weights:H-2009). If a previous run used the
+    same IRI for a DIFFERENT value, a short hash of the new value is appended so the old declaration stays
     addressable. --iri-style hash always appends the hash instead (pure content addressing).
-  * Numbers are kept as xsd:decimal text, never as float. Uncertainty digits in "x(u)" notation
-    are scaled to the last digits of x. Significant figures are counted from the cell text,
-    because xsd:decimal drops trailing zeros.
-  * Not in these two tables, therefore not generated: atomic masses, conventional/abridged
-    values, German labels.
+  * Not in these two tables, therefore not generated: atomic masses, conventional/abridged values.
 """
 from __future__ import annotations
 
@@ -44,11 +48,12 @@ from decimal import Decimal
 from pathlib import Path
 
 from bs4 import BeautifulSoup
-from rdflib import BNode, Graph, Literal, Namespace, OWL, RDF, RDFS, URIRef, XSD
+from rdflib import Graph, Literal, OWL, RDF, RDFS, URIRef, XSD
 from rdflib.namespace import DCTERMS, SKOS
 
-from ciaaw_draft.namespaces import (ADMS, ADMS_DEPRECATED, CHEBI, CHEMROF, DEFAULT_DATA_NS, DEFAULT_ELEMENT_NS,
-                                    DEFAULT_VOCAB_NS, QUDT, UNIT)
+from ciaaw_draft import namespaces as n
+from ciaaw_draft.namespaces import (ABUNDANCES_PAGE, CHEBI, PROV, SITE_URL, STATUS_CURRENT, STATUS_SUPERSEDED,
+                                    SUPPLEMENT_FILE, UNIT_ONE, WEIGHTS_PAGE, Namespaces)
 
 NONE_MARKS = {"", "-", "—", "–", "−"}
 
@@ -66,53 +71,8 @@ FOOTNOTES = {
          "standard atomic weight being given; the tabulated value and uncertainty should be "
          "applicable to normal material.",
 }
-
-VOCAB_TTL = """
-@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix qudt: <http://qudt.org/schema/qudt/> .
-@prefix ciaaw: <@@VOCAB@@> .
-
-ciaaw:Declaration a rdfs:Class ;
-    rdfs:comment "One immutable, citable assignment of a value by CIAAW. Never edited after publication, only deprecated." .
-ciaaw:StandardAtomicWeightDeclaration rdfs:subClassOf ciaaw:Declaration ;
-    rdfs:comment "Ar°(E): either an interval (lowerBound/upperBound) or value with standardUncertainty." .
-ciaaw:ConventionalAtomicWeightDeclaration rdfs:subClassOf ciaaw:Declaration ;
-    rdfs:comment "Single abridged/conventional value for applications that do not need the interval." .
-ciaaw:Footnote a rdfs:Class .
-ciaaw:IsotopicAbundanceDeclaration rdfs:subClassOf ciaaw:Declaration ;
-    rdfs:comment "Representative isotopic composition (amount fraction) of one isotope." .
-ciaaw:AtomicMassDeclaration rdfs:subClassOf ciaaw:Declaration ;
-    rdfs:comment "Atomic mass of one isotope in Da, with standard uncertainty." .
-
-ciaaw:hasIsotope a rdf:Property ; rdfs:comment "Element -> isotope." .
-ciaaw:massNumber a rdf:Property .
-ciaaw:longestLivedMassNumber a rdf:Property ;
-    rdfs:comment "Element without stable isotopes: mass number of the longest-lived isotope as bracketed in the CIAAW table." .
-ciaaw:ofIsotope a rdf:Property ; rdfs:comment "Isotope declaration -> isotope it is about." .
-ciaaw:currentAbundance a rdf:Property ; rdfs:comment "Isotope -> the one non-deprecated abundance declaration." .
-ciaaw:currentAtomicMass a rdf:Property ; rdfs:comment "Isotope -> the one non-deprecated atomic mass declaration." .
-
-ciaaw:ofElement a rdf:Property ; rdfs:comment "Declaration -> element it is about." .
-ciaaw:hasDeclaration a rdf:Property ; rdfs:comment "Element or isotope -> ALL its declarations incl. deprecated (history)." .
-ciaaw:currentStandardAtomicWeight a rdf:Property ;
-    rdfs:comment "Element -> the one non-deprecated standard declaration. Modelled after dcat:hasCurrentVersion." .
-ciaaw:currentConventionalAtomicWeight a rdf:Property ;
-    rdfs:comment "Element -> the one non-deprecated conventional declaration." .
-ciaaw:value a rdf:Property ; rdfs:range qudt:QuantityValue .
-ciaaw:significantFigures a rdf:Property ;
-    rdfs:comment "Needed because xsd:decimal drops trailing zeros (1.0080 = 1.008)." .
-ciaaw:significantFiguresLower a rdf:Property .
-ciaaw:significantFiguresUpper a rdf:Property .
-ciaaw:significantFiguresUncertainty a rdf:Property ;
-    rdfs:comment "Number of digits in the bracketed uncertainty, e.g. 3 for 0.969 41(156)." .
-ciaaw:footnote a rdf:Property ; rdfs:range ciaaw:Footnote .
-ciaaw:standardAtomicWeightLower a rdf:Property ;
-    rdfs:comment "Derived shortcut copied from the current declaration; never edited by hand." .
-ciaaw:standardAtomicWeightUpper a rdf:Property .
-ciaaw:standardAtomicWeightValue a rdf:Property .
-ciaaw:standardAtomicWeightUncertainty a rdf:Property .
-"""
+BODIES = {"CIAAW": ("Commission on Isotopic Abundances and Atomic Weights", "https://ciaaw.org", "IUPAC"),
+          "IUPAC": ("International Union of Pure and Applied Chemistry", "https://iupac.org", None)}
 
 
 # ---------------------------------------------------------------------------
@@ -129,15 +89,21 @@ def squeeze(text: str | None) -> str:
     return re.sub(r"\s+", "", text or "")
 
 
-def sig_figs(number: str) -> int | None:
-    """Significant figures of a plain decimal string; None if the value is zero."""
-    digits = number.replace(".", "").lstrip("0")
-    return len(digits) or None
-
-
 def scaled_uncertainty(value: str, uncertainty_digits: str) -> str:
     places = len(value.split(".")[1]) if "." in value else 0
     return format(Decimal(uncertainty_digits).scaleb(-places), "f")
+
+
+def group_digits(number: str, space: str = " ") -> str:
+    """Group decimals in threes as CIAAW prints them (1.007 84). A lone last digit joins the group before it
+    (9.012 1831)."""
+    if "." not in number:
+        return number
+    whole, decimals = number.split(".")
+    groups = [decimals[i:i + 3] for i in range(0, len(decimals), 3)]
+    if len(groups) > 1 and len(groups[-1]) == 1:
+        groups[-2:] = [groups[-2] + groups[-1]]
+    return f"{whole}.{space.join(groups)}"
 
 
 @dataclass
@@ -150,6 +116,15 @@ class Parsed:
     uncertainty: str | None = None
     uncertainty_digits: str | None = None
     mass_number: int | None = None
+
+    @property
+    def printed(self) -> str:
+        """The value as CIAAW prints it, with every digit of the table."""
+        if self.kind == "interval":
+            return f"[{group_digits(self.lower)}, {group_digits(self.upper)}]"
+        if self.kind == "value":
+            return f"{group_digits(self.value)}({self.uncertainty_digits})"
+        return group_digits(self.value)
 
 
 def parse_quantity(cell: str) -> Parsed:
@@ -245,7 +220,7 @@ def read_abundances(html: str, problems: list[str]) -> list[AbundanceElement]:
 
 
 # ---------------------------------------------------------------------------
-# Graph construction
+# The parts that historical2ttl.py shares
 # ---------------------------------------------------------------------------
 def short_hash(*parts: str) -> str:
     return hashlib.sha1("|".join(parts).encode("utf-8")).hexdigest()[:8]
@@ -253,6 +228,77 @@ def short_hash(*parts: str) -> str:
 
 def iri_name(name: str) -> str:
     return re.sub(r"[^A-Za-z0-9]", "", name).capitalize()
+
+
+def value_triples(ns: Namespaces, decl, parsed: Parsed) -> list[tuple]:
+    """The numbers of a declaration in one of three forms, the value as printed, and its unit."""
+    ciaaw, dec = ns.ciaaw, (lambda s: Literal(s, datatype=XSD.decimal))
+    triples = [(decl, ciaaw.hasValueAsString, Literal(parsed.printed)), (decl, ciaaw.hasUnit, UNIT_ONE)]
+    if parsed.kind == "interval":
+        triples += [(decl, ciaaw.hasLowerBound, dec(parsed.lower)), (decl, ciaaw.hasUpperBound, dec(parsed.upper))]
+    elif parsed.kind == "value":
+        triples += [(decl, ciaaw.hasValue, dec(parsed.value)),
+                    (decl, ciaaw.hasStandardUncertainty, dec(parsed.uncertainty))]
+    else:
+        triples.append((decl, ciaaw.hasValue, dec(parsed.value)))
+    return triples
+
+
+def numbers(parsed: Parsed) -> frozenset:
+    """The numbers of a value, as numbers, so that 107.8682 and 107.868200 compare equal. rdflib also writes
+    "1"^^xsd:decimal as 1.0, so the text of an unchanged value can differ after a round trip."""
+    if parsed.kind == "interval":
+        items = [("hasLowerBound", parsed.lower), ("hasUpperBound", parsed.upper)]
+    elif parsed.kind == "value":
+        items = [("hasValue", parsed.value), ("hasStandardUncertainty", parsed.uncertainty)]
+    else:
+        items = [("hasValue", parsed.value)]
+    return frozenset((name, Decimal(text)) for name, text in items)
+
+
+def graph_numbers(ns: Namespaces, g: Graph, decl) -> frozenset:
+    found = set()
+    for name in ("hasLowerBound", "hasUpperBound", "hasValue", "hasStandardUncertainty"):
+        if (v := g.value(decl, ns.ciaaw[name])) is not None:
+            found.add((name, Decimal(str(v))))
+    return frozenset(found)
+
+
+def report_triples(ns: Namespaces, doi: str) -> tuple[URIRef, list[tuple]]:
+    """The report with this DOI, named after the part of the DOI after the registrant (reports:PAC-REP-10-09-14)."""
+    report = ns.reports[re.sub(r"[^A-Za-z0-9._-]", "-", doi.split("/", 1)[-1])]
+    return report, [(report, RDF.type, ns.ciaaw.Report), (report, RDFS.label, Literal(f"doi:{doi}")),
+                    (report, DCTERMS.identifier, Literal(doi)), (report, RDFS.seeAlso, URIRef(f"https://doi.org/{doi}"))]
+
+
+def source_triples(ns: Namespaces, source: URIRef) -> list[tuple]:
+    label, publisher = n.SOURCE_LABELS[source]
+    triples = [(source, RDF.type, PROV.Entity), (source, RDFS.label, Literal(label, lang="en"))]
+    if publisher:
+        triples.append((source, DCTERMS.publisher, ns.bodies[publisher]))
+    return triples
+
+
+def header_triples(ns: Namespaces, prefix: str, sources: list[URIRef]) -> list[tuple]:
+    """The header of one namespace of the data, as the SI Reference Point gives each of its files."""
+    head = URIRef(str(getattr(ns, prefix)))
+    triples = [(head, RDF.type, OWL.Ontology), (head, RDFS.label, Literal(f"CIAAW draft: {n.TITLES[prefix]}", lang="en")),
+               (head, OWL.versionInfo, Literal(n.VERSION)),
+               (head, OWL.versionIRI, URIRef(f"{ns.base}{n.VERSION}/{n.FOLDERS[prefix]}")),
+               (head, OWL.imports, ns.ontology), (head, DCTERMS.rights, Literal(n.DATA_RIGHTS, lang="en")),
+               (head, DCTERMS.rightsHolder, ns.bodies.CIAAW), (head, DCTERMS.rightsHolder, ns.bodies.IUPAC)]
+    return triples + [(head, PROV.wasDerivedFrom, s) for s in sources]
+
+
+def body_triples(ns: Namespaces) -> list[tuple]:
+    triples = []
+    for key, (label, page, part_of) in BODIES.items():
+        body = ns.bodies[key]
+        triples += [(body, RDF.type, ns.ciaaw.Body), (body, RDFS.label, Literal(label, lang="en")),
+                    (body, SKOS.altLabel, Literal(key)), (body, RDFS.seeAlso, URIRef(page))]
+        if part_of:
+            triples.append((body, DCTERMS.isPartOf, ns.bodies[part_of]))
+    return triples
 
 
 def load_supplement(path: str | None) -> dict[tuple[str, str], dict[str, str]]:
@@ -272,55 +318,33 @@ def load_supplement(path: str | None) -> dict[tuple[str, str], dict[str, str]]:
     return sup
 
 
+# ---------------------------------------------------------------------------
+# Graph construction
+# ---------------------------------------------------------------------------
 def build_graph(weights: list[WeightRow], abundances: list[AbundanceElement],
-                supplement: dict | None = None, data_ns: str = DEFAULT_DATA_NS,
-                vocab_ns: str = DEFAULT_VOCAB_NS, include_vocab: bool = True,
-                iri_style: str = "readable", previous: Graph | None = None,
-                element_ns: str = DEFAULT_ELEMENT_NS):
-    EX, CIAAW, ELEMENT = Namespace(data_ns), Namespace(vocab_ns), Namespace(element_ns)
+                supplement: dict | None = None, base: str = SITE_URL, headers: bool = True,
+                iri_style: str = "readable", previous: Graph | None = None):
+    ns = Namespaces(base)
+    CIAAW = ns.ciaaw
     supplement = supplement or {}
     warnings: list[str] = []
     g = Graph()
-    if include_vocab:
-        g.parse(data=VOCAB_TTL.replace("@@VOCAB@@", vocab_ns), format="turtle")
-    for prefix, ns in [("dcterms", DCTERMS), ("skos", SKOS), ("qudt", QUDT), ("unit", UNIT), ("owl", OWL),
-                       ("adms", ADMS), ("chemrof", CHEMROF), ("chebi", CHEBI), ("ciaaw", CIAAW), ("ciaaw_draft", EX), ("element", ELEMENT)]:
-        g.bind(prefix, ns)
+    ns.bind(g)
 
-    def dec(s: str) -> Literal:
-        return Literal(s, datatype=XSD.decimal)
+    def add(triples):
+        for triple in triples:
+            g.add(triple)
 
-    # --- value signatures: decide whether a value changed between two runs ------------------
-    # Compared as numbers, not as text: rdflib writes "1"^^xsd:decimal as 1.0 in Turtle, so the
-    # lexical form of an unchanged value can differ after a round trip.
-    def signature(parsed: Parsed) -> frozenset:
-        if parsed.kind == "interval":
-            items = [("lowerBound", parsed.lower), ("upperBound", parsed.upper)]
-        elif parsed.kind == "value":
-            items = [("numericValue", parsed.value), ("standardUncertainty", parsed.uncertainty)]
-        else:
-            items = [("numericValue", parsed.value)]
-        return frozenset((name, Decimal(text)) for name, text in items)
-
-    def graph_signature(graph: Graph, decl) -> frozenset:
-        q = graph.value(decl, CIAAW.value)
-        sig = set()
-        for name in ("lowerBound", "upperBound", "numericValue", "standardUncertainty"):
-            v = graph.value(q, QUDT[name]) if q is not None else None
-            if v is not None:
-                sig.add((name, Decimal(str(v))))
-        return frozenset(sig)
-
-    def declaration_iri(base: str, raw: str, year: str | None, parsed: Parsed):
-        local = base
+    def declaration_iri(namespace, local: str, raw: str, year: str | None, parsed: Parsed):
+        base_name = local
         if iri_style == "hash":
-            local += "-" + short_hash(base, raw)
+            local += "-" + short_hash(base_name, raw)
         elif year:
             local += f"-{year}"
-        iri = EX[local]
+        iri = namespace[local]
         if (previous is not None and (iri, RDF.type, None) in previous
-                and graph_signature(previous, iri) != signature(parsed)):
-            iri = EX[f"{local}-{short_hash(base, raw)}"]        # same name, new value
+                and graph_numbers(ns, previous, iri) != numbers(parsed)):
+            iri = namespace[f"{local}-{short_hash(base_name, raw)}"]        # same name, new value
         return iri
 
     # --- supplement ------------------------------------------------------------------------
@@ -330,94 +354,78 @@ def build_graph(weights: list[WeightRow], abundances: list[AbundanceElement],
                 return supplement[(s, role)]
         return {}
 
-    def add_provenance(decl, info: dict):
+    def add_provenance(decl, info: dict, source: URIRef):
+        g.add((decl, PROV.wasDerivedFrom, source))
+        if info:
+            g.add((decl, PROV.wasDerivedFrom, SUPPLEMENT_FILE))
         if info.get("year"):
-            g.add((decl, DCTERMS.issued, Literal(info["year"], datatype=XSD.gYear)))
+            g.add((decl, CIAAW.hasStartValidity, Literal(info["year"], datatype=XSD.gYear)))
         if info.get("doi"):
-            g.add((decl, DCTERMS.source, URIRef(f"https://doi.org/{info['doi']}")))
+            report, triples = report_triples(ns, info["doi"])
+            add(triples)
+            g.add((decl, CIAAW.hasDefiningReport, report))
 
     def add_match(node, key: str):
         if (chebi_id := supplement.get((key, "match"), {}).get("chebi")):
             g.add((node, SKOS.closeMatch, CHEBI[chebi_id]))
 
-    # --- values and footnotes --------------------------------------------------------------
-    def add_value(decl, parsed: Parsed):
-        q = BNode()
-        g.add((decl, CIAAW.value, q))
-        g.add((q, RDF.type, QUDT.QuantityValue))
-        g.add((q, QUDT.hasUnit, UNIT.UNITLESS))
-        if parsed.kind == "interval":
-            g.add((q, QUDT.lowerBound, dec(parsed.lower)))
-            g.add((q, QUDT.upperBound, dec(parsed.upper)))
-            for prop, num in ((CIAAW.significantFiguresLower, parsed.lower),
-                              (CIAAW.significantFiguresUpper, parsed.upper)):
-                if (n := sig_figs(num)) is not None:
-                    g.add((q, prop, Literal(n)))
-        elif parsed.kind == "value":
-            g.add((q, QUDT.numericValue, dec(parsed.value)))
-            g.add((q, QUDT.standardUncertainty, dec(parsed.uncertainty)))
-            g.add((q, CIAAW.significantFigures, Literal(sig_figs(parsed.value))))
-            g.add((q, CIAAW.significantFiguresUncertainty, Literal(len(parsed.uncertainty_digits))))
-        elif parsed.kind == "exact":
-            g.add((q, QUDT.numericValue, dec(parsed.value)))
-
-    def add_notes(decl, notes):
+    def add_declaration(decl, kind, label: str, subject, current_pointer, parsed: Parsed, notes, info, source):
+        g.add((decl, RDF.type, kind))
+        g.add((decl, RDFS.label, Literal(f"{label}, {info['year']}" if info.get("year") else label, lang="en")))
+        g.add((decl, CIAAW.isDeclarationOf, subject))
+        g.add((decl, CIAAW.hasStatus, Literal(STATUS_CURRENT)))
+        add(value_triples(ns, decl, parsed))
         for letter in notes:
-            g.add((decl, CIAAW.footnote, CIAAW[f"note-{letter}"]))
+            g.add((decl, CIAAW.hasFootnote, ns.footnotes[letter]))
+        add_provenance(decl, info, source)
+        g.add((subject, CIAAW.hasDeclaration, decl))
+        g.add((subject, current_pointer, decl))
+        if previous is not None:
+            carry_history(subject, current_pointer, decl, numbers(parsed))
 
-    # --- deprecation chain across runs -----------------------------------------------------
-    def copy_closure(node):
+    # --- revisions across runs -------------------------------------------------------------
+    def copy_from_previous(node):
         for p, o in previous.predicate_objects(node):
             g.add((node, p, o))
-            if isinstance(o, BNode):
-                copy_closure(o)
+            if p == CIAAW.hasDefiningReport:
+                for triple in previous.triples((o, None, None)):
+                    g.add(triple)
 
-    def carry_history(subject, pointer, new_decl, new_sig: frozenset):
-        """Keep declarations of the previous run; flag the one that this run supersedes."""
+    def carry_history(subject, pointer, new_decl, new_numbers: frozenset):
+        """Keep the declarations of the previous run, and chain the one that this run supersedes."""
         old = previous.value(subject, pointer)
         skip = {new_decl}
-        if old is not None and old != new_decl and graph_signature(previous, old) == new_sig:
+        if old is not None and old != new_decl and graph_numbers(ns, previous, old) == new_numbers:
             skip.add(old)                 # same value, only the IRI differs (e.g. year added later)
         history = set(previous.objects(subject, CIAAW.hasDeclaration))
         if old is not None:
             history.add(old)
         for d in sorted(history - skip, key=str):
-            copy_closure(d)
+            copy_from_previous(d)
             g.add((subject, CIAAW.hasDeclaration, d))
             if d == old:
-                g.add((d, OWL.deprecated, Literal(True)))
-                g.add((d, ADMS.status, ADMS_DEPRECATED))
-                g.add((d, DCTERMS.isReplacedBy, new_decl))
-                g.add((new_decl, DCTERMS.replaces, d))
+                g.set((d, CIAAW.hasStatus, Literal(STATUS_SUPERSEDED)))
+                g.add((d, CIAAW.hasNextDeclaration, new_decl))
+                g.add((new_decl, CIAAW.hasPreviousDeclaration, d))
+                if (start := g.value(new_decl, CIAAW.hasStartValidity)) is not None:
+                    g.set((d, CIAAW.hasEndValidity, start))
 
     # --- main loop -------------------------------------------------------------------------
     ab_by_symbol = {e.symbol: e for e in abundances}
     for row in weights:
-        el = ELEMENT[iri_name(row.name)]
-        g.add((el, RDF.type, CHEMROF.ChemicalElement))
+        el = ns.elements[iri_name(row.name)]
+        g.add((el, RDF.type, CIAAW.ChemicalElement))
         g.add((el, RDFS.label, Literal(row.name, lang="en")))
-        g.add((el, CHEMROF.symbol, Literal(row.symbol)))
-        g.add((el, CHEMROF.atomic_number, Literal(row.z)))
+        g.add((el, CIAAW.hasSymbol, Literal(row.symbol)))
+        g.add((el, CIAAW.hasAtomicNumber, Literal(row.z)))
+        g.add((el, PROV.wasDerivedFrom, WEIGHTS_PAGE))
         add_match(el, row.symbol)
 
         if row.weight.kind in ("interval", "value"):
             info = meta("standard", row.symbol)
-            decl = declaration_iri(f"AW-{row.symbol}-standard", row.weight.raw, info.get("year"), row.weight)
-            g.add((decl, RDF.type, CIAAW.StandardAtomicWeightDeclaration))
-            g.add((decl, CIAAW.ofElement, el))
-            add_value(decl, row.weight)
-            add_notes(decl, row.notes)
-            add_provenance(decl, info)
-            g.add((el, CIAAW.hasDeclaration, decl))
-            g.add((el, CIAAW.currentStandardAtomicWeight, decl))
-            if row.weight.kind == "interval":
-                g.add((el, CIAAW.standardAtomicWeightLower, dec(row.weight.lower)))
-                g.add((el, CIAAW.standardAtomicWeightUpper, dec(row.weight.upper)))
-            else:
-                g.add((el, CIAAW.standardAtomicWeightValue, dec(row.weight.value)))
-                g.add((el, CIAAW.standardAtomicWeightUncertainty, dec(row.weight.uncertainty)))
-            if previous is not None:
-                carry_history(el, CIAAW.currentStandardAtomicWeight, decl, signature(row.weight))
+            decl = declaration_iri(ns.weights, row.symbol, row.weight.raw, info.get("year"), row.weight)
+            add_declaration(decl, CIAAW.StandardAtomicWeightDeclaration, f"standard atomic weight of {row.name}",
+                            el, CIAAW.hasCurrentStandardAtomicWeight, row.weight, row.notes, info, WEIGHTS_PAGE)
         elif row.weight.kind != "none":
             warnings.append(f"{row.symbol}: unexpected standard atomic weight format {row.weight.raw!r}")
 
@@ -425,28 +433,24 @@ def build_graph(weights: list[WeightRow], abundances: list[AbundanceElement],
         if ab is None:
             warnings.append(f"{row.symbol}: not found in the abundance table")
             continue
+        g.add((el, PROV.wasDerivedFrom, ABUNDANCES_PAGE))
         if (ab.z, ab.name.lower()) != (row.z, row.name.lower()):
             warnings.append(f"{row.symbol}: Z/name differ between tables ({row.z}/{row.name} vs {ab.z}/{ab.name})")
         if ab.longest_lived is not None:
-            g.add((el, CIAAW.longestLivedMassNumber, Literal(ab.longest_lived)))
+            g.add((el, CIAAW.hasLongestLivedMassNumber, Literal(ab.longest_lived)))
         for mass_number, comp in ab.isotopes:
             key = f"{row.symbol}-{mass_number}"
-            iso = EX[key]
-            g.add((iso, RDF.type, CHEMROF.Isotope))
-            g.add((iso, CIAAW.massNumber, Literal(mass_number)))
+            iso = ns.isotopes[key]
+            g.add((iso, RDF.type, CIAAW.Isotope))
+            g.add((iso, RDFS.label, Literal(f"{row.name}-{mass_number}", lang="en")))
+            g.add((iso, CIAAW.hasMassNumber, Literal(mass_number)))
+            g.add((iso, PROV.wasDerivedFrom, ABUNDANCES_PAGE))
             add_match(iso, key)
             g.add((el, CIAAW.hasIsotope, iso))
             info = meta("abundance", key, row.symbol)
-            decl = declaration_iri(f"Abundance-{row.symbol}{mass_number}", comp.raw, info.get("year"), comp)
-            g.add((decl, RDF.type, CIAAW.IsotopicAbundanceDeclaration))
-            g.add((decl, CIAAW.ofIsotope, iso))
-            add_value(decl, comp)
-            add_notes(decl, sorted(ab.notes))      # footnotes are element-level
-            add_provenance(decl, info)
-            g.add((iso, CIAAW.hasDeclaration, decl))
-            g.add((iso, CIAAW.currentAbundance, decl))
-            if previous is not None:
-                carry_history(iso, CIAAW.currentAbundance, decl, signature(comp))
+            decl = declaration_iri(ns.abundances, key, comp.raw, info.get("year"), comp)
+            add_declaration(decl, CIAAW.IsotopicAbundanceDeclaration, f"isotopic abundance of {row.name}-{mass_number}",
+                            iso, CIAAW.hasCurrentAbundance, comp, sorted(ab.notes), info, ABUNDANCES_PAGE)
         singles = [c for _, c in ab.isotopes]
         if singles and all(c.kind in ("value", "exact") for c in singles):
             total = sum(Decimal(c.value) for c in singles)
@@ -455,13 +459,30 @@ def build_graph(weights: list[WeightRow], abundances: list[AbundanceElement],
 
     if sorted(r.z for r in weights) != list(range(1, 119)):
         warnings.append(f"weights table has {len(weights)} elements; expected Z = 1..118 without gaps")
-    letters = {str(o).rsplit("note-", 1)[-1] for o in g.objects(None, CIAAW.footnote)}
-    for letter in sorted(letters & set(FOOTNOTES)):
-        note = CIAAW[f"note-{letter}"]
-        g.add((note, RDF.type, CIAAW.Footnote))
-        g.add((note, SKOS.notation, Literal(letter)))
-        g.add((note, SKOS.definition, Literal(FOOTNOTES[letter], lang="en")))
+    for letter in sorted({str(o).rsplit("/", 1)[-1] for o in g.objects(None, CIAAW.hasFootnote)} & set(FOOTNOTES)):
+        note = ns.footnotes[letter]
+        add([(note, RDF.type, CIAAW.Footnote), (note, RDFS.label, Literal(f"footnote {letter}", lang="en")),
+             (note, SKOS.notation, Literal(letter)), (note, SKOS.definition, Literal(FOOTNOTES[letter], lang="en")),
+             (note, PROV.wasDerivedFrom, WEIGHTS_PAGE)])
+    add(body_triples(ns))
+    if headers:
+        add_headers(ns, g)
     return g, warnings
+
+
+def add_headers(ns: Namespaces, g: Graph) -> None:
+    """A header for each namespace that holds resources, naming the documents its resources come from."""
+    for prefix in n.FOLDERS:
+        namespace = str(getattr(ns, prefix))
+        subjects = {s for s in g.subjects() if str(s).startswith(namespace) and str(s) != namespace}
+        if not subjects:
+            continue
+        sources = sorted({o for s in subjects for o in g.objects(s, PROV.wasDerivedFrom)}, key=str)
+        for triple in header_triples(ns, prefix, sources):
+            g.add(triple)
+        for source in sources:
+            for triple in source_triples(ns, source):
+                g.add(triple)
 
 
 # ---------------------------------------------------------------------------
@@ -476,13 +497,11 @@ def main(argv=None) -> int:
     ap.add_argument("--weights", required=True, type=Path)
     ap.add_argument("--abundances", required=True, type=Path)
     ap.add_argument("--supplement", help="CSV: subject,role,year,doi,chebi")
-    ap.add_argument("--previous", type=Path, help="Turtle from an earlier run; enables the deprecation chain")
+    ap.add_argument("--previous", type=Path, help="Turtle from an earlier run; enables the chain of revisions")
     ap.add_argument("--iri-style", choices=("readable", "hash"), default="readable")
     ap.add_argument("-o", "--output", required=True, type=Path)
-    ap.add_argument("--data-ns", default=DEFAULT_DATA_NS)
-    ap.add_argument("--element-ns", default=DEFAULT_ELEMENT_NS, help="namespace of the element IRIs")
-    ap.add_argument("--vocab-ns", default=DEFAULT_VOCAB_NS)
-    ap.add_argument("--no-vocab", action="store_true", help="omit the vocabulary block")
+    ap.add_argument("--base", default=SITE_URL, help="address under which all namespaces of the data lie")
+    ap.add_argument("--no-headers", action="store_true", help="omit the header of each namespace")
     ap.add_argument("--lenient", action="store_true", help="exit 0 even if cells could not be parsed")
     args = ap.parse_args(argv)
 
@@ -493,8 +512,8 @@ def main(argv=None) -> int:
     if args.previous:
         previous = Graph()
         previous.parse(args.previous, format="turtle")
-    graph, warnings = build_graph(weights, abundances, load_supplement(args.supplement), args.data_ns,
-                                  args.vocab_ns, not args.no_vocab, args.iri_style, previous, args.element_ns)
+    graph, warnings = build_graph(weights, abundances, load_supplement(args.supplement), args.base,
+                                  not args.no_headers, args.iri_style, previous)
 
     header = (f"# Generated by ciaaw2ttl.py\n"
               f"# weights:    {args.weights.name} sha256={sha256(args.weights)}\n"
@@ -503,9 +522,10 @@ def main(argv=None) -> int:
         header += f"# previous:   {args.previous.name} sha256={sha256(args.previous)}\n"
     args.output.write_text(header + "\n" + graph.serialize(format="turtle"), encoding="utf-8")
 
-    n_deprecated = len(set(graph.subjects(OWL.deprecated, Literal(True))))
+    ciaaw = Namespaces(args.base).ciaaw
+    n_superseded = len(set(graph.subjects(ciaaw.hasStatus, Literal(STATUS_SUPERSEDED))))
     print(f"{len(weights)} elements, {sum(len(e.isotopes) for e in abundances)} isotopes, "
-          f"{len(graph)} triples, {n_deprecated} deprecated declarations -> {args.output}", file=sys.stderr)
+          f"{len(graph)} triples, {n_superseded} superseded declarations -> {args.output}", file=sys.stderr)
     for msg in warnings:
         print(f"WARNING: {msg}", file=sys.stderr)
     for msg in problems:

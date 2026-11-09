@@ -5,7 +5,7 @@ The page is HTML and CSS without JavaScript. The periodic table colours each ele
 its standard atomic weight (the width of the interval, or twice the standard uncertainty, divided by the value), by
 the year of the current value, or by the number of values recommended since 1902; radio inputs switch the colouring
 and choose the element whose details and history show below the table. The history is the chain of declarations of
-each element in the data (ciaaw:hasDeclaration, with dcterms:issued and dcterms:source), which historical2ttl.py
+each element in the data (ciaaw:hasDeclaration, with ciaaw:hasStartValidity and ciaaw:hasDefiningReport), which historical2ttl.py
 adds from CIAAW's table of every standard atomic weight recommended since 1902. The styles are in
 site/static/style.css under .page-visualization.
 
@@ -101,14 +101,14 @@ def bin_index(x: float, bins: list) -> int:
 
 def quantity(g: Graph, declaration) -> dict:
     """The numbers of a declaration: kind, low and high end, midpoint and relative uncertainty."""
-    node = g.value(declaration, b.CIAAW.value)
-    lower, upper = g.value(node, b.QUDT.lowerBound), g.value(node, b.QUDT.upperBound)
+    node, ciaaw = declaration, b.CIAAW
+    lower, upper = g.value(node, ciaaw.hasLowerBound), g.value(node, ciaaw.hasUpperBound)
     if lower is not None:
         lower, upper = Decimal(str(lower)), Decimal(str(upper))
         mid = (lower + upper) / 2
         return {"kind": "interval", "low": lower, "high": upper, "mid": mid, "relative": float((upper - lower) / mid)}
-    value = Decimal(str(g.value(node, b.QUDT.numericValue)))
-    uncertainty = g.value(node, b.QUDT.standardUncertainty)
+    value = Decimal(str(g.value(node, ciaaw.hasValue)))
+    uncertainty = g.value(node, ciaaw.hasStandardUncertainty)
     if uncertainty is None:
         return {"kind": "exact", "low": value, "high": value, "mid": value, "relative": 0.0}
     uncertainty = Decimal(str(uncertainty))

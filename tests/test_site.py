@@ -1,4 +1,5 @@
 """Tests for the static site.  Run with:  python -m pytest tests/test_site.py"""
+import hashlib
 import json
 import re
 from pathlib import Path
@@ -6,12 +7,12 @@ from urllib.parse import unquote
 
 import pytest
 from bs4 import BeautifulSoup
-from rdflib import Graph
+from rdflib import Graph, OWL, RDF, URIRef
 from rdflib.compare import isomorphic
 
 from ciaaw_draft.paths import DATA_DIR, ROOT
 from ciaaw_draft.website import build_site as b
-from ciaaw_draft.convert import ciaaw2ttl as c
+from ciaaw_draft.namespaces import NS
 
 NB = b.NBSP
 SAMPLE = ["--data", str(DATA_DIR / "example-output.ttl")]            # small and fast; test_published_data.py has the rest
@@ -66,7 +67,7 @@ def test_abundance_table_uses_ciaaw_notation(site):
 
 def test_elements_missing_from_the_abundance_table_get_no_row():
     """The CIAAW table stops at uranium, so elements 93 to 118 should not appear as empty rows."""
-    empty = b.Element(b.URIRef(f"{c.DEFAULT_ELEMENT_NS}Neptunium"), "neptunium", "Np", 93, None, [], [], None, [])
+    empty = b.Element(NS.elements.Neptunium, "neptunium", "Np", 93, None, [], [], None, [])
     assert "neptunium" not in b.page_isotopic_abundances([empty], {})
 
 
@@ -204,7 +205,7 @@ def test_mermaid_is_only_loaded_where_needed(site):
 
 def test_build_fails_when_data_does_not_conform(tmp_path):
     broken = tmp_path / "broken.ttl"
-    broken.write_text(text_of(DATA_DIR / "example-output.ttl").replace('chemrof:symbol "He"', 'chemrof:symbol "he"'), encoding="utf-8")
+    broken.write_text(text_of(DATA_DIR / "example-output.ttl").replace('ciaaw:hasSymbol "He"', 'ciaaw:hasSymbol "he"'), encoding="utf-8")
     assert b.main(["--data", str(broken), "--out", str(tmp_path / "out")]) == 1
 
 
@@ -214,29 +215,31 @@ if __name__ == "__main__":
 
 # --- Subpages -------------------------------------------------------------------------------
 def test_isotope_page_shows_its_facts_and_links_to_its_turtle(site):
-    html = text_of(site / "id" / "H-1.html")
+    html = text_of(site / "isotopes" / "H-1.html")
     assert 'href="../elements/Hydrogen.html"' in html
     assert 'href="H-1.ttl"' in html
-    assert "ciaaw_draft:Abundance-H1" in html                       # the Turtle is shown on the page
-    assert 'href="Abundance-H1.html"' in html
-    assert (site / "id" / "H-1.ttl").exists()
+    assert "abundances:H-1" in html                                # the Turtle is shown on the page
+    assert 'href="../isotopic-abundances/H-1.html"' in html
+    assert "Isotopic compositions of the elements, ciaaw.org" in html  # where it was read from
+    assert (site / "isotopes" / "H-1.ttl").exists()
 
 
 def test_declaration_page_shows_the_value_and_what_it_is_about(site):
-    html = text_of(site / "id" / "AW-H-standard-2009.html")
+    html = text_of(site / "standard-atomic-weights" / "H-2009.html")
     assert "Standard atomic weight of hydrogen" in html
     assert f"[1.007{NB}84,{NB}1.008{NB}11]" in html
     assert 'href="../elements/Hydrogen.html"' in html
 
 
 def test_declaration_page_explains_its_footnotes(site):
-    html = text_of(site / "id" / "Abundance-Ar36.html")
+    html = text_of(site / "isotopic-abundances" / "Ar-36.html")
     for letter in ("g", "r"):
         assert f'id="note-{letter}"' in html
 
 
 def test_resource_pages_tell_software_where_the_turtle_is(site):
-    for path, name in (("id/H-1", "H-1"), ("id/Abundance-H1", "Abundance-H1"), ("elements/Hydrogen", "Hydrogen")):
+    for path, name in (("isotopes/H-1", "H-1"), ("isotopic-abundances/H-1", "H-1"), ("elements/Hydrogen", "Hydrogen"),
+                       ("reports/pac-2015-0503", "pac-2015-0503"), ("footnotes/m", "m"), ("bodies/CIAAW", "CIAAW")):
         link = BeautifulSoup(text_of(site / f"{path}.html"), "html.parser").find("link", rel="alternate")
         assert link["type"] == "text/turtle" and link["href"] == f"{name}.ttl"
 
@@ -246,30 +249,63 @@ def test_other_pages_have_no_turtle_link(site):
 
 
 def test_tables_link_to_the_subpages(site):
-    assert 'href="id/H-1.html"' in text_of(site / "isotopic-abundances.html")
+    assert 'href="isotopes/H-1.html"' in text_of(site / "isotopic-abundances.html")
     element = text_of(site / "elements" / "Hydrogen.html")
-    assert 'href="../id/H-1.html"' in element
-    assert 'href="../id/AW-H-standard-2009.html"' in element
-    assert 'href="../id/Abundance-H1.html"' in element
+    assert 'href="../isotopes/H-1.html"' in element
+    assert 'href="../standard-atomic-weights/H-2009.html"' in element
+    assert 'href="../isotopic-abundances/H-1.html"' in element
 
 
 def test_query_results_link_to_the_subpages(site):
     html = text_of(site / "sparql.html")
-    assert '<a href="id/H-1.html">ciaaw_draft:H-1</a>' in html
-    assert '<a href="elements/Hydrogen.html">element:Hydrogen</a>' in html
-    assert '<a href="id/Abundance-H1.html">ciaaw_draft:Abundance-H1</a>' in html
+    assert '<a href="isotopes/H-1.html">isotopes:H-1</a>' in html
+    assert '<a href="elements/Hydrogen.html">elements:Hydrogen</a>' in html
+    assert '<a href="isotopic-abundances/H-1.html">abundances:H-1</a>' in html
 
 
 def test_invented_declaration_gets_no_page(site):
     """The revision example is not in the current data, so its made-up value must not look like a real resource."""
-    assert not (site / "id" / "AW-H-standard-2027.html").exists()
+    assert not (site / "standard-atomic-weights" / "H-2027.html").exists()
 
 
 def test_revision_diagram_uses_the_prefixes(site):
     text = text_of(site / "revision-example.md")
-    assert "element:Hydrogen" in text and "ciaaw_draft:AW-H-standard-2009" in text
+    assert "elements:Hydrogen" in text and "weights:H-2009" in text and "ciaaw:hasNextDeclaration" in text
     assert '"ex:' not in text
 
+
+
+def test_downloads_give_each_part_of_the_data_with_its_checksum(site):
+    """As the SI Reference Point publishes its knowledge graphs: one file per kind of resource, with a checksum."""
+    md = text_of(site / "downloads.md")
+    for name in ("elements", "isotopes", "standard-atomic-weights", "isotopic-abundances", "reports", "footnotes", "bodies"):
+        path = site / "data" / f"{name}.ttl"
+        assert hashlib.sha256(path.read_bytes()).hexdigest() in md, name
+    part = Graph().parse(site / "data" / "isotopes.ttl", format="turtle")
+    assert (URIRef(str(NS.isotopes)), RDF.type, OWL.Ontology) in part
+    assert {s for s in part.subjects(RDF.type, NS.ciaaw.Isotope)} and not set(part.subjects(RDF.type, NS.ciaaw.ChemicalElement))
+    assert "This prototype declares no licence of its own" in md
+
+
+def test_each_namespace_has_an_index_page(site):
+    html = text_of(site / "isotopes" / "index.html")
+    assert 'href="H-1.html"' in html and "Isotopes" in html
+    assert (site / "isotopes" / "index.ttl").exists()
+
+
+def test_the_vocabulary_page_describes_every_term(site):
+    html = text_of(site / "ciaaw-draft.html")
+    onto = Graph().parse(ROOT / "model" / "ontology.ttl", format="turtle")
+    for term in onto.subjects(RDF.type, None):
+        if str(term).startswith(str(NS.ciaaw)):
+            assert f'id="{str(term).split("#")[1]}"' in html, term
+    assert text_of(site / "ciaaw-draft.ttl") == text_of(ROOT / "model" / "ontology.ttl")
+
+
+def test_a_report_page_lists_its_declarations(site):
+    html = text_of(site / "reports" / "pac-2015-0503.html")
+    assert "10.1515/pac-2015-0503" in html
+    assert 'href="../isotopic-abundances/H-1.html"' in html
 
 # --- Wikidata links -------------------------------------------------------------------------
 def test_element_page_links_to_wikidata_for_the_element_and_each_isotope(site):
@@ -299,15 +335,15 @@ def test_element_page_has_a_bibliography_of_its_sources(site):
 
 
 def test_isotope_and_abundance_pages_have_a_bibliography_of_their_sources(site):
-    for name in ("H-1", "Abundance-H1"):
-        html = text_of(site / "id" / f"{name}.html")
+    for name in ("isotopes/H-1", "isotopic-abundances/H-1"):
+        html = text_of(site / f"{name}.html")
         assert ">Bibliography</h2>" in html, name
         assert "Isotopic compositions of the elements 2013" in html, name      # formatted by citation.js
         assert 'href="https://doi.org/10.1515/pac-2015-0503"' in html, name
 
 
 def test_weight_declaration_pages_have_no_bibliography(site):
-    assert all("Bibliography" not in text_of(p) for p in (site / "id").glob("AW-*.html"))
+    assert all("Bibliography" not in text_of(p) for p in (site / "standard-atomic-weights").glob("*.html"))
 
 
 def test_no_bibliography_without_sources(site):

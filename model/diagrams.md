@@ -11,8 +11,8 @@ The main classes and how they connect. Attributes, back-references and history l
 ```mermaid
 classDiagram
     direction TB
-    class Element["chemrof:ChemicalElement"]
-    class Isotope["chemrof:Isotope"]
+    class Element["ciaaw:ChemicalElement"]
+    class Isotope["ciaaw:Isotope"]
     class StandardAtomicWeightDeclaration["ciaaw:StandardAtomicWeightDeclaration"]
     class ConventionalAtomicWeightDeclaration["ciaaw:ConventionalAtomicWeightDeclaration"]
     class IsotopicAbundanceDeclaration["ciaaw:IsotopicAbundanceDeclaration"]
@@ -20,29 +20,23 @@ classDiagram
     class Declaration["Declaration"] {
         <<abstract>>
     }
+    class Report["ciaaw:Report"]
     class Footnote["ciaaw:Footnote"]
-    class IntervalValue["Interval"]
-    class ValueWithUncertainty["Value with uncertainty"]
-    class SingleValue["Single value"]
-    class MassValue["Mass with uncertainty"]
+    class Body["ciaaw:Body"]
+    class Source["prov:Entity"]
     Declaration <|-- StandardAtomicWeightDeclaration
     Declaration <|-- ConventionalAtomicWeightDeclaration
     Declaration <|-- IsotopicAbundanceDeclaration
     Declaration <|-- AtomicMassDeclaration
     Element --> "0..*" Isotope : ciaaw#58;hasIsotope
-    Element --> "0..1" StandardAtomicWeightDeclaration : ciaaw#58;currentStandardAtomicWeight
-    Element --> "0..1" ConventionalAtomicWeightDeclaration : ciaaw#58;currentConventionalAtomicWeight
-    Isotope --> "1" IsotopicAbundanceDeclaration : ciaaw#58;currentAbundance
-    Isotope --> "0..1" AtomicMassDeclaration : ciaaw#58;currentAtomicMass
-    Declaration --> "0..*" Footnote : ciaaw#58;footnote
-    StandardAtomicWeightDeclaration --> "1" IntervalValue : ciaaw#58;value (one of)
-    StandardAtomicWeightDeclaration --> "1" ValueWithUncertainty : ciaaw#58;value (one of)
-    StandardAtomicWeightDeclaration --> "1" SingleValue : ciaaw#58;value (one of)
-    ConventionalAtomicWeightDeclaration --> "1" SingleValue : ciaaw#58;value
-    IsotopicAbundanceDeclaration --> "1" IntervalValue : ciaaw#58;value (one of)
-    IsotopicAbundanceDeclaration --> "1" ValueWithUncertainty : ciaaw#58;value (one of)
-    IsotopicAbundanceDeclaration --> "1" SingleValue : ciaaw#58;value (one of)
-    AtomicMassDeclaration --> "1" MassValue : ciaaw#58;value
+    Element --> "0..1" StandardAtomicWeightDeclaration : ciaaw#58;hasCurrentStandardAtomicWeight
+    Element --> "0..1" ConventionalAtomicWeightDeclaration : ciaaw#58;hasCurrentConventionalAtomicWeight
+    Isotope --> "1" IsotopicAbundanceDeclaration : ciaaw#58;hasCurrentAbundance
+    Isotope --> "0..1" AtomicMassDeclaration : ciaaw#58;hasCurrentAtomicMass
+    Declaration --> "0..*" Report : ciaaw#58;hasDefiningReport
+    Declaration --> "0..*" Footnote : ciaaw#58;hasFootnote
+    Body --> "0..1" Body : dcterms#58;isPartOf
+    Source --> "0..1" Body : dcterms#58;publisher
 ```
 
 ## Elements and isotopes
@@ -52,15 +46,16 @@ Elements and isotopes keep a stable IRI. They hold identifying facts and pointer
 ```mermaid
 classDiagram
     direction LR
-    class Element["chemrof:ChemicalElement"] {
+    class Element["ciaaw:ChemicalElement"] {
         rdfs:label : langString [1..*]
-        chemrof:symbol : string [1]
-        chemrof:atomic_number : integer [1]
+        ciaaw:hasSymbol : string [1]
+        ciaaw:hasAtomicNumber : integer [1]
         skos:closeMatch : IRI [0..*]
-        ciaaw:longestLivedMassNumber : integer [0..1]
+        ciaaw:hasLongestLivedMassNumber : integer [0..1]
     }
-    class Isotope["chemrof:Isotope"] {
-        ciaaw:massNumber : integer [1]
+    class Isotope["ciaaw:Isotope"] {
+        rdfs:label : langString [1..*]
+        ciaaw:hasMassNumber : integer [1]
         skos:closeMatch : IRI [0..*]
     }
     Element --> "0..*" Isotope : ciaaw#58;hasIsotope
@@ -68,56 +63,44 @@ classDiagram
 
 ## Atomic weight declarations
 
-A standard atomic weight is either an interval or a value with an uncertainty. The element points to the one current declaration and repeats its numbers as derived shortcuts.
+The element points to all its standard atomic weight declarations and to the one that is current.
 
 ```mermaid
 classDiagram
     direction TB
-    class Element["chemrof:ChemicalElement"] {
-        ciaaw:standardAtomicWeightLower : decimal [0..1]
-        ciaaw:standardAtomicWeightUpper : decimal [0..1]
-        ciaaw:standardAtomicWeightValue : decimal [0..1]
-        ciaaw:standardAtomicWeightUncertainty : decimal [0..1]
+    class Element["ciaaw:ChemicalElement"]
+    class StandardAtomicWeightDeclaration["ciaaw:StandardAtomicWeightDeclaration"] {
+        ciaaw:hasUnit : IRI [1]
     }
-    class StandardAtomicWeightDeclaration["ciaaw:StandardAtomicWeightDeclaration"]
-    class ConventionalAtomicWeightDeclaration["ciaaw:ConventionalAtomicWeightDeclaration"]
-    class IntervalValue["Interval"]
-    class ValueWithUncertainty["Value with uncertainty"]
-    class SingleValue["Single value"]
-    Element --> "0..1" StandardAtomicWeightDeclaration : ciaaw#58;currentStandardAtomicWeight
-    Element --> "0..1" ConventionalAtomicWeightDeclaration : ciaaw#58;currentConventionalAtomicWeight
+    class ConventionalAtomicWeightDeclaration["ciaaw:ConventionalAtomicWeightDeclaration"] {
+        ciaaw:hasUnit : IRI [1]
+    }
+    Element --> "0..1" StandardAtomicWeightDeclaration : ciaaw#58;hasCurrentStandardAtomicWeight
+    Element --> "0..1" ConventionalAtomicWeightDeclaration : ciaaw#58;hasCurrentConventionalAtomicWeight
     Element --> "0..*" StandardAtomicWeightDeclaration : ciaaw#58;hasDeclaration (one of)
     Element --> "0..*" ConventionalAtomicWeightDeclaration : ciaaw#58;hasDeclaration (one of)
-    StandardAtomicWeightDeclaration --> "1" Element : ciaaw#58;ofElement
-    StandardAtomicWeightDeclaration --> "1" IntervalValue : ciaaw#58;value (one of)
-    StandardAtomicWeightDeclaration --> "1" ValueWithUncertainty : ciaaw#58;value (one of)
-    StandardAtomicWeightDeclaration --> "1" SingleValue : ciaaw#58;value (one of)
-    ConventionalAtomicWeightDeclaration --> "1" Element : ciaaw#58;ofElement
-    ConventionalAtomicWeightDeclaration --> "1" SingleValue : ciaaw#58;value
+    StandardAtomicWeightDeclaration --> "1" Element : ciaaw#58;isDeclarationOf
+    ConventionalAtomicWeightDeclaration --> "1" Element : ciaaw#58;isDeclarationOf
 ```
 
 ## Isotopic abundance declarations
 
-The representative isotopic composition of one isotope. It can be an interval, a value with an uncertainty, or a single value such as 1 for monoisotopic elements.
+The representative isotopic composition of one isotope: an interval, a value with an uncertainty, or a single value such as 1 for monoisotopic elements.
 
 ```mermaid
 classDiagram
     direction TB
-    class Element["chemrof:ChemicalElement"]
-    class Isotope["chemrof:Isotope"]
-    class IsotopicAbundanceDeclaration["ciaaw:IsotopicAbundanceDeclaration"]
+    class Element["ciaaw:ChemicalElement"]
+    class Isotope["ciaaw:Isotope"]
+    class IsotopicAbundanceDeclaration["ciaaw:IsotopicAbundanceDeclaration"] {
+        ciaaw:hasUnit : IRI [1]
+    }
     class AtomicMassDeclaration["ciaaw:AtomicMassDeclaration"]
-    class IntervalValue["Interval"]
-    class ValueWithUncertainty["Value with uncertainty"]
-    class SingleValue["Single value"]
     Element --> "0..*" Isotope : ciaaw#58;hasIsotope
-    Isotope --> "1" IsotopicAbundanceDeclaration : ciaaw#58;currentAbundance
+    Isotope --> "1" IsotopicAbundanceDeclaration : ciaaw#58;hasCurrentAbundance
     Isotope --> "1..*" IsotopicAbundanceDeclaration : ciaaw#58;hasDeclaration (one of)
     Isotope --> "1..*" AtomicMassDeclaration : ciaaw#58;hasDeclaration (one of)
-    IsotopicAbundanceDeclaration --> "1" Isotope : ciaaw#58;ofIsotope
-    IsotopicAbundanceDeclaration --> "1" IntervalValue : ciaaw#58;value (one of)
-    IsotopicAbundanceDeclaration --> "1" ValueWithUncertainty : ciaaw#58;value (one of)
-    IsotopicAbundanceDeclaration --> "1" SingleValue : ciaaw#58;value (one of)
+    IsotopicAbundanceDeclaration --> "1" Isotope : ciaaw#58;isDeclarationOf
 ```
 
 ## Atomic masses (planned)
@@ -127,67 +110,114 @@ Part of the draft vocabulary, but not generated yet because the two source table
 ```mermaid
 classDiagram
     direction TB
-    class Isotope["chemrof:Isotope"]
-    class AtomicMassDeclaration["ciaaw:AtomicMassDeclaration"]
+    class Isotope["ciaaw:Isotope"]
+    class AtomicMassDeclaration["ciaaw:AtomicMassDeclaration"] {
+        ciaaw:hasUnit : IRI [1]
+    }
     class IsotopicAbundanceDeclaration["ciaaw:IsotopicAbundanceDeclaration"]
-    class MassValue["Mass with uncertainty"]
-    Isotope --> "0..1" AtomicMassDeclaration : ciaaw#58;currentAtomicMass
+    Isotope --> "0..1" AtomicMassDeclaration : ciaaw#58;hasCurrentAtomicMass
     Isotope --> "1..*" IsotopicAbundanceDeclaration : ciaaw#58;hasDeclaration (one of)
     Isotope --> "1..*" AtomicMassDeclaration : ciaaw#58;hasDeclaration (one of)
-    AtomicMassDeclaration --> "1" Isotope : ciaaw#58;ofIsotope
-    AtomicMassDeclaration --> "1" MassValue : ciaaw#58;value
+    AtomicMassDeclaration --> "1" Isotope : ciaaw#58;isDeclarationOf
 ```
 
-## Quantity values
+## Values
 
-Numbers are qudt:QuantityValue nodes in one of a few closed forms. Significant figures are stored separately because xsd:decimal does not preserve trailing zeros.
+A declaration holds its numbers itself, without a separate node: an interval, a value with its standard uncertainty, or a value alone, and always the value as CIAAW prints it, which keeps the significant figures.
 
 ```mermaid
 classDiagram
     direction LR
+    class Declaration["Declaration"] {
+        <<abstract>>
+        ciaaw:hasValueAsString : string [1]
+        ciaaw:hasLowerBound : decimal [0..1]
+        ciaaw:hasUpperBound : decimal [0..1]
+        ciaaw:hasValue : decimal [0..1]
+        ciaaw:hasStandardUncertainty : decimal [0..1]
+    }
+```
+
+## History
+
+Declarations are never edited. A new value creates a new declaration with the status current; the old one becomes superseded, gets the year it ended, and the two are linked, as definitions are in the SI Reference Point.
+
+```mermaid
+classDiagram
+    direction LR
+    class Element["ciaaw:ChemicalElement"]
+    class Current["Current declaration"] {
+        ciaaw:hasStatus : string [1]
+    }
     class StandardAtomicWeightDeclaration["ciaaw:StandardAtomicWeightDeclaration"]
-    class IntervalValue["Interval"] {
-        qudt:hasUnit : IRI [1]
-        qudt:lowerBound : decimal [1]
-        qudt:upperBound : decimal [1]
-        ciaaw:significantFiguresLower : integer [0..1]
-        ciaaw:significantFiguresUpper : integer [0..1]
-    }
-    class ValueWithUncertainty["Value with uncertainty"] {
-        qudt:hasUnit : IRI [1]
-        qudt:numericValue : decimal [1]
-        qudt:standardUncertainty : decimal [1]
-        ciaaw:significantFigures : integer [1]
-        ciaaw:significantFiguresUncertainty : integer [1]
-    }
-    class SingleValue["Single value"] {
-        qudt:hasUnit : IRI [1]
-        qudt:numericValue : decimal [1]
-        ciaaw:significantFigures : integer [0..1]
-    }
     class ConventionalAtomicWeightDeclaration["ciaaw:ConventionalAtomicWeightDeclaration"]
+    class Isotope["ciaaw:Isotope"]
     class IsotopicAbundanceDeclaration["ciaaw:IsotopicAbundanceDeclaration"]
     class AtomicMassDeclaration["ciaaw:AtomicMassDeclaration"]
-    class MassValue["Mass with uncertainty"] {
-        qudt:hasUnit : IRI [1]
-        qudt:numericValue : decimal [1]
-        qudt:standardUncertainty : decimal [1]
-        ciaaw:significantFigures : integer [1]
-        ciaaw:significantFiguresUncertainty : integer [1]
+    class Declaration["Declaration"] {
+        <<abstract>>
+        rdfs:label : langString [1]
+        ciaaw:hasStatus : string [1]
+        ciaaw:hasStartValidity : gYear [0..1]
+        ciaaw:hasEndValidity : gYear [0..1]
     }
-    StandardAtomicWeightDeclaration --> "1" IntervalValue : ciaaw#58;value (one of)
-    StandardAtomicWeightDeclaration --> "1" ValueWithUncertainty : ciaaw#58;value (one of)
-    StandardAtomicWeightDeclaration --> "1" SingleValue : ciaaw#58;value (one of)
-    ConventionalAtomicWeightDeclaration --> "1" SingleValue : ciaaw#58;value
-    IsotopicAbundanceDeclaration --> "1" IntervalValue : ciaaw#58;value (one of)
-    IsotopicAbundanceDeclaration --> "1" ValueWithUncertainty : ciaaw#58;value (one of)
-    IsotopicAbundanceDeclaration --> "1" SingleValue : ciaaw#58;value (one of)
-    AtomicMassDeclaration --> "1" MassValue : ciaaw#58;value
+    Declaration <|-- StandardAtomicWeightDeclaration
+    Declaration <|-- ConventionalAtomicWeightDeclaration
+    Declaration <|-- IsotopicAbundanceDeclaration
+    Declaration <|-- AtomicMassDeclaration
+    Element --> "0..1" Current : ciaaw#58;hasCurrentStandardAtomicWeight
+    Element --> "0..1" Current : ciaaw#58;hasCurrentConventionalAtomicWeight
+    Element --> "0..*" StandardAtomicWeightDeclaration : ciaaw#58;hasDeclaration (one of)
+    Element --> "0..*" ConventionalAtomicWeightDeclaration : ciaaw#58;hasDeclaration (one of)
+    Isotope --> "1" Current : ciaaw#58;hasCurrentAbundance
+    Isotope --> "0..1" Current : ciaaw#58;hasCurrentAtomicMass
+    Isotope --> "1..*" IsotopicAbundanceDeclaration : ciaaw#58;hasDeclaration (one of)
+    Isotope --> "1..*" AtomicMassDeclaration : ciaaw#58;hasDeclaration (one of)
+    Declaration --> "0..1" Declaration : ciaaw#58;hasPreviousDeclaration
+    Declaration --> "0..1" Declaration : ciaaw#58;hasNextDeclaration
+```
+
+## Provenance
+
+Every element, isotope and declaration names the documents it was read from, and a declaration names the report in which CIAAW published it.
+
+```mermaid
+classDiagram
+    direction LR
+    class Element["ciaaw:ChemicalElement"] {
+        prov:wasDerivedFrom : IRI [1..*]
+    }
+    class Isotope["ciaaw:Isotope"] {
+        prov:wasDerivedFrom : IRI [1..*]
+    }
+    class Declaration["Declaration"] {
+        <<abstract>>
+        prov:wasDerivedFrom : IRI [1..*]
+    }
+    class Report["ciaaw:Report"] {
+        rdfs:label : string [1]
+        dcterms:identifier : string [1]
+        rdfs:seeAlso : IRI [1]
+    }
+    class Body["ciaaw:Body"] {
+        rdfs:label : langString [1..*]
+        skos:altLabel : string [0..*]
+        rdfs:seeAlso : IRI [0..*]
+    }
+    class Footnote["ciaaw:Footnote"] {
+        prov:wasDerivedFrom : IRI [1..*]
+    }
+    class Source["prov:Entity"] {
+        rdfs:label : langString [1]
+    }
+    Declaration --> "0..*" Report : ciaaw#58;hasDefiningReport
+    Body --> "0..1" Body : dcterms#58;isPartOf
+    Source --> "0..1" Body : dcterms#58;publisher
 ```
 
 ## Footnotes
 
-The g, m and r notes printed below the CIAAW tables are shared nodes that declarations refer to.
+The g, m and r notes printed below the CIAAW tables are shared resources that declarations refer to.
 
 ```mermaid
 classDiagram
@@ -196,47 +226,10 @@ classDiagram
         <<abstract>>
     }
     class Footnote["ciaaw:Footnote"] {
+        rdfs:label : langString [1]
         skos:notation : string [1]
         skos:definition : langString [1]
+        prov:wasDerivedFrom : IRI [1..*]
     }
-    Declaration --> "0..*" Footnote : ciaaw#58;footnote
-```
-
-## History and provenance
-
-Declarations are never edited. A new value creates a new declaration, and the old one is kept, flagged as deprecated, and linked to its replacement.
-
-```mermaid
-classDiagram
-    direction LR
-    class Element["chemrof:ChemicalElement"]
-    class NotDeprecated["Not deprecated"] {
-        owl:deprecated : boolean [0..1]
-    }
-    class StandardAtomicWeightDeclaration["ciaaw:StandardAtomicWeightDeclaration"]
-    class ConventionalAtomicWeightDeclaration["ciaaw:ConventionalAtomicWeightDeclaration"]
-    class Isotope["chemrof:Isotope"]
-    class IsotopicAbundanceDeclaration["ciaaw:IsotopicAbundanceDeclaration"]
-    class AtomicMassDeclaration["ciaaw:AtomicMassDeclaration"]
-    class Declaration["Declaration"] {
-        <<abstract>>
-        dcterms:issued : gYear [0..1]
-        dcterms:source : IRI [0..*]
-        owl:deprecated : boolean [0..1]
-        adms:status : IRI [0..1]
-    }
-    Declaration <|-- StandardAtomicWeightDeclaration
-    Declaration <|-- ConventionalAtomicWeightDeclaration
-    Declaration <|-- IsotopicAbundanceDeclaration
-    Declaration <|-- AtomicMassDeclaration
-    Element --> "0..1" NotDeprecated : ciaaw#58;currentStandardAtomicWeight
-    Element --> "0..1" NotDeprecated : ciaaw#58;currentConventionalAtomicWeight
-    Element --> "0..*" StandardAtomicWeightDeclaration : ciaaw#58;hasDeclaration (one of)
-    Element --> "0..*" ConventionalAtomicWeightDeclaration : ciaaw#58;hasDeclaration (one of)
-    Isotope --> "1" NotDeprecated : ciaaw#58;currentAbundance
-    Isotope --> "0..1" NotDeprecated : ciaaw#58;currentAtomicMass
-    Isotope --> "1..*" IsotopicAbundanceDeclaration : ciaaw#58;hasDeclaration (one of)
-    Isotope --> "1..*" AtomicMassDeclaration : ciaaw#58;hasDeclaration (one of)
-    Declaration --> "0..1" Declaration : dcterms#58;isReplacedBy
-    Declaration --> "0..1" Declaration : dcterms#58;replaces
+    Declaration --> "0..*" Footnote : ciaaw#58;hasFootnote
 ```

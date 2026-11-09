@@ -1,13 +1,19 @@
-# Declarations and their sources
-# Every declaration that cites a report, with the year when it is known.
-#+ summary: Declarations and their sources
+# Provenance of the hydrogen values
+# Every declaration about hydrogen and its isotopes: its status, the year CIAAW recommended it, the report it comes from, and the documents it was read from.
+#+ summary: Provenance of the hydrogen values
 #+ tags:
 #+ - provenance
 #+ - declarations
+PREFIX ciaaw: <https://hendrikborgelt.github.io/Draft_for_IUPAC_CIAAW-Isotopic-Abundances-and-Atomic-Weights/ciaaw-draft#>
 PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX prov: <http://www.w3.org/ns/prov#>
 
-SELECT ?declaration ?year ?source WHERE {
-  ?declaration dcterms:source ?source .
-  OPTIONAL { ?declaration dcterms:issued ?year }
+SELECT ?declaration ?status ?year ?doi ?source WHERE {
+  ?element ciaaw:hasSymbol "H" ;
+    ciaaw:hasDeclaration|ciaaw:hasIsotope/ciaaw:hasDeclaration ?declaration .
+  ?declaration ciaaw:hasStatus ?status ;
+    prov:wasDerivedFrom ?source .
+  OPTIONAL { ?declaration ciaaw:hasStartValidity ?year }
+  OPTIONAL { ?declaration ciaaw:hasDefiningReport/dcterms:identifier ?doi }
 }
-ORDER BY ?declaration
+ORDER BY ?declaration ?source

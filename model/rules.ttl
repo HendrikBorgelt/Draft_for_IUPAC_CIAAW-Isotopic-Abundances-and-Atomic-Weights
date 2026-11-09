@@ -1,11 +1,10 @@
 # Rules that compare several nodes or properties, which a DCTAP row cannot express.
 # tap2model.py appends this file unchanged to the shapes generated from model_dctap.csv.
 
-@prefix chemrof: <https://w3id.org/chemrof/> .
 @prefix ciaaw: <https://hendrikborgelt.github.io/Draft_for_IUPAC_CIAAW-Isotopic-Abundances-and-Atomic-Weights/ciaaw-draft#> .
 @prefix dcterms: <http://purl.org/dc/terms/> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
-@prefix qudt: <http://qudt.org/schema/qudt/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix sh: <http://www.w3.org/ns/shacl#> .
 @prefix shape: <https://hendrikborgelt.github.io/Draft_for_IUPAC_CIAAW-Isotopic-Abundances-and-Atomic-Weights/ciaaw-draft/shapes#> .
@@ -15,39 +14,51 @@ shape:prefixes a owl:Ontology ;
     sh:declare [ sh:prefix "ciaaw" ; sh:namespace "https://hendrikborgelt.github.io/Draft_for_IUPAC_CIAAW-Isotopic-Abundances-and-Atomic-Weights/ciaaw-draft#"^^xsd:anyURI ] ,
         [ sh:prefix "dcterms" ; sh:namespace "http://purl.org/dc/terms/"^^xsd:anyURI ] ,
         [ sh:prefix "owl" ; sh:namespace "http://www.w3.org/2002/07/owl#"^^xsd:anyURI ] ,
-        [ sh:prefix "adms" ; sh:namespace "http://www.w3.org/ns/adms#"^^xsd:anyURI ] ,
-        [ sh:prefix "qudt" ; sh:namespace "http://qudt.org/schema/qudt/"^^xsd:anyURI ] .
+        [ sh:prefix "prov" ; sh:namespace "http://www.w3.org/ns/prov#"^^xsd:anyURI ] ,
+        [ sh:prefix "xsd" ; sh:namespace "http://www.w3.org/2001/XMLSchema#"^^xsd:anyURI ] .
+
+# --- Values --------------------------------------------------------------------------------------------------------
+
+shape:OneValueForm a sh:NodeShape ;
+    rdfs:label "Exactly one form of value" ;
+    sh:targetClass ciaaw:Declaration ;
+    sh:message "A declaration gives an interval, a value with its standard uncertainty, or a value alone: exactly one of them." ;
+    sh:xone ( shape:IntervalForm shape:ValueWithUncertaintyForm shape:SingleValueForm ) .
+
+shape:IntervalForm a sh:NodeShape ;
+    rdfs:label "Interval" ;
+    sh:property [ sh:path ciaaw:hasLowerBound ; sh:minCount 1 ] , [ sh:path ciaaw:hasUpperBound ; sh:minCount 1 ] ,
+        [ sh:path ciaaw:hasValue ; sh:maxCount 0 ] , [ sh:path ciaaw:hasStandardUncertainty ; sh:maxCount 0 ] .
+
+shape:ValueWithUncertaintyForm a sh:NodeShape ;
+    rdfs:label "Value with standard uncertainty" ;
+    sh:property [ sh:path ciaaw:hasValue ; sh:minCount 1 ] , [ sh:path ciaaw:hasStandardUncertainty ; sh:minCount 1 ] ,
+        [ sh:path ciaaw:hasLowerBound ; sh:maxCount 0 ] , [ sh:path ciaaw:hasUpperBound ; sh:maxCount 0 ] .
+
+shape:SingleValueForm a sh:NodeShape ;
+    rdfs:label "Value alone" ;
+    sh:property [ sh:path ciaaw:hasValue ; sh:minCount 1 ] , [ sh:path ciaaw:hasStandardUncertainty ; sh:maxCount 0 ] ,
+        [ sh:path ciaaw:hasLowerBound ; sh:maxCount 0 ] , [ sh:path ciaaw:hasUpperBound ; sh:maxCount 0 ] .
 
 shape:BoundsInOrder a sh:NodeShape ;
     rdfs:label "Bounds are in order" ;
-    sh:targetSubjectsOf qudt:lowerBound ;
+    sh:targetSubjectsOf ciaaw:hasLowerBound ;
     sh:property shape:BoundsInOrder-check .
 
 shape:BoundsInOrder-check a sh:PropertyShape ;
-    sh:path qudt:lowerBound ;
-    sh:lessThanOrEquals qudt:upperBound ;
+    sh:path ciaaw:hasLowerBound ;
+    sh:lessThanOrEquals ciaaw:hasUpperBound ;
     sh:message "The lower bound must not exceed the upper bound." .
 
 shape:UncertaintyIsPositive a sh:NodeShape ;
     rdfs:label "Uncertainty is positive" ;
-    sh:targetSubjectsOf qudt:standardUncertainty ;
+    sh:targetSubjectsOf ciaaw:hasStandardUncertainty ;
     sh:property shape:UncertaintyIsPositive-check .
 
 shape:UncertaintyIsPositive-check a sh:PropertyShape ;
-    sh:path qudt:standardUncertainty ;
+    sh:path ciaaw:hasStandardUncertainty ;
     sh:minExclusive 0 ;
     sh:message "A standard uncertainty must be greater than zero." .
-
-shape:IsotopeBelongsToOneElement a sh:NodeShape ;
-    rdfs:label "Isotope belongs to one element" ;
-    sh:targetClass chemrof:Isotope ;
-    sh:property shape:IsotopeBelongsToOneElement-check .
-
-shape:IsotopeBelongsToOneElement-check a sh:PropertyShape ;
-    sh:path [ sh:inversePath ciaaw:hasIsotope ] ;
-    sh:minCount 1 ;
-    sh:maxCount 1 ;
-    sh:message "An isotope must belong to exactly one element." .
 
 shape:AbundanceIsAFraction a sh:NodeShape ;
     rdfs:label "Abundance is a fraction" ;
@@ -57,96 +68,118 @@ shape:AbundanceIsAFraction a sh:NodeShape ;
         sh:message "An isotopic abundance must lie between 0 and 1, found {?value}." ;
         sh:select """
             SELECT $this ?value WHERE {
-                $this ciaaw:value/(qudt:lowerBound|qudt:upperBound|qudt:numericValue) ?value .
+                $this ciaaw:hasLowerBound|ciaaw:hasUpperBound|ciaaw:hasValue ?value .
                 FILTER (?value < 0 || ?value > 1)
             }""" ] .
 
+# --- Elements and isotopes -----------------------------------------------------------------------------------------
+
+shape:IsotopeBelongsToOneElement a sh:NodeShape ;
+    rdfs:label "Isotope belongs to one element" ;
+    sh:targetClass ciaaw:Isotope ;
+    sh:property shape:IsotopeBelongsToOneElement-check .
+
+shape:IsotopeBelongsToOneElement-check a sh:PropertyShape ;
+    sh:path [ sh:inversePath ciaaw:hasIsotope ] ;
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
+    sh:message "An isotope must belong to exactly one element." .
+
 shape:CurrentIsInHistory a sh:NodeShape ;
     rdfs:label "Current declaration is part of the history" ;
-    sh:targetClass chemrof:ChemicalElement, chemrof:Isotope ;
+    sh:targetClass ciaaw:ChemicalElement, ciaaw:Isotope ;
     sh:sparql [
         sh:prefixes shape:prefixes ;
         sh:message "The current declaration {?value} is missing from ciaaw:hasDeclaration." ;
         sh:select """
             SELECT $this ?value WHERE {
-                $this ciaaw:currentStandardAtomicWeight|ciaaw:currentConventionalAtomicWeight|ciaaw:currentAbundance|ciaaw:currentAtomicMass ?value .
+                $this ciaaw:hasCurrentStandardAtomicWeight|ciaaw:hasCurrentConventionalAtomicWeight|ciaaw:hasCurrentAbundance|ciaaw:hasCurrentAtomicMass ?value .
                 FILTER NOT EXISTS { $this ciaaw:hasDeclaration ?value }
             }""" ] .
 
 shape:DeclarationPointsBack a sh:NodeShape ;
     rdfs:label "Declaration points back to its subject" ;
-    sh:targetClass chemrof:ChemicalElement, chemrof:Isotope ;
+    sh:targetClass ciaaw:ChemicalElement, ciaaw:Isotope ;
     sh:sparql [
         sh:prefixes shape:prefixes ;
-        sh:message "Declaration {?value} does not point back with ciaaw:ofElement or ciaaw:ofIsotope." ;
+        sh:message "Declaration {?value} does not point back with ciaaw:isDeclarationOf." ;
         sh:select """
             SELECT $this ?value WHERE {
                 $this ciaaw:hasDeclaration ?value .
-                FILTER NOT EXISTS { ?value ciaaw:ofElement|ciaaw:ofIsotope $this }
+                FILTER NOT EXISTS { ?value ciaaw:isDeclarationOf $this }
             }""" ] .
 
-shape:DeprecationIsComplete a sh:NodeShape ;
-    rdfs:label "Deprecation names a replacement and a status" ;
-    sh:targetSubjectsOf owl:deprecated ;
-    sh:sparql [
-        sh:prefixes shape:prefixes ;
-        sh:message "A deprecated declaration needs both dcterms:isReplacedBy and adms:status." ;
-        sh:select """
-            SELECT $this WHERE {
-                $this owl:deprecated true .
-                FILTER (NOT EXISTS { $this dcterms:isReplacedBy ?new } || NOT EXISTS { $this adms:status ?status })
-            }""" ] .
+# --- History -------------------------------------------------------------------------------------------------------
 
-shape:ReplacementIsMutual a sh:NodeShape ;
-    rdfs:label "Replacement links run both ways" ;
-    sh:targetSubjectsOf dcterms:isReplacedBy ;
+shape:CurrentIsPointedTo a sh:NodeShape ;
+    rdfs:label "A current declaration is the current one of its subject" ;
+    sh:targetClass ciaaw:Declaration ;
     sh:sparql [
         sh:prefixes shape:prefixes ;
-        sh:message "{?value} must link back with dcterms:replaces." ;
+        sh:message "The declaration has the status current, but its subject {?value} does not point to it as current." ;
         sh:select """
             SELECT $this ?value WHERE {
-                $this dcterms:isReplacedBy ?value .
-                FILTER NOT EXISTS { ?value dcterms:replaces $this }
+                $this ciaaw:hasStatus "current" ; ciaaw:isDeclarationOf ?value .
+                FILTER NOT EXISTS { ?value ciaaw:hasCurrentStandardAtomicWeight|ciaaw:hasCurrentConventionalAtomicWeight|ciaaw:hasCurrentAbundance|ciaaw:hasCurrentAtomicMass $this }
             }""" ] .
 
-shape:ShortcutsMatchCurrentDeclaration a sh:NodeShape ;
-    rdfs:label "Derived shortcuts match the current declaration" ;
-    sh:targetClass chemrof:ChemicalElement ;
+shape:SupersededHasNext a sh:NodeShape ;
+    rdfs:label "Superseded and only superseded declarations have a next one" ;
+    sh:targetClass ciaaw:Declaration ;
     sh:sparql [
         sh:prefixes shape:prefixes ;
-        sh:message "Derived shortcut {?value} differs from the current declaration." ;
+        sh:message "A superseded declaration must name the next declaration, and a current one must not." ;
+        sh:select """
+            SELECT $this WHERE {
+                { $this ciaaw:hasStatus "superseded" . FILTER NOT EXISTS { $this ciaaw:hasNextDeclaration ?next } }
+                UNION
+                { $this ciaaw:hasStatus "current" ; ciaaw:hasNextDeclaration ?next }
+            }""" ] .
+
+shape:ChainIsMutual a sh:NodeShape ;
+    rdfs:label "Previous and next links run both ways" ;
+    sh:targetSubjectsOf ciaaw:hasNextDeclaration ;
+    sh:sparql [
+        sh:prefixes shape:prefixes ;
+        sh:message "{?value} must link back with ciaaw:hasPreviousDeclaration." ;
+        sh:select """
+            SELECT $this ?value WHERE {
+                $this ciaaw:hasNextDeclaration ?value .
+                FILTER NOT EXISTS { ?value ciaaw:hasPreviousDeclaration $this }
+            }""" ] .
+
+shape:ChainStaysWithSubject a sh:NodeShape ;
+    rdfs:label "A chain stays with one element or isotope" ;
+    sh:targetSubjectsOf ciaaw:hasNextDeclaration ;
+    sh:sparql [
+        sh:prefixes shape:prefixes ;
+        sh:message "The next declaration {?value} is about another element or isotope." ;
+        sh:select """
+            SELECT $this ?value WHERE {
+                $this ciaaw:hasNextDeclaration ?value ; ciaaw:isDeclarationOf ?subject .
+                FILTER NOT EXISTS { ?value ciaaw:isDeclarationOf ?subject }
+            }""" ] .
+
+shape:ValidityInOrder a sh:NodeShape ;
+    rdfs:label "A declaration ends when the next one starts" ;
+    sh:targetSubjectsOf ciaaw:hasEndValidity ;
+    sh:sparql [
+        sh:prefixes shape:prefixes ;
+        sh:message "The end of validity {?value} is before the start, or differs from the start of the next declaration." ;
         sh:select """
             SELECT $this ?value WHERE {
                 {
-                    $this ciaaw:standardAtomicWeightLower ?value .
-                    FILTER NOT EXISTS {
-                        $this ciaaw:currentStandardAtomicWeight/ciaaw:value/qudt:lowerBound ?original .
-                        FILTER (?original = ?value)
-                    }
+                    $this ciaaw:hasEndValidity ?value ; ciaaw:hasStartValidity ?start .
+                    FILTER (STR(?value) < STR(?start))
                 } UNION {
-                    $this ciaaw:standardAtomicWeightUpper ?value .
-                    FILTER NOT EXISTS {
-                        $this ciaaw:currentStandardAtomicWeight/ciaaw:value/qudt:upperBound ?original .
-                        FILTER (?original = ?value)
-                    }
-                } UNION {
-                    $this ciaaw:standardAtomicWeightValue ?value .
-                    FILTER NOT EXISTS {
-                        $this ciaaw:currentStandardAtomicWeight/ciaaw:value/qudt:numericValue ?original .
-                        FILTER (?original = ?value)
-                    }
-                } UNION {
-                    $this ciaaw:standardAtomicWeightUncertainty ?value .
-                    FILTER NOT EXISTS {
-                        $this ciaaw:currentStandardAtomicWeight/ciaaw:value/qudt:standardUncertainty ?original .
-                        FILTER (?original = ?value)
-                    }
+                    $this ciaaw:hasEndValidity ?value ; ciaaw:hasNextDeclaration/ciaaw:hasStartValidity ?next .
+                    FILTER (STR(?value) != STR(?next))
                 }
             }""" ] .
 
 shape:AbundancesSumToOne a sh:NodeShape ;
     rdfs:label "Abundances of an element sum to 1" ;
-    sh:targetClass chemrof:ChemicalElement ;
+    sh:targetClass ciaaw:ChemicalElement ;
     sh:severity sh:Warning ;
     sh:sparql [
         sh:prefixes shape:prefixes ;
@@ -156,9 +189,9 @@ shape:AbundancesSumToOne a sh:NodeShape ;
             SELECT $this ?value WHERE {
                 {
                     SELECT $this (SUM(?amount) AS ?value) WHERE {
-                        $this ciaaw:hasIsotope/ciaaw:currentAbundance/ciaaw:value/qudt:numericValue ?amount .
+                        $this ciaaw:hasIsotope/ciaaw:hasCurrentAbundance/ciaaw:hasValue ?amount .
                     } GROUP BY $this
                 }
-                FILTER NOT EXISTS { $this ciaaw:hasIsotope/ciaaw:currentAbundance/ciaaw:value/qudt:lowerBound ?any }
+                FILTER NOT EXISTS { $this ciaaw:hasIsotope/ciaaw:hasCurrentAbundance/ciaaw:hasLowerBound ?any }
                 FILTER (ABS(?value - 1) > 0.0005)
             }""" ] .
