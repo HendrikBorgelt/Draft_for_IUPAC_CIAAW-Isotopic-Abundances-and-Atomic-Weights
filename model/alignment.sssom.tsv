@@ -1,0 +1,65 @@
+# sssom_version: "1.0"
+# curie_map:
+#   ciaaw: https://hendrikborgelt.github.io/Draft_for_IUPAC_CIAAW-Isotopic-Abundances-and-Atomic-Weights/ciaaw-draft#
+#   BFO: http://purl.obolibrary.org/obo/BFO_
+#   CHEBI: http://purl.obolibrary.org/obo/CHEBI_
+#   IAO: http://purl.obolibrary.org/obo/IAO_
+#   OBI: http://purl.obolibrary.org/obo/OBI_
+#   chemrof: https://w3id.org/chemrof/
+#   prov: http://www.w3.org/ns/prov#
+#   qudt: http://qudt.org/schema/qudt/
+#   si: https://si-digital-framework.org/SI#
+#   dcterms: http://purl.org/dc/terms/
+#   skos: http://www.w3.org/2004/02/skos/core#
+#   semapv: https://w3id.org/semapv/vocab/
+#   wd: http://www.wikidata.org/entity/
+#   wdt: http://www.wikidata.org/prop/direct/
+# mapping_set_id: https://hendrikborgelt.github.io/Draft_for_IUPAC_CIAAW-Isotopic-Abundances-and-Atomic-Weights/model/alignment.sssom.tsv
+# mapping_set_title: CIAAW draft vocabulary - alignment with OBO ontologies, the SI Digital Framework, Wikidata and earlier terms
+# mapping_set_description: >
+#   How the classes and properties of model/ontology.ttl relate to BFO, IAO, OBI and ChEBI, to the SI Reference
+#   Point of the SI Digital Framework, to the classes and properties of Wikidata, and to the Chemrof and QUDT terms
+#   this prototype used before. Nothing is
+#   imported: the mappings say where each term would go for someone who aligns the data with those ontologies.
+#   The mappings of single elements and isotopes to ChEBI and Wikidata are in data/ciaaw.sssom.tsv.
+# license: https://creativecommons.org/publicdomain/zero/1.0/
+# mapping_provider: https://github.com/HendrikBorgelt/Draft_for_IUPAC_CIAAW-Isotopic-Abundances-and-Atomic-Weights
+# mapping_set_version: 0.1.0
+subject_id	subject_label	predicate_id	object_id	object_label	mapping_justification	comment
+ciaaw:ChemicalElement	chemical element	skos:relatedMatch	CHEBI:33250	atom	semapv:ManualMappingCuration	Each element stands for a subclass of atom in ChEBI, such as hydrogen atom. The element individuals are mapped to those classes in data/ciaaw.sssom.tsv.
+ciaaw:ChemicalElement	chemical element	skos:closeMatch	chemrof:ChemicalElement	chemical element	semapv:ManualMappingCuration	The class this prototype used before. Replaced because Chemrof is young and its terms still change.
+ciaaw:Isotope	isotope	skos:relatedMatch	CHEBI:33250	atom	semapv:ManualMappingCuration	Each isotope stands for a class of atoms with one mass number in ChEBI, such as protium. ChEBI has no class for isotopes in general.
+ciaaw:Isotope	isotope	skos:closeMatch	chemrof:Isotope	isotope	semapv:ManualMappingCuration	The class this prototype used before.
+ciaaw:Declaration	declaration	skos:broadMatch	IAO:0000030	information content entity	semapv:ManualMappingCuration	A declaration is information about an element or isotope: what CIAAW recommended, not a property of a material. IAO places information content entities under BFO generically dependent continuant.
+ciaaw:Declaration	declaration	skos:closeMatch	si:Definition	definition of a base unit	semapv:ManualMappingCuration	Same pattern as the SI Reference Point: a stable resource with versioned definitions.
+ciaaw:Report	report	skos:broadMatch	IAO:0000310	document	semapv:ManualMappingCuration
+ciaaw:Footnote	footnote	skos:broadMatch	IAO:0000300	textual entity	semapv:ManualMappingCuration
+ciaaw:Body	body	skos:closeMatch	OBI:0000245	organization	semapv:ManualMappingCuration
+ciaaw:isDeclarationOf	is declaration of	skos:broadMatch	IAO:0000136	is about	semapv:ManualMappingCuration	The object is an element or isotope, which stands for a kind of atom (see ciaaw:ChemicalElement). In OWL with IAO this becomes: the declaration is about some atom of that class.
+ciaaw:hasValue	has value	skos:closeMatch	IAO:0000004	has measurement value	semapv:ManualMappingCuration	IAO uses it for measurement data. A declaration is a recommended value, not a measurement.
+ciaaw:hasValue	has value	skos:closeMatch	si:hasValue	has value	semapv:ManualMappingCuration
+ciaaw:hasValue	has value	skos:closeMatch	qudt:numericValue	numeric value	semapv:ManualMappingCuration	The property this prototype used before, on a separate qudt:QuantityValue node.
+ciaaw:hasStandardUncertainty	has standard uncertainty	skos:closeMatch	qudt:standardUncertainty	standard uncertainty	semapv:ManualMappingCuration	The property this prototype used before.
+ciaaw:hasLowerBound	has lower bound	skos:closeMatch	qudt:lowerBound	lower bound	semapv:ManualMappingCuration	The property this prototype used before.
+ciaaw:hasUpperBound	has upper bound	skos:closeMatch	qudt:upperBound	upper bound	semapv:ManualMappingCuration	The property this prototype used before.
+ciaaw:hasValueAsString	has value as string	skos:closeMatch	si:hasValueAsString	has value as a string	semapv:ManualMappingCuration
+ciaaw:hasUnit	has unit	skos:closeMatch	IAO:0000039	has measurement unit label	semapv:ManualMappingCuration	The object is a unit of the SI Digital Framework, not a unit label of UO.
+ciaaw:hasUnit	has unit	skos:closeMatch	si:hasUnit	has unit	semapv:ManualMappingCuration
+ciaaw:hasSymbol	has symbol	skos:closeMatch	si:hasSymbol	has symbol	semapv:ManualMappingCuration
+ciaaw:hasSymbol	has symbol	skos:closeMatch	chemrof:symbol	symbol	semapv:ManualMappingCuration	The property this prototype used before.
+ciaaw:hasAtomicNumber	has atomic number	skos:closeMatch	chemrof:atomic_number	atomic number	semapv:ManualMappingCuration	The property this prototype used before.
+ciaaw:hasStatus	has status	skos:closeMatch	si:hasStatus	has status	semapv:ManualMappingCuration	Same values: "current" and "superseded".
+ciaaw:hasStartValidity	has start of validity	skos:closeMatch	si:hasStartValidity	has start validity	semapv:ManualMappingCuration	A year here, a date in the SI Reference Point.
+ciaaw:hasEndValidity	has end of validity	skos:closeMatch	si:hasEndValidity	has end validity	semapv:ManualMappingCuration	A year here, a date in the SI Reference Point.
+ciaaw:hasPreviousDeclaration	has previous declaration	skos:closeMatch	si:hasPreviousDefinition	has previous definition	semapv:ManualMappingCuration
+ciaaw:hasPreviousDeclaration	has previous declaration	skos:closeMatch	prov:wasRevisionOf	was revision of	semapv:ManualMappingCuration	A later declaration is a revision of the one it supersedes.
+ciaaw:hasNextDeclaration	has next declaration	skos:closeMatch	si:hasNextDefinition	has next definition	semapv:ManualMappingCuration
+ciaaw:hasDefiningReport	has defining report	skos:closeMatch	si:hasDefiningResolution	has defining resolution	semapv:ManualMappingCuration	A CIAAW report takes the place of a CGPM resolution.
+ciaaw:hasDefiningReport	has defining report	skos:closeMatch	dcterms:source	source	semapv:ManualMappingCuration	The property this prototype used before, with the DOI as its value.
+ciaaw:ChemicalElement	chemical element	skos:closeMatch	wd:Q11344	chemical element	semapv:ManualMappingCuration	The elements themselves are mapped to their Wikidata items in data/ciaaw.sssom.tsv, with this class as their category.
+ciaaw:Isotope	isotope	skos:closeMatch	wd:Q25276	isotope	semapv:ManualMappingCuration	The isotopes themselves are mapped to their Wikidata items in data/ciaaw.sssom.tsv, with this class as their category.
+ciaaw:hasAtomicNumber	has atomic number	skos:closeMatch	wdt:P1086	atomic number	semapv:ManualMappingCuration	Used to match the elements and isotopes to their Wikidata items.
+ciaaw:hasSymbol	has symbol	skos:closeMatch	wdt:P246	element symbol	semapv:ManualMappingCuration	
+ciaaw:hasMassNumber	has mass number	skos:relatedMatch	wdt:P1148	neutron number	semapv:ManualMappingCuration	Wikidata gives the neutron number, which is the mass number minus the atomic number. Used to match the isotopes.
+ciaaw:IsotopicAbundanceDeclaration	isotopic abundance declaration	skos:relatedMatch	wdt:P2374	natural abundance	semapv:ManualMappingCuration	The value of the current declaration of an isotope corresponds to P2374 of its Wikidata item, without the history. See ttl2quickstatements.py.
+ciaaw:StandardAtomicWeightDeclaration	standard atomic weight declaration	skos:relatedMatch	wdt:P2067	mass	semapv:ManualMappingCuration	Wikidata gives the atomic weight of an element as its mass in dalton. check_wikidata_weights.py compares the two.

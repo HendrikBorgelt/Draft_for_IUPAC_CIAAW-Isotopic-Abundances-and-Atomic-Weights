@@ -2,19 +2,18 @@
 # See https://dctap-python.readthedocs.io/en/latest/config/
 #
 # The vocabulary and shape namespaces are placeholders until CIAAW chooses persistent IRIs.
+# The terms of the ciaaw: vocabulary are defined in ontology.ttl.
 
 prefixes:
-  "adms:": "http://www.w3.org/ns/adms#"
-  "chemrof:": "https://w3id.org/chemrof/"
   "ciaaw:": "https://hendrikborgelt.github.io/Draft_for_IUPAC_CIAAW-Isotopic-Abundances-and-Atomic-Weights/ciaaw-draft#"
   "dcterms:": "http://purl.org/dc/terms/"
   "owl:": "http://www.w3.org/2002/07/owl#"
-  "qudt:": "http://qudt.org/schema/qudt/"
+  "prov:": "http://www.w3.org/ns/prov#"
   "rdf:": "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
   "rdfs:": "http://www.w3.org/2000/01/rdf-schema#"
   "shape:": "https://hendrikborgelt.github.io/Draft_for_IUPAC_CIAAW-Isotopic-Abundances-and-Atomic-Weights/ciaaw-draft/shapes#"
   "skos:": "http://www.w3.org/2004/02/skos/core#"
-  "unit:": "http://qudt.org/vocab/unit/"
+  "units:": "https://si-digital-framework.org/SI/units/"
   "xsd:": "http://www.w3.org/2001/XMLSchema#"
 
 # Columns added to the 12 standard DCTAP elements.
@@ -48,14 +47,13 @@ aspects:
     direction: TB
     title: Atomic weight declarations
     description: >-
-      A standard atomic weight is either an interval or a value with an uncertainty.
-      The element points to the one current declaration and repeats its numbers as derived shortcuts.
+      The element points to all its standard atomic weight declarations and to the one that is current.
   abundance:
     direction: TB
     title: Isotopic abundance declarations
     description: >-
-      The representative isotopic composition of one isotope. It can be an interval,
-      a value with an uncertainty, or a single value such as 1 for monoisotopic elements.
+      The representative isotopic composition of one isotope: an interval, a value with an uncertainty,
+      or a single value such as 1 for monoisotopic elements.
   atomicMass:
     direction: TB
     title: Atomic masses (planned)
@@ -64,18 +62,24 @@ aspects:
       do not contain atomic masses.
   value:
     direction: LR
-    title: Quantity values
+    title: Values
     description: >-
-      Numbers are qudt:QuantityValue nodes in one of a few closed forms. Significant figures are
-      stored separately because xsd:decimal does not preserve trailing zeros.
+      A declaration holds its numbers itself, without a separate node: an interval, a value with its standard
+      uncertainty, or a value alone, and always the value as CIAAW prints it, which keeps the significant figures.
+  history:
+    direction: LR
+    title: History
+    description: >-
+      Declarations are never edited. A new value creates a new declaration with the status current; the old one
+      becomes superseded, gets the year it ended, and the two are linked, as definitions are in the SI Reference Point.
+  provenance:
+    direction: LR
+    title: Provenance
+    description: >-
+      Every element, isotope and declaration names the documents it was read from, and a declaration names the
+      report in which CIAAW published it.
   footnote:
     direction: LR
     title: Footnotes
     description: >-
-      The g, m and r notes printed below the CIAAW tables are shared nodes that declarations refer to.
-  history:
-    direction: LR
-    title: History and provenance
-    description: >-
-      Declarations are never edited. A new value creates a new declaration, and the old one is
-      kept, flagged as deprecated, and linked to its replacement.
+      The g, m and r notes printed below the CIAAW tables are shared resources that declarations refer to.

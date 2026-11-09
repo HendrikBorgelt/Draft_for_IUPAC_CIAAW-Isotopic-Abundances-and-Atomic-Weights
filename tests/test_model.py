@@ -10,21 +10,22 @@ from pathlib import Path
 import pytest
 from dctap.config import get_config
 from dctap.csvreader import csvreader
-from rdflib import BNode, Graph, Literal, Namespace, RDF, XSD
+from rdflib import Graph, Literal, RDF, URIRef, XSD
 from rdflib.compare import isomorphic
-from rdflib.namespace import DCTERMS, OWL, SKOS
+from rdflib.namespace import DCTERMS, RDFS, SKOS
 
-from ciaaw_draft.paths import DATA_DIR, ROOT
 from ciaaw_draft.convert import ciaaw2ttl as c
+from ciaaw_draft.namespaces import NS, PROV, SI_UNITS, UNIT_DALTON, UNIT_ONE, WEIGHTS_PAGE
+from ciaaw_draft.paths import DATA_DIR, ROOT
 from ciaaw_draft.schema import tap2model as t
 
 HERE = Path(__file__).parent
 FIX = HERE / "fixtures"
-CIAAW = Namespace(c.DEFAULT_VOCAB_NS)
-EX = Namespace(c.DEFAULT_DATA_NS)
-ELEMENT = Namespace(c.DEFAULT_ELEMENT_NS)
-QUDT, CHEMROF = c.QUDT, c.CHEMROF
+CIAAW, ELEMENTS, ISOTOPES, WEIGHTS, ABUNDANCES = NS.ciaaw, NS.elements, NS.isotopes, NS.weights, NS.abundances
+REPORTS, FOOTNOTES = NS.reports, NS.footnotes
 SH = t.SH
+H, HE = ELEMENTS.Hydrogen, ELEMENTS.Helium
+H_WEIGHT, HE_WEIGHT = WEIGHTS["H-2009"], WEIGHTS.He
 
 
 @pytest.fixture(scope="module")
@@ -42,8 +43,8 @@ def revision():
     return Graph().parse(DATA_DIR / "example-output-next.ttl", format="turtle")
 
 
-def quantity(g, decl):
-    return g.value(decl, CIAAW.value)
+def dec(text: str) -> Literal:
+    return Literal(text, datatype=XSD.decimal)
 
 
 def remove(g, *triple):
@@ -53,7 +54,7 @@ def remove(g, *triple):
 
 
 def replace(g, subject, predicate, new):
-    g.remove((subject, predicate, None))
+    remove(g, subject, predicate, None)
     g.add((subject, predicate, new))
 
 
@@ -90,11 +91,12 @@ def test_consistency_check_finds_broken_references(tmp_path):
 
 
 def test_every_property_used_in_the_data_is_modelled(revision):
-    """Otherwise the shapes would silently ignore part of the data."""
+    """Otherwise the shapes would silently ignore part of the data. Only the headers of the namespaces are left to
+    test_ciaaw2ttl.py, because the ontology, which validation mixes in, is an owl:Ontology too."""
     tap = t.load_tap()
     modelled = {tap.iri(st.property) for s in tap.shapes.values() for st in s.statements}
-    instances = {s for cls in (CHEMROF.ChemicalElement, CHEMROF.Isotope, CIAAW.Footnote, QUDT.QuantityValue,
-                               CIAAW.StandardAtomicWeightDeclaration, CIAAW.IsotopicAbundanceDeclaration)
+    instances = {s for cls in (CIAAW.ChemicalElement, CIAAW.Isotope, CIAAW.Footnote, CIAAW.Report, CIAAW.Body,
+                               CIAAW.StandardAtomicWeightDeclaration, CIAAW.IsotopicAbundanceDeclaration, PROV.Entity)
                  for s in revision.subjects(RDF.type, cls)}
     used = {p for s in instances for p in revision.predicates(s)}
     assert used - modelled == set()
@@ -112,7 +114,7 @@ def test_generation_is_deterministic():
 
 
 def test_cardinality_mapping(shapes):
-    p = t.load_tap().iri("shape:Element-chemrof-symbol")
+    p = t.load_tap().iri("shape:Element-ciaaw-hasSymbol")
     assert (p, SH.minCount, Literal(1)) in shapes and (p, SH.maxCount, Literal(1)) in shapes
     repeatable = t.load_tap().iri("shape:Element-skos-closeMatch")
     assert (repeatable, SH.minCount, None) not in shapes and (repeatable, SH.maxCount, None) not in shapes
@@ -137,7 +139,7 @@ def test_relation_labels_contain_no_raw_colon():
     tap = t.load_tap()
     for key in [None, *tap.aspects]:
         relations = [line for line in t.mermaid(tap, key).splitlines() if " --> " in line]
-        assert relations
+        assert relations or key == "value"
         assert all(line.count(":") == 1 for line in relations), key
 
 
@@ -153,173 +155,184 @@ def test_example_data_conforms(name, shapes):
     assert results(report) == []
 
 
-def test_data_without_the_vocabulary_block_conforms(shapes):
-    """The shapes must not rely on rdfs:subClassOf triples being present in the data."""
+def test_data_without_headers_conforms(shapes):
+    """The shapes rely on the ontology, which validation mixes in, not on anything else in the data."""
     problems = []
     w = c.read_weights((FIX / "atomic-weights.htm").read_text(encoding="utf-8"), problems)
     a = c.read_abundances((FIX / "isotopic-abundances.htm").read_text(encoding="utf-8"), problems)
-    g, _ = c.build_graph(w, a, c.load_supplement(str(FIX / "supplement.csv")), include_vocab=False)
+    g, _ = c.build_graph(w, a, c.load_supplement(str(FIX / "supplement.csv")), headers=False)
     conforms, _, text = t.validate_graph(g, shapes)
     assert conforms, text
 
 
 def test_planned_declaration_types_conform(data, shapes):
-    conventional, mass = EX["AW-H-conventional"], EX["Mass-H1"]
-    for decl, kind, subject, about, pointer, unit in (
-            (conventional, CIAAW.ConventionalAtomicWeightDeclaration, ELEMENT["Hydrogen"], CIAAW.ofElement,
-             CIAAW.currentConventionalAtomicWeight, c.UNIT.UNITLESS),
-            (mass, CIAAW.AtomicMassDeclaration, EX["H-1"], CIAAW.ofIsotope, CIAAW.currentAtomicMass, c.UNIT.DA)):
-        q = BNode()
-        data.add((decl, RDF.type, kind))
-        data.add((decl, about, subject))
-        data.add((decl, CIAAW.value, q))
-        data.add((subject, pointer, decl))
-        data.add((subject, CIAAW.hasDeclaration, decl))
-        data.add((q, RDF.type, QUDT.QuantityValue))
-        data.add((q, QUDT.hasUnit, unit))
-        data.add((q, QUDT.numericValue, Literal("1.008", datatype=XSD.decimal)))
+    conventional = URIRef(f"{NS.base}conventional-atomic-weights/H")
+    mass = URIRef(f"{NS.base}atomic-masses/H-1")
+    for decl, kind, subject, pointer, unit in (
+            (conventional, CIAAW.ConventionalAtomicWeightDeclaration, H, CIAAW.hasCurrentConventionalAtomicWeight, UNIT_ONE),
+            (mass, CIAAW.AtomicMassDeclaration, ISOTOPES["H-1"], CIAAW.hasCurrentAtomicMass, UNIT_DALTON)):
+        for triple in ((decl, RDF.type, kind), (decl, RDFS.label, Literal("planned", lang="en")),
+                       (decl, CIAAW.isDeclarationOf, subject), (decl, CIAAW.hasStatus, Literal("current")),
+                       (decl, CIAAW.hasValueAsString, Literal("1.008")), (decl, CIAAW.hasUnit, unit),
+                       (decl, CIAAW.hasValue, dec("1.008")), (decl, PROV.wasDerivedFrom, WEIGHTS_PAGE),
+                       (subject, pointer, decl), (subject, CIAAW.hasDeclaration, decl)):
+            data.add(triple)
         if decl == mass:
-            data.add((q, QUDT.standardUncertainty, Literal("0.001", datatype=XSD.decimal)))
-            data.add((q, CIAAW.significantFigures, Literal(4)))
-            data.add((q, CIAAW.significantFiguresUncertainty, Literal(1)))
+            data.add((decl, CIAAW.hasStandardUncertainty, dec("0.001")))
     conforms, _, text = t.validate_graph(data, shapes)
     assert conforms, text
 
 
 # --- broken data: every rule must fire ----------------------------------------------------
 def missing_symbol(g):
-    remove(g, ELEMENT["Hydrogen"], CHEMROF.symbol, None)
+    remove(g, H, CIAAW.hasSymbol, None)
 
 
 def two_symbols(g):
-    g.add((ELEMENT["Hydrogen"], CHEMROF.symbol, Literal("Hy")))
+    g.add((H, CIAAW.hasSymbol, Literal("Hy")))
 
 
 def bad_symbol(g):
-    replace(g, ELEMENT["Hydrogen"], CHEMROF.symbol, Literal("hydrogen"))
+    replace(g, H, CIAAW.hasSymbol, Literal("hydrogen"))
 
 
 def zero_atomic_number(g):
-    replace(g, ELEMENT["Hydrogen"], CHEMROF.atomic_number, Literal(0))
+    replace(g, H, CIAAW.hasAtomicNumber, Literal(0))
 
 
 def wrong_chebi_namespace(g):
-    g.add((ELEMENT["Hydrogen"], SKOS.closeMatch, EX["somewhere-else"]))
+    g.add((H, SKOS.closeMatch, ELEMENTS["somewhere-else"]))
+
+
+def element_without_source(g):
+    remove(g, H, PROV.wasDerivedFrom, None)
 
 
 def isotope_without_abundance(g):
-    remove(g, EX["H-1"], CIAAW.currentAbundance, None)
+    remove(g, ISOTOPES["H-1"], CIAAW.hasCurrentAbundance, None)
 
 
 def wrong_kind_of_declaration(g):
-    replace(g, ELEMENT["Hydrogen"], CIAAW.currentStandardAtomicWeight, EX["Abundance-H1"])
+    replace(g, H, CIAAW.hasCurrentStandardAtomicWeight, ABUNDANCES["H-1"])
 
 
-def declaration_without_value(g):
-    remove(g, EX["AW-He-standard"], CIAAW.value, None)
+def declaration_without_numbers(g):
+    remove(g, HE_WEIGHT, CIAAW.hasValue, None)
+    remove(g, HE_WEIGHT, CIAAW.hasStandardUncertainty, None)
 
 
-def weight_as_a_single_value(g):
-    q = quantity(g, EX["AW-He-standard"])
-    for p in (QUDT.standardUncertainty, CIAAW.significantFigures, CIAAW.significantFiguresUncertainty):
-        remove(g, q, p, None)
-
-
-def standard_value_without_a_number(g):
-    q = quantity(g, EX["AW-He-standard"])
-    for p in (QUDT.numericValue, QUDT.standardUncertainty):
-        remove(g, q, p, None)
+def uncertainty_without_value(g):
+    remove(g, HE_WEIGHT, CIAAW.hasValue, None)
 
 
 def bounds_and_value_mixed(g):
-    g.add((quantity(g, EX["AW-H-standard-2009"]), QUDT.numericValue, Literal("1.008", datatype=XSD.decimal)))
+    g.add((H_WEIGHT, CIAAW.hasValue, dec("1.008")))
 
 
 def interval_missing_upper_bound(g):
-    remove(g, quantity(g, EX["AW-H-standard-2009"]), QUDT.upperBound, None)
+    remove(g, H_WEIGHT, CIAAW.hasUpperBound, None)
+
+
+def without_the_printed_value(g):
+    remove(g, HE_WEIGHT, CIAAW.hasValueAsString, None)
 
 
 def float_instead_of_decimal(g):
-    replace(g, quantity(g, EX["AW-He-standard"]), QUDT.numericValue, Literal(4.002602, datatype=XSD.double))
+    replace(g, HE_WEIGHT, CIAAW.hasValue, Literal(4.002602, datatype=XSD.double))
 
 
 def wrong_unit(g):
-    replace(g, quantity(g, EX["AW-He-standard"]), QUDT.hasUnit, c.UNIT.DA)
+    replace(g, HE_WEIGHT, CIAAW.hasUnit, UNIT_DALTON)
+
+
+def unit_outside_the_si_framework(g):
+    replace(g, HE_WEIGHT, CIAAW.hasUnit, URIRef("http://qudt.org/vocab/unit/UNITLESS"))
+
+
+def unknown_status(g):
+    replace(g, HE_WEIGHT, CIAAW.hasStatus, Literal("deprecated"))
+
+
+def declaration_without_source(g):
+    remove(g, HE_WEIGHT, PROV.wasDerivedFrom, None)
 
 
 def unknown_footnote_letter(g):
-    replace(g, CIAAW["note-g"], SKOS.notation, Literal("x"))
+    replace(g, FOOTNOTES.g, SKOS.notation, Literal("x"))
 
 
 def undefined_footnote(g):
-    g.add((EX["AW-He-standard"], CIAAW.footnote, CIAAW["note-z"]))
+    g.add((HE_WEIGHT, CIAAW.hasFootnote, FOOTNOTES.z))
 
 
 def year_as_integer(g):
-    replace(g, EX["AW-H-standard-2009"], DCTERMS.issued, Literal(2009))
+    replace(g, H_WEIGHT, CIAAW.hasStartValidity, Literal(2009))
 
 
-def source_is_not_a_doi(g):
-    g.add((EX["AW-He-standard"], DCTERMS.source, EX["report"]))
+def report_is_not_a_report(g):
+    g.add((HE_WEIGHT, CIAAW.hasDefiningReport, H))
+
+
+def report_without_a_doi(g):
+    replace(g, REPORTS["pac-2015-0503"], DCTERMS.identifier, Literal("pac-2015-0503"))
 
 
 def lower_above_upper(g):
-    q = quantity(g, EX["AW-H-standard-2009"])
-    replace(g, q, QUDT.lowerBound, Literal("1.1", datatype=XSD.decimal))
+    replace(g, H_WEIGHT, CIAAW.hasLowerBound, dec("1.1"))
 
 
 def zero_uncertainty(g):
-    replace(g, quantity(g, EX["AW-He-standard"]), QUDT.standardUncertainty, Literal("0", datatype=XSD.decimal))
+    replace(g, HE_WEIGHT, CIAAW.hasStandardUncertainty, dec("0"))
 
 
 def abundance_above_one(g):
-    q = quantity(g, EX["Abundance-H1"])
-    replace(g, q, QUDT.upperBound, Literal("1.2", datatype=XSD.decimal))
+    replace(g, ABUNDANCES["H-1"], CIAAW.hasUpperBound, dec("1.2"))
 
 
 def abundance_below_zero(g):
-    q = quantity(g, EX["Abundance-H1"])
-    replace(g, q, QUDT.lowerBound, Literal("-0.1", datatype=XSD.decimal))
+    replace(g, ABUNDANCES["H-1"], CIAAW.hasLowerBound, dec("-0.1"))
 
 
 def isotope_without_element(g):
-    remove(g, None, CIAAW.hasIsotope, EX["H-1"])
+    remove(g, None, CIAAW.hasIsotope, ISOTOPES["H-1"])
 
 
 def isotope_in_two_elements(g):
-    g.add((ELEMENT["Helium"], CIAAW.hasIsotope, EX["H-1"]))
+    g.add((HE, CIAAW.hasIsotope, ISOTOPES["H-1"]))
 
 
 def current_not_in_history(g):
-    remove(g, ELEMENT["Hydrogen"], CIAAW.hasDeclaration, EX["AW-H-standard-2009"])
+    remove(g, H, CIAAW.hasDeclaration, H_WEIGHT)
 
 
 def declaration_points_elsewhere(g):
-    replace(g, EX["AW-He-standard"], CIAAW.ofElement, ELEMENT["Hydrogen"])
-
-
-def shortcut_differs(g):
-    replace(g, ELEMENT["Hydrogen"], CIAAW.standardAtomicWeightLower, Literal("1.5", datatype=XSD.decimal))
+    replace(g, HE_WEIGHT, CIAAW.isDeclarationOf, H)
 
 
 @pytest.mark.parametrize("break_it, expected", [
-    (missing_symbol, "Element-chemrof-symbol"),
-    (two_symbols, "Element-chemrof-symbol"),
-    (bad_symbol, "Element-chemrof-symbol"),
-    (zero_atomic_number, "Element-chemrof-atomic_number"),
+    (missing_symbol, "Element-ciaaw-hasSymbol"),
+    (two_symbols, "Element-ciaaw-hasSymbol"),
+    (bad_symbol, "Element-ciaaw-hasSymbol"),
+    (zero_atomic_number, "Element-ciaaw-hasAtomicNumber"),
     (wrong_chebi_namespace, "Element-skos-closeMatch"),
-    (isotope_without_abundance, "Isotope-ciaaw-currentAbundance"),
-    (wrong_kind_of_declaration, "Element-ciaaw-currentStandardAtomicWeight"),
-    (declaration_without_value, "StandardAtomicWeightDeclaration-ciaaw-value"),
-    (standard_value_without_a_number, "StandardAtomicWeightDeclaration-ciaaw-value"),
-    (bounds_and_value_mixed, "StandardAtomicWeightDeclaration-ciaaw-value"),
-    (interval_missing_upper_bound, "StandardAtomicWeightDeclaration-ciaaw-value"),
-    (float_instead_of_decimal, "StandardAtomicWeightDeclaration-ciaaw-value"),
-    (wrong_unit, "StandardAtomicWeightDeclaration-ciaaw-value"),
+    (element_without_source, "Element-prov-wasDerivedFrom"),
+    (isotope_without_abundance, "Isotope-ciaaw-hasCurrentAbundance"),
+    (wrong_kind_of_declaration, "Element-ciaaw-hasCurrentStandardAtomicWeight"),
+    (declaration_without_numbers, "OneValueForm"),
+    (uncertainty_without_value, "OneValueForm"),
+    (bounds_and_value_mixed, "OneValueForm"),
+    (interval_missing_upper_bound, "OneValueForm"),
+    (without_the_printed_value, "Declaration-ciaaw-hasValueAsString"),
+    (float_instead_of_decimal, "Declaration-ciaaw-hasValue"),
+    (wrong_unit, "StandardAtomicWeightDeclaration-ciaaw-hasUnit"),
+    (unit_outside_the_si_framework, "StandardAtomicWeightDeclaration-ciaaw-hasUnit"),
+    (unknown_status, "Declaration-ciaaw-hasStatus"),
+    (declaration_without_source, "Declaration-prov-wasDerivedFrom"),
     (unknown_footnote_letter, "Footnote-skos-notation"),
-    (undefined_footnote, "Declaration-ciaaw-footnote"),
-    (year_as_integer, "Declaration-dcterms-issued"),
-    (source_is_not_a_doi, "Declaration-dcterms-source"),
+    (undefined_footnote, "Declaration-ciaaw-hasFootnote"),
+    (year_as_integer, "Declaration-ciaaw-hasStartValidity"),
+    (report_is_not_a_report, "Declaration-ciaaw-hasDefiningReport"),
+    (report_without_a_doi, "Report-dcterms-identifier"),
     (lower_above_upper, "BoundsInOrder"),
     (zero_uncertainty, "UncertaintyIsPositive"),
     (abundance_above_one, "AbundanceIsAFraction"),
@@ -328,7 +341,6 @@ def shortcut_differs(g):
     (isotope_in_two_elements, "IsotopeBelongsToOneElement"),
     (current_not_in_history, "CurrentIsInHistory"),
     (declaration_points_elsewhere, "DeclarationPointsBack"),
-    (shortcut_differs, "ShortcutsMatchCurrentDeclaration"),
 ])
 def test_broken_data_is_rejected_by_the_expected_shape(break_it, expected, data, shapes):
     break_it(data)
@@ -337,43 +349,63 @@ def test_broken_data_is_rejected_by_the_expected_shape(break_it, expected, data,
     assert expected in text, text
 
 
-def test_a_standard_value_may_be_exact_as_in_the_older_tables(data, shapes):
+def test_a_standard_value_may_be_given_without_an_uncertainty_as_in_the_older_tables(data, shapes):
     """The historical tables give some values without an uncertainty, for example oxygen in 1902 as 16."""
-    weight_as_a_single_value(data)
-    remove(data, ELEMENT["Helium"], CIAAW.standardAtomicWeightUncertainty, None)   # derived from the uncertainty
+    remove(data, HE_WEIGHT, CIAAW.hasStandardUncertainty, None)
     conforms, _, text = t.validate_graph(data, shapes)
     assert conforms, text
 
 
-OLD, NEW = EX["AW-H-standard-2009"], EX["AW-H-standard-2027"]
+OLD, NEW = WEIGHTS["H-2009"], WEIGHTS["H-2027"]
 
 
-def pointer_to_deprecated(g):
-    replace(g, ELEMENT["Hydrogen"], CIAAW.currentStandardAtomicWeight, OLD)
+def pointer_to_superseded(g):
+    replace(g, H, CIAAW.hasCurrentStandardAtomicWeight, OLD)
 
 
-def deprecated_without_replacement(g):
-    remove(g, OLD, DCTERMS.isReplacedBy, None)
+def superseded_without_next(g):
+    remove(g, OLD, CIAAW.hasNextDeclaration, None)
 
 
-def deprecated_without_status(g):
-    remove(g, OLD, c.ADMS.status, None)
+def current_with_a_next(g):
+    g.add((NEW, CIAAW.hasNextDeclaration, OLD))
 
 
-def replacement_one_way(g):
-    remove(g, NEW, DCTERMS.replaces, None)
+def superseded_marked_current(g):
+    replace(g, OLD, CIAAW.hasStatus, Literal("current"))
 
 
-def replaced_by_a_non_declaration(g):
-    replace(g, OLD, DCTERMS.isReplacedBy, ELEMENT["Hydrogen"])
+def chain_one_way(g):
+    remove(g, NEW, CIAAW.hasPreviousDeclaration, None)
+
+
+def next_is_not_a_declaration(g):
+    replace(g, OLD, CIAAW.hasNextDeclaration, H)
+
+
+def chain_changes_element(g):
+    replace(g, OLD, CIAAW.hasNextDeclaration, HE_WEIGHT)
+    g.add((HE_WEIGHT, CIAAW.hasPreviousDeclaration, OLD))
+
+
+def ends_before_it_starts(g):
+    replace(g, OLD, CIAAW.hasEndValidity, Literal("1999", datatype=XSD.gYear))
+
+
+def ends_after_the_next_starts(g):
+    replace(g, OLD, CIAAW.hasEndValidity, Literal("2030", datatype=XSD.gYear))
 
 
 @pytest.mark.parametrize("break_it, expected", [
-    (pointer_to_deprecated, "Element-ciaaw-currentStandardAtomicWeight-2"),
-    (deprecated_without_replacement, "DeprecationIsComplete"),
-    (deprecated_without_status, "DeprecationIsComplete"),
-    (replacement_one_way, "ReplacementIsMutual"),
-    (replaced_by_a_non_declaration, "Declaration-dcterms-isReplacedBy"),
+    (pointer_to_superseded, "Element-ciaaw-hasCurrentStandardAtomicWeight-2"),
+    (superseded_without_next, "SupersededHasNext"),
+    (current_with_a_next, "SupersededHasNext"),
+    (superseded_marked_current, "CurrentIsPointedTo"),
+    (chain_one_way, "ChainIsMutual"),
+    (next_is_not_a_declaration, "Declaration-ciaaw-hasNextDeclaration"),
+    (chain_changes_element, "ChainStaysWithSubject"),
+    (ends_before_it_starts, "ValidityInOrder"),
+    (ends_after_the_next_starts, "ValidityInOrder"),
 ])
 def test_broken_history_is_rejected(break_it, expected, revision, shapes):
     break_it(revision)
@@ -383,7 +415,7 @@ def test_broken_history_is_rejected(break_it, expected, revision, shapes):
 
 
 def test_wrong_abundance_sum_is_only_a_warning(data, shapes):
-    replace(data, quantity(data, EX["Abundance-He4"]), QUDT.numericValue, Literal("0.9", datatype=XSD.decimal))
+    replace(data, ABUNDANCES["He-4"], CIAAW.hasValue, dec("0.9"))
     conforms, report, _ = t.validate_graph(data, shapes)
     assert conforms
     found = results(report)
@@ -394,6 +426,11 @@ def test_wrong_abundance_sum_is_only_a_warning(data, shapes):
 def test_abundance_sum_skips_elements_given_as_intervals(data, shapes):
     """Hydrogen is given as intervals, so there is no meaningful sum to check."""
     assert results(t.validate_graph(data, shapes)[1]) == []
+
+
+def test_units_come_from_the_si_digital_framework(shapes):
+    units = {o for o in shapes.objects(None, SH.hasValue) if str(o).startswith(str(SI_UNITS))}
+    assert units == {UNIT_ONE, UNIT_DALTON}
 
 
 # --- the restored fixtures ----------------------------------------------------------------
@@ -415,7 +452,7 @@ def test_fixtures_reproduce_the_committed_revision_example(tmp_path, revision):
     built = build_from_fixtures(tmp_path, "atomic-weights-next.htm", "supplement-next.csv",
                                 DATA_DIR / "example-output.ttl")
     assert isomorphic(built, revision)
-    assert (OLD, OWL.deprecated, Literal(True)) in built
+    assert (OLD, CIAAW.hasStatus, Literal("superseded")) in built
 
 
 if __name__ == "__main__":

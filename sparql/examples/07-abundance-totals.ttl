@@ -11,14 +11,12 @@ ex:7_07-abundance-totals a sh:SPARQLExecutable, sh:SPARQLSelectExecutable;
  Adds up the isotopes of each element. Elements given as intervals are left out, because intervals have no meaningful sum.""";
   rdfs:label "Total abundance per element";
   sh:prefixes _:sparql_examples_prefixes;
-  sh:select """PREFIX chemrof: <https://w3id.org/chemrof/>
-PREFIX ciaaw: <https://hendrikborgelt.github.io/Draft_for_IUPAC_CIAAW-Isotopic-Abundances-and-Atomic-Weights/ciaaw-draft#>
-PREFIX qudt: <http://qudt.org/schema/qudt/>
+  sh:select """PREFIX ciaaw: <https://hendrikborgelt.github.io/Draft_for_IUPAC_CIAAW-Isotopic-Abundances-and-Atomic-Weights/ciaaw-draft#>
 SELECT ?symbol (SUM(?amount) AS ?total) WHERE {
-  ?element chemrof:symbol ?symbol ;
-    ciaaw:hasIsotope/ciaaw:currentAbundance/ciaaw:value/qudt:numericValue ?amount .
+  ?element ciaaw:hasSymbol ?symbol ;
+    ciaaw:hasIsotope/ciaaw:hasCurrentAbundance/ciaaw:hasValue ?amount .
   MINUS {
-    ?element ciaaw:hasIsotope/ciaaw:currentAbundance/ciaaw:value/qudt:lowerBound ?bound .
+    ?element ciaaw:hasIsotope/ciaaw:hasCurrentAbundance/ciaaw:hasLowerBound ?bound .
   }
 }
 GROUP BY ?symbol

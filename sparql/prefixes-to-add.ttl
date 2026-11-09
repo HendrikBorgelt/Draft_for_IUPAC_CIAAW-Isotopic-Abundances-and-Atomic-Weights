@@ -5,22 +5,40 @@
 # sparql_examples_prefixes node, so the examples can use them too. combine_sparql_examples.py joins this file after
 # prefixes.ttl, because the Turtle blank nodes are only shared within one file.
 
+_:prefix_abundances sh:namespace "https://hendrikborgelt.github.io/Draft_for_IUPAC_CIAAW-Isotopic-Abundances-and-Atomic-Weights/isotopic-abundances/"^^xsd:anyURI;
+  sh:prefix "abundances" .
+
+_:prefix_bodies sh:namespace "https://hendrikborgelt.github.io/Draft_for_IUPAC_CIAAW-Isotopic-Abundances-and-Atomic-Weights/bodies/"^^xsd:anyURI;
+  sh:prefix "bodies" .
+
 _:prefix_chebi sh:namespace "http://purl.obolibrary.org/obo/CHEBI_"^^xsd:anyURI;
   sh:prefix "chebi" .
 
-_:prefix_ciaaw_draft sh:namespace "https://hendrikborgelt.github.io/Draft_for_IUPAC_CIAAW-Isotopic-Abundances-and-Atomic-Weights/id/"^^xsd:anyURI;
-  sh:prefix "ciaaw_draft" .
+_:prefix_elements sh:namespace "https://hendrikborgelt.github.io/Draft_for_IUPAC_CIAAW-Isotopic-Abundances-and-Atomic-Weights/elements/"^^xsd:anyURI;
+  sh:prefix "elements" .
 
-_:prefix_element sh:namespace "https://hendrikborgelt.github.io/Draft_for_IUPAC_CIAAW-Isotopic-Abundances-and-Atomic-Weights/elements/"^^xsd:anyURI;
-  sh:prefix "element" .
+_:prefix_footnotes sh:namespace "https://hendrikborgelt.github.io/Draft_for_IUPAC_CIAAW-Isotopic-Abundances-and-Atomic-Weights/footnotes/"^^xsd:anyURI;
+  sh:prefix "footnotes" .
+
+_:prefix_isotopes sh:namespace "https://hendrikborgelt.github.io/Draft_for_IUPAC_CIAAW-Isotopic-Abundances-and-Atomic-Weights/isotopes/"^^xsd:anyURI;
+  sh:prefix "isotopes" .
+
+_:prefix_owl sh:namespace "http://www.w3.org/2002/07/owl#"^^xsd:anyURI;
+  sh:prefix "owl" .
 
 _:prefix_rdf sh:namespace "http://www.w3.org/1999/02/22-rdf-syntax-ns#"^^xsd:anyURI;
   sh:prefix "rdf" .
 
-_:prefix_unit sh:namespace "http://qudt.org/vocab/unit/"^^xsd:anyURI;
-  sh:prefix "unit" .
+_:prefix_reports sh:namespace "https://hendrikborgelt.github.io/Draft_for_IUPAC_CIAAW-Isotopic-Abundances-and-Atomic-Weights/reports/"^^xsd:anyURI;
+  sh:prefix "reports" .
+
+_:prefix_units sh:namespace "https://si-digital-framework.org/SI/units/"^^xsd:anyURI;
+  sh:prefix "units" .
+
+_:prefix_weights sh:namespace "https://hendrikborgelt.github.io/Draft_for_IUPAC_CIAAW-Isotopic-Abundances-and-Atomic-Weights/standard-atomic-weights/"^^xsd:anyURI;
+  sh:prefix "weights" .
 
 _:prefix_xsd sh:namespace "http://www.w3.org/2001/XMLSchema#"^^xsd:anyURI;
   sh:prefix "xsd" .
 
-_:sparql_examples_prefixes sh:declare _:prefix_chebi, _:prefix_ciaaw_draft, _:prefix_element, _:prefix_rdf, _:prefix_unit, _:prefix_xsd .
+_:sparql_examples_prefixes sh:declare _:prefix_abundances, _:prefix_bodies, _:prefix_chebi, _:prefix_elements, _:prefix_footnotes, _:prefix_isotopes, _:prefix_owl, _:prefix_rdf, _:prefix_reports, _:prefix_units, _:prefix_weights, _:prefix_xsd .

@@ -18,7 +18,7 @@ from ruamel.yaml import YAML
 
 from ciaaw_draft.paths import DATA_DIR, ROOT
 from ciaaw_draft.website import build_site as b
-from ciaaw_draft.convert import ciaaw2ttl as c
+from ciaaw_draft.namespaces import NS
 
 DATA = DATA_DIR / "example-output.ttl"
 SAMPLE = ["--data", str(DATA)]
@@ -26,11 +26,7 @@ QUERY_FILES = sorted((ROOT / "sparql" / "queries").glob("*.rq"))
 EXAMPLES = ROOT / "sparql" / "examples"
 SH = Namespace("http://www.w3.org/ns/shacl#")
 ENDPOINT = "https://another-endpoint.example/sparql"
-PREFIXES = f"""PREFIX ciaaw: <{c.DEFAULT_VOCAB_NS}>
-PREFIX ciaaw_draft: <{c.DEFAULT_DATA_NS}>
-PREFIX element: <{c.DEFAULT_ELEMENT_NS}>
-PREFIX qudt: <{c.QUDT}>
-"""
+PREFIXES = "".join(f"PREFIX {prefix}: <{namespace}>\n" for prefix, namespace in NS.prefixes().items())
 
 
 @pytest.fixture(scope="module")
@@ -111,21 +107,22 @@ def test_oxigraph_version_matches_the_worker_lockfile():
     assert ox.__version__ == "0.5.11"
 
 
-def test_oxigraph_normalises_decimals_but_significant_figures_survive(store):
-    """Why the SPARQL page warns about trailing zeros, and why significantFigures is in the model."""
-    query = PREFIXES + """SELECT ?value ?figures WHERE {
-        element:Dysprosium ciaaw:currentStandardAtomicWeight/ciaaw:value ?q .
-        ?q qudt:numericValue ?value ; ciaaw:significantFigures ?figures }"""
+def test_oxigraph_normalises_decimals_but_the_printed_value_survives(store):
+    """Why the SPARQL page warns about trailing zeros, and why ciaaw:hasValueAsString is in the model."""
+    query = PREFIXES + """SELECT ?value ?printed WHERE {
+        elements:Dysprosium ciaaw:hasCurrentStandardAtomicWeight ?weight .
+        ?weight ciaaw:hasValue ?value ; ciaaw:hasValueAsString ?printed }"""
     row = next(iter(store.query(query)))
     assert row["value"].value == "162.5"
-    assert row["figures"].value == "6"
+    assert row["printed"].value == "162.500(1)"
 
 
-def test_zero_bounds_lose_their_printed_form_on_the_endpoint(store):
-    """A known gap: 0.0000 and 0.000 both become 0, and zero has no significant figures recorded."""
-    query = PREFIXES + "SELECT ?lower WHERE { ciaaw_draft:Abundance-Ar36 ciaaw:value/qudt:lowerBound ?lower }"
-    assert next(iter(store.query(query)))["lower"].value == "0"
-    assert "qudt:lowerBound 0.0000" in text_of(DATA)              # the Turtle keeps the digits
+def test_zero_bounds_keep_their_printed_form_on_the_endpoint(store):
+    """0.0000 becomes 0 as a number, but the value as printed keeps every digit."""
+    query = PREFIXES + "SELECT ?lower ?printed WHERE { abundances:Ar-36 ciaaw:hasLowerBound ?lower ; ciaaw:hasValueAsString ?printed }"
+    row = next(iter(store.query(query)))
+    assert row["lower"].value == "0" and row["printed"].value.startswith("[0.0000, ")
+    assert "ciaaw:hasLowerBound 0.0000" in text_of(DATA)          # the Turtle keeps the digits
 
 
 # --- the example queries ------------------------------------------------------------------
@@ -196,7 +193,7 @@ def test_abundance_totals_are_close_to_one(examples):
 
 def test_terms_are_shortened(examples):
     subjects = [row[0] for row in examples["Matches to ChEBI"].rows]
-    assert "ciaaw_draft:H-1" in subjects
+    assert "isotopes:H-1" in subjects
     assert all(row[1].startswith("chebi:") for row in examples["Matches to ChEBI"].rows)
 
 

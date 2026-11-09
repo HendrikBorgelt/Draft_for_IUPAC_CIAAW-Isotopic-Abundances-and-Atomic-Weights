@@ -4,15 +4,13 @@
 #+ tags:
 #+ - standard atomic weight
 #+ - interval
-PREFIX chemrof: <https://w3id.org/chemrof/>
 PREFIX ciaaw: <https://hendrikborgelt.github.io/Draft_for_IUPAC_CIAAW-Isotopic-Abundances-and-Atomic-Weights/ciaaw-draft#>
-PREFIX qudt: <http://qudt.org/schema/qudt/>
 
 SELECT ?symbol ?lower ?upper ?value ?uncertainty WHERE {
-  ?element chemrof:symbol ?symbol ;
-    chemrof:atomic_number ?z ;
-    ciaaw:currentStandardAtomicWeight/ciaaw:value ?quantity .
-  OPTIONAL { ?quantity qudt:lowerBound ?lower ; qudt:upperBound ?upper }
-  OPTIONAL { ?quantity qudt:numericValue ?value ; qudt:standardUncertainty ?uncertainty }
+  ?element ciaaw:hasSymbol ?symbol ;
+    ciaaw:hasAtomicNumber ?z ;
+    ciaaw:hasCurrentStandardAtomicWeight ?weight .
+  OPTIONAL { ?weight ciaaw:hasLowerBound ?lower ; ciaaw:hasUpperBound ?upper }
+  OPTIONAL { ?weight ciaaw:hasValue ?value ; ciaaw:hasStandardUncertainty ?uncertainty }
 }
 ORDER BY ?z

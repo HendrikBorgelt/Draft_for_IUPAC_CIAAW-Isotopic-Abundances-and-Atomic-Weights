@@ -1,0 +1,260 @@
+# The vocabulary of the CIAAW linked-data prototype, written by hand.
+#
+# It follows the SI Digital Framework of the BIPM (https://si-digital-framework.org/SI): a stable resource for each
+# element and isotope, a separate declaration for each value CIAAW ever recommended, chained from version to version,
+# and only W3C and Dublin Core vocabularies besides its own. How the terms relate to BFO, IAO, ChEBI, Wikidata and
+# the SI Digital Framework is described in alignment.sssom.tsv, without importing those ontologies.
+#
+# Proposal for issue #11. Not an official CIAAW or IUPAC vocabulary.
+
+@prefix ciaaw:   <https://hendrikborgelt.github.io/Draft_for_IUPAC_CIAAW-Isotopic-Abundances-and-Atomic-Weights/ciaaw-draft#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix owl:     <http://www.w3.org/2002/07/owl#> .
+@prefix prov:    <http://www.w3.org/ns/prov#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos:    <http://www.w3.org/2004/02/skos/core#> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+
+<https://hendrikborgelt.github.io/Draft_for_IUPAC_CIAAW-Isotopic-Abundances-and-Atomic-Weights/ciaaw-draft> a owl:Ontology ;
+    rdfs:label "CIAAW draft vocabulary"@en ;
+    dcterms:description "Elements, isotopes and the values CIAAW recommended for them: standard atomic weights, isotopic abundances and, planned, atomic masses. Every recommended value is a declaration of its own, with the report it comes from, the years it was valid and the declaration it replaced."@en ;
+    owl:versionInfo "0.1.0" ;
+    owl:versionIRI <https://hendrikborgelt.github.io/Draft_for_IUPAC_CIAAW-Isotopic-Abundances-and-Atomic-Weights/0.1.0/ciaaw-draft> ;
+    dcterms:rights "No licence has been chosen for this draft vocabulary, which is a proposal to CIAAW. A licence would be stated here with dcterms:license."@en ;
+    dcterms:references <https://si-digital-framework.org/SI> ;
+    rdfs:seeAlso <https://github.com/HendrikBorgelt/Draft_for_IUPAC_CIAAW-Isotopic-Abundances-and-Atomic-Weights/issues/11> .
+
+# --- Elements and isotopes ---------------------------------------------------------------------------------------
+
+ciaaw:ChemicalElement a owl:Class ;
+    rdfs:label "chemical element"@en ;
+    skos:definition "A chemical element as listed in the tables of CIAAW, identified by its atomic number. It stands for all atoms with that atomic number, so it corresponds to a class of atoms in ChEBI, such as hydrogen atom."@en .
+
+ciaaw:Isotope a owl:Class ;
+    rdfs:label "isotope"@en ;
+    skos:definition "An isotope of a chemical element as listed in the CIAAW table of isotopic compositions, identified by its element and its mass number. It corresponds to a class of atoms in ChEBI, such as protium."@en ;
+    owl:disjointWith ciaaw:ChemicalElement .
+
+ciaaw:hasSymbol a owl:DatatypeProperty, owl:FunctionalProperty ;
+    rdfs:label "has symbol"@en ;
+    skos:definition "The symbol of an element as printed in the CIAAW tables, such as H."@en ;
+    rdfs:domain ciaaw:ChemicalElement ;
+    rdfs:range xsd:string .
+
+ciaaw:hasAtomicNumber a owl:DatatypeProperty, owl:FunctionalProperty ;
+    rdfs:label "has atomic number"@en ;
+    skos:definition "The atomic number of an element: the number of protons in the nucleus of its atoms."@en ;
+    rdfs:domain ciaaw:ChemicalElement ;
+    rdfs:range xsd:integer .
+
+ciaaw:hasMassNumber a owl:DatatypeProperty, owl:FunctionalProperty ;
+    rdfs:label "has mass number"@en ;
+    skos:definition "The mass number of an isotope: the number of protons and neutrons in the nucleus of its atoms."@en ;
+    rdfs:domain ciaaw:Isotope ;
+    rdfs:range xsd:integer .
+
+ciaaw:hasLongestLivedMassNumber a owl:DatatypeProperty, owl:FunctionalProperty ;
+    rdfs:label "has longest-lived mass number"@en ;
+    skos:definition "For an element without stable isotopes, the mass number of its longest-lived isotope, which CIAAW prints in brackets instead of a standard atomic weight."@en ;
+    rdfs:domain ciaaw:ChemicalElement ;
+    rdfs:range xsd:integer .
+
+ciaaw:hasIsotope a owl:ObjectProperty, owl:InverseFunctionalProperty ;
+    rdfs:label "has isotope"@en ;
+    skos:definition "Links an element to one of its isotopes that CIAAW lists."@en ;
+    rdfs:domain ciaaw:ChemicalElement ;
+    rdfs:range ciaaw:Isotope .
+
+# --- Declarations --------------------------------------------------------------------------------------------------
+
+ciaaw:Declaration a owl:Class ;
+    rdfs:label "declaration"@en ;
+    skos:definition "A value that CIAAW recommended at one time for an element or an isotope. A declaration is never changed after publication: a new recommendation is a new declaration, and the earlier one is kept as superseded."@en ;
+    owl:disjointWith ciaaw:ChemicalElement, ciaaw:Isotope .
+
+ciaaw:StandardAtomicWeightDeclaration a owl:Class ;
+    rdfs:subClassOf ciaaw:Declaration ;
+    rdfs:label "standard atomic weight declaration"@en ;
+    skos:definition "A declaration of the standard atomic weight of an element, which applies to normal terrestrial materials: an interval, or a value with its standard uncertainty. Tables before 1961 also gave values without an uncertainty."@en .
+
+ciaaw:ConventionalAtomicWeightDeclaration a owl:Class ;
+    rdfs:subClassOf ciaaw:Declaration ;
+    rdfs:label "conventional atomic weight declaration"@en ;
+    skos:definition "A declaration of a single conventional atomic weight of an element, for uses that do not need the interval of the standard atomic weight."@en ;
+    skos:editorialNote "Planned. The source tables do not contain these values yet."@en .
+
+ciaaw:IsotopicAbundanceDeclaration a owl:Class ;
+    rdfs:subClassOf ciaaw:Declaration ;
+    rdfs:label "isotopic abundance declaration"@en ;
+    skos:definition "A declaration of the amount fraction of one isotope in the representative isotopic composition of its element, a number between 0 and 1."@en .
+
+ciaaw:AtomicMassDeclaration a owl:Class ;
+    rdfs:subClassOf ciaaw:Declaration ;
+    rdfs:label "atomic mass declaration"@en ;
+    skos:definition "A declaration of the atomic mass of one isotope in daltons, with its standard uncertainty."@en ;
+    skos:editorialNote "Planned. The source tables do not contain atomic masses yet."@en .
+
+ciaaw:hasDeclaration a owl:ObjectProperty, owl:InverseFunctionalProperty ;
+    rdfs:label "has declaration"@en ;
+    skos:definition "Links an element or an isotope to every declaration about it, including superseded ones."@en ;
+    rdfs:domain [ a owl:Class ; owl:unionOf ( ciaaw:ChemicalElement ciaaw:Isotope ) ] ;
+    rdfs:range ciaaw:Declaration ;
+    owl:inverseOf ciaaw:isDeclarationOf .
+
+ciaaw:isDeclarationOf a owl:ObjectProperty, owl:FunctionalProperty ;
+    rdfs:label "is declaration of"@en ;
+    skos:definition "Links a declaration to the element or isotope it is about."@en ;
+    rdfs:domain ciaaw:Declaration ;
+    rdfs:range [ a owl:Class ; owl:unionOf ( ciaaw:ChemicalElement ciaaw:Isotope ) ] .
+
+ciaaw:hasCurrentStandardAtomicWeight a owl:ObjectProperty, owl:FunctionalProperty ;
+    rdfs:subPropertyOf ciaaw:hasDeclaration ;
+    rdfs:label "has current standard atomic weight"@en ;
+    skos:definition "Links an element to the standard atomic weight declaration that is valid now."@en ;
+    rdfs:domain ciaaw:ChemicalElement ;
+    rdfs:range ciaaw:StandardAtomicWeightDeclaration .
+
+ciaaw:hasCurrentConventionalAtomicWeight a owl:ObjectProperty, owl:FunctionalProperty ;
+    rdfs:subPropertyOf ciaaw:hasDeclaration ;
+    rdfs:label "has current conventional atomic weight"@en ;
+    skos:definition "Links an element to the conventional atomic weight declaration that is valid now."@en ;
+    rdfs:domain ciaaw:ChemicalElement ;
+    rdfs:range ciaaw:ConventionalAtomicWeightDeclaration .
+
+ciaaw:hasCurrentAbundance a owl:ObjectProperty, owl:FunctionalProperty ;
+    rdfs:subPropertyOf ciaaw:hasDeclaration ;
+    rdfs:label "has current abundance"@en ;
+    skos:definition "Links an isotope to the isotopic abundance declaration that is valid now."@en ;
+    rdfs:domain ciaaw:Isotope ;
+    rdfs:range ciaaw:IsotopicAbundanceDeclaration .
+
+ciaaw:hasCurrentAtomicMass a owl:ObjectProperty, owl:FunctionalProperty ;
+    rdfs:subPropertyOf ciaaw:hasDeclaration ;
+    rdfs:label "has current atomic mass"@en ;
+    skos:definition "Links an isotope to the atomic mass declaration that is valid now."@en ;
+    rdfs:domain ciaaw:Isotope ;
+    rdfs:range ciaaw:AtomicMassDeclaration .
+
+# --- Values --------------------------------------------------------------------------------------------------------
+# A declaration holds its numbers itself, in one of three forms: hasLowerBound and hasUpperBound (an interval),
+# hasValue and hasStandardUncertainty, or hasValue alone. model/rules.ttl checks that exactly one form is used.
+
+ciaaw:hasValue a owl:DatatypeProperty, owl:FunctionalProperty ;
+    rdfs:label "has value"@en ;
+    skos:definition "The value of a declaration that gives a single number, with or without a standard uncertainty."@en ;
+    rdfs:domain ciaaw:Declaration ;
+    rdfs:range xsd:decimal .
+
+ciaaw:hasStandardUncertainty a owl:DatatypeProperty, owl:FunctionalProperty ;
+    rdfs:label "has standard uncertainty"@en ;
+    skos:definition "The standard uncertainty of the value of a declaration, in the same unit. CIAAW prints it in brackets as the uncertainty of the last digits."@en ;
+    rdfs:domain ciaaw:Declaration ;
+    rdfs:range xsd:decimal .
+
+ciaaw:hasLowerBound a owl:DatatypeProperty, owl:FunctionalProperty ;
+    rdfs:label "has lower bound"@en ;
+    skos:definition "The lower bound of a declaration that gives an interval."@en ;
+    rdfs:domain ciaaw:Declaration ;
+    rdfs:range xsd:decimal .
+
+ciaaw:hasUpperBound a owl:DatatypeProperty, owl:FunctionalProperty ;
+    rdfs:label "has upper bound"@en ;
+    skos:definition "The upper bound of a declaration that gives an interval."@en ;
+    rdfs:domain ciaaw:Declaration ;
+    rdfs:range xsd:decimal .
+
+ciaaw:hasValueAsString a owl:DatatypeProperty, owl:FunctionalProperty ;
+    rdfs:label "has value as string"@en ;
+    skos:definition "The value of a declaration as CIAAW prints it, such as [1.007 84, 1.008 11] or 1.007 94(7). It keeps the trailing zeros and so the number of significant figures, which the decimal values do not."@en ;
+    rdfs:domain ciaaw:Declaration ;
+    rdfs:range xsd:string .
+
+ciaaw:hasUnit a owl:ObjectProperty, owl:FunctionalProperty ;
+    rdfs:label "has unit"@en ;
+    skos:definition "Links a declaration to the unit of its numbers, an identifier of the SI Digital Framework: one for atomic weights and abundances, the dalton for atomic masses."@en ;
+    rdfs:domain ciaaw:Declaration .
+
+ciaaw:hasFootnote a owl:ObjectProperty ;
+    rdfs:label "has footnote"@en ;
+    skos:definition "Links a declaration to a footnote of the CIAAW tables that qualifies it."@en ;
+    rdfs:domain ciaaw:Declaration ;
+    rdfs:range ciaaw:Footnote .
+
+ciaaw:Footnote a owl:Class ;
+    rdfs:label "footnote"@en ;
+    skos:definition "One of the notes g, m and r printed below the CIAAW tables, which qualify the values of an element."@en .
+
+# --- History and provenance ----------------------------------------------------------------------------------------
+
+ciaaw:hasStatus a owl:DatatypeProperty, owl:FunctionalProperty ;
+    rdfs:label "has status"@en ;
+    skos:definition "Whether a declaration is valid now: \"current\", or \"superseded\" by a later declaration."@en ;
+    rdfs:domain ciaaw:Declaration ;
+    rdfs:range xsd:string .
+
+ciaaw:hasStartValidity a owl:DatatypeProperty, owl:FunctionalProperty ;
+    rdfs:label "has start of validity"@en ;
+    skos:definition "The year in which CIAAW recommended the value of a declaration."@en ;
+    rdfs:domain ciaaw:Declaration ;
+    rdfs:range xsd:gYear .
+
+ciaaw:hasEndValidity a owl:DatatypeProperty, owl:FunctionalProperty ;
+    rdfs:label "has end of validity"@en ;
+    skos:definition "The year in which a later declaration superseded a declaration."@en ;
+    rdfs:domain ciaaw:Declaration ;
+    rdfs:range xsd:gYear .
+
+ciaaw:hasPreviousDeclaration a owl:ObjectProperty, owl:FunctionalProperty ;
+    rdfs:label "has previous declaration"@en ;
+    skos:definition "Links a declaration to the declaration about the same element or isotope that it superseded."@en ;
+    rdfs:domain ciaaw:Declaration ;
+    rdfs:range ciaaw:Declaration ;
+    owl:inverseOf ciaaw:hasNextDeclaration .
+
+ciaaw:hasNextDeclaration a owl:ObjectProperty, owl:FunctionalProperty ;
+    rdfs:label "has next declaration"@en ;
+    skos:definition "Links a superseded declaration to the declaration that superseded it."@en ;
+    rdfs:domain ciaaw:Declaration ;
+    rdfs:range ciaaw:Declaration .
+
+ciaaw:hasDefiningReport a owl:ObjectProperty ;
+    rdfs:label "has defining report"@en ;
+    skos:definition "Links a declaration to the report in which CIAAW published the recommendation."@en ;
+    rdfs:domain ciaaw:Declaration ;
+    rdfs:range ciaaw:Report .
+
+ciaaw:Report a owl:Class ;
+    rdfs:label "report"@en ;
+    skos:definition "A publication in which CIAAW reported recommendations, identified by its DOI, usually an IUPAC Technical Report in Pure and Applied Chemistry."@en .
+
+ciaaw:Body a owl:Class ;
+    rdfs:label "body"@en ;
+    skos:definition "An organisation that makes or publishes recommendations, such as CIAAW and IUPAC."@en .
+
+# --- Earlier terms -------------------------------------------------------------------------------------------------
+# Kept so that their IRIs do not disappear, as in OBO practice: deprecated, with what replaces them.
+
+ciaaw:ofElement a owl:ObjectProperty ; owl:deprecated true ; dcterms:isReplacedBy ciaaw:isDeclarationOf .
+ciaaw:ofIsotope a owl:ObjectProperty ; owl:deprecated true ; dcterms:isReplacedBy ciaaw:isDeclarationOf .
+ciaaw:currentStandardAtomicWeight a owl:ObjectProperty ; owl:deprecated true ; dcterms:isReplacedBy ciaaw:hasCurrentStandardAtomicWeight .
+ciaaw:currentConventionalAtomicWeight a owl:ObjectProperty ; owl:deprecated true ; dcterms:isReplacedBy ciaaw:hasCurrentConventionalAtomicWeight .
+ciaaw:currentAbundance a owl:ObjectProperty ; owl:deprecated true ; dcterms:isReplacedBy ciaaw:hasCurrentAbundance .
+ciaaw:currentAtomicMass a owl:ObjectProperty ; owl:deprecated true ; dcterms:isReplacedBy ciaaw:hasCurrentAtomicMass .
+ciaaw:massNumber a owl:DatatypeProperty ; owl:deprecated true ; dcterms:isReplacedBy ciaaw:hasMassNumber .
+ciaaw:longestLivedMassNumber a owl:DatatypeProperty ; owl:deprecated true ; dcterms:isReplacedBy ciaaw:hasLongestLivedMassNumber .
+ciaaw:footnote a owl:ObjectProperty ; owl:deprecated true ; dcterms:isReplacedBy ciaaw:hasFootnote .
+ciaaw:value a owl:ObjectProperty ; owl:deprecated true ;
+    dcterms:isReplacedBy ciaaw:hasValue, ciaaw:hasStandardUncertainty, ciaaw:hasLowerBound, ciaaw:hasUpperBound, ciaaw:hasUnit ;
+    skos:editorialNote "The numbers are now properties of the declaration itself, without a qudt:QuantityValue node."@en .
+ciaaw:significantFigures a owl:DatatypeProperty ; owl:deprecated true ; dcterms:isReplacedBy ciaaw:hasValueAsString .
+ciaaw:significantFiguresLower a owl:DatatypeProperty ; owl:deprecated true ; dcterms:isReplacedBy ciaaw:hasValueAsString .
+ciaaw:significantFiguresUpper a owl:DatatypeProperty ; owl:deprecated true ; dcterms:isReplacedBy ciaaw:hasValueAsString .
+ciaaw:significantFiguresUncertainty a owl:DatatypeProperty ; owl:deprecated true ; dcterms:isReplacedBy ciaaw:hasValueAsString .
+ciaaw:standardAtomicWeightLower a owl:DatatypeProperty ; owl:deprecated true ;
+    skos:editorialNote "Removed: use ciaaw:hasCurrentStandardAtomicWeight/ciaaw:hasLowerBound."@en .
+ciaaw:standardAtomicWeightUpper a owl:DatatypeProperty ; owl:deprecated true ;
+    skos:editorialNote "Removed: use ciaaw:hasCurrentStandardAtomicWeight/ciaaw:hasUpperBound."@en .
+ciaaw:standardAtomicWeightValue a owl:DatatypeProperty ; owl:deprecated true ;
+    skos:editorialNote "Removed: use ciaaw:hasCurrentStandardAtomicWeight/ciaaw:hasValue."@en .
+ciaaw:standardAtomicWeightUncertainty a owl:DatatypeProperty ; owl:deprecated true ;
+    skos:editorialNote "Removed: use ciaaw:hasCurrentStandardAtomicWeight/ciaaw:hasStandardUncertainty."@en .

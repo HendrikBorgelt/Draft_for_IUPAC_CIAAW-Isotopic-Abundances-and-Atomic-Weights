@@ -5,10 +5,11 @@
 > on this; please open an issue with comments or questions.
 > For values you intend to use, go to [ciaaw.org](https://ciaaw.org).
 
-The scripts convert the tables on [ciaaw.org](https://ciaaw.org) into Turtle, following the
-draft declaration model from issue 20: every published value is its own declaration with a
-`qudt:QuantityValue`, and elements and isotopes keep stable IRIs that point to the current
-declaration and its history.
+The scripts convert the tables on [ciaaw.org](https://ciaaw.org) into Turtle, following the draft vocabulary in
+[model/ontology.ttl](model/ontology.ttl). It is modelled after the
+[SI Digital Framework](https://si-digital-framework.org/SI) of the BIPM: elements and isotopes keep stable IRIs,
+every value CIAAW ever recommended is a declaration of its own, chained from version to version, and every
+element, isotope and declaration names the documents it was read from. See [issue #11](../../issues/11).
 
 **[View the prototype site](https://hendrikborgelt.github.io/Draft_for_IUPAC_CIAAW-Isotopic-Abundances-and-Atomic-Weights/)**
 
@@ -37,7 +38,8 @@ We want to develop this together with the Commission. Decisions about the conten
 | `ciaaw_draft/compare/check_wikidata.py` | Compares the abundances in the Turtle with Wikidata |
 | `ciaaw_draft/compare/check_wikidata_weights.py` | Compares the standard atomic weights in the Turtle with the mass of the elements in Wikidata |
 | `ciaaw_draft/schema/tap2model.py` | DCTAP → SHACL shapes and UML diagrams |
-| `ciaaw_draft/schema/construct.py`, `model/ontology.rq`, `model/ciaaw.owl` | The OWL ontology, generated via SPARQL CONSTRUCT |
+| `model/ontology.ttl` | The vocabulary, written by hand, with a definition for every term |
+| `model/alignment.sssom.tsv` | How the vocabulary relates to BFO, IAO, ChEBI, PROV, Wikidata and the SI Digital Framework |
 | `model/` | The data model, see [below](#the-data-model) |
 | `ciaaw_draft/website/build_site.py`, `site/` | Static site for GitHub Pages |
 | `sparql/queries/` | Example SPARQL queries, shown on the SPARQL tab and published as `.rq` files |
@@ -100,27 +102,29 @@ To keep the history of changed values, pass the Turtle of the earlier release:
 make ttl PREVIOUS=data/ciaaw.ttl
 ```
 
-Declarations whose value changed are kept, flagged `owl:deprecated`, and linked with
-`dcterms:isReplacedBy` / `dcterms:replaces`.
+Declarations whose value changed are kept with the status `superseded` and the year they ended, and linked with
+`ciaaw:hasNextDeclaration` / `ciaaw:hasPreviousDeclaration`, as the SI Reference Point links the definitions of a
+unit.
 
 `make ttl` also adds the historical standard atomic weights from `data/historical/IUPAC-TSAW.csv`, the table of
 [ciaaw.org](https://www.ciaaw.org/historical-atomic-weights.htm) (`https://www.ciaaw.org/data/IUPAC-TSAW.csv`).
-Each earlier recommendation becomes a declaration, chained to the next one like the superseded values above. The
+Each earlier recommendation becomes a declaration, chained to the next one like the superseded values above, and
+the year of the current one becomes part of its IRI (`weights:H-2009`). The
 script stops if the newest recommendation differs from the current value. Rows marked `n/a` are left out, because
 they record that no value was recommended. Np, Ra, Rn and Tc have no current standard atomic weight, so their history
 is left out too.
 
 ### Options
 
-Other options of `ciaaw2ttl.py` (`--iri-style hash`, `--data-ns`, `--vocab-ns`, `--no-vocab`)
+Other options of `ciaaw2ttl.py` (`--iri-style hash`, `--base`, `--no-headers`)
 are described by `python3 -m ciaaw_draft.convert.ciaaw2ttl --help`. Call the script directly to use them.
 
 ## Wikidata (optional)
 
 `make quickstatements` writes `build/quickstatements.csv` for import with
 [QuickStatements](https://quickstatements.toolforge.org/). It follows the model: the abundance of the
-current declaration (`ciaaw:currentAbundance`, not the deprecated ones) as a natural abundance (P2374), with
-the year of the declaration as qualifier (P585) and its DOI as reference (S356). The amounts are fractions
+current declaration (`ciaaw:hasCurrentAbundance`, not the superseded ones) as a natural abundance (P2374), with
+the year of the declaration as qualifier (P585) and the DOI of its report as reference (S356). The amounts are fractions
 without unit, because that is how Wikidata stores P2374 (0.0107 for carbon-13), not percentages.
 
 - Isotopes that Wikidata already has (`site/wikidata.csv`, see below) are **not created again**.
@@ -194,7 +198,7 @@ make test
 
 | Test file | What it covers |
 |---|---|
-| `tests/test_ciaaw2ttl.py` | Reading the tables, number handling, the deprecation chain |
+| `tests/test_ciaaw2ttl.py` | Reading the tables, number handling, the chain of revisions, provenance |
 | `tests/test_model.py` | The DCTAP, and that each SHACL rule rejects data broken on purpose |
 | `tests/test_check_bodr.py` | The comparison with BODR, on a small isotopes file |
 | `tests/test_quickstatements.py` | The QuickStatements export: properties, units, no duplicate items |
@@ -211,12 +215,20 @@ it. To show other data, use for example `make site SITE_DATA=data/example-output
 
 Every resource has a page, and its IRI is the address of that page:
 
-| Prefix | Resources | Example IRI | Page | Turtle |
-|---|---|---|---|---|
-| `element:` | Elements | `element:Hydrogen` | `elements/Hydrogen` | `elements/Hydrogen.ttl` |
-| `ciaaw_draft:` | Isotopes and declarations | `ciaaw_draft:H-1` | `id/H-1` | `id/H-1.ttl` |
+| Prefix | Resources | Example IRI | Page |
+|---|---|---|---|
+| `elements:` | Elements | `elements:Hydrogen` | `elements/Hydrogen` |
+| `isotopes:` | Isotopes | `isotopes:H-1` | `isotopes/H-1` |
+| `weights:` | Standard atomic weight declarations | `weights:H-2009` | `standard-atomic-weights/H-2009` |
+| `abundances:` | Isotopic abundance declarations | `abundances:H-1` | `isotopic-abundances/H-1` |
+| `reports:` | Reports, named after their DOI | `reports:PAC-REP-10-09-14` | `reports/PAC-REP-10-09-14` |
+| `footnotes:` | The notes g, m and r | `footnotes:g` | `footnotes/g` |
+| `bodies:` | CIAAW and IUPAC | `bodies:CIAAW` | `bodies/CIAAW` |
+| `ciaaw:` | The terms of the vocabulary | `ciaaw:hasSymbol` | `ciaaw-draft` (one page, an anchor per term) |
 
-GitHub Pages serves `id/H-1.html` at `id/H-1`, which is what makes these IRIs resolve. It cannot choose a
+Each page has a Turtle file next to it (`isotopes/H-1.ttl`), and the address of each namespace, such as
+`isotopes/`, is an index page with the header of that part of the data. GitHub Pages serves `isotopes/H-1.html`
+at `isotopes/H-1`, which is what makes these IRIs resolve. It cannot choose a
 format per request, so an IRI always opens the page. The page links to the Turtle, shows it, and names it in
 `<link rel="alternate">`, and software can also add `.ttl` to the IRI. `make serve` does not drop the `.html`,
 so on your own machine an IRI only resolves if you add it.
@@ -257,7 +269,7 @@ from P356 if the source has one) as the abundance comparison. `make wikidata-wei
 `site/wikidata-weights-comparison.json` for the site. Mind that CIAAW gives no weight for elements without a stable
 isotope, so for those Wikidata is "only in the resource". The local data has no masses of single isotopes.
 
-Each element page, each isotope page and each isotopic abundance page ends with a Bibliography of the DOIs in `dcterms:source` of its declarations.
+Each element page, each isotope page and each isotopic abundance page ends with a Bibliography of the reports of its declarations (`ciaaw:hasDefiningReport`), by their DOI.
 They are formatted as APA by [citation.js](https://citation.js.org), the way the author's blog does it:
 `make references` (`update_references.js`, needs Node.js; if the system npm fails use
 `make references NPM="node path/to/npm-cli.js"`) looks up the DOIs that are not yet in
@@ -317,8 +329,7 @@ A token for another Cloudflare account creates a separate worker at a different 
 Things to know:
 
 - **Decimals are normalised.** Oxigraph returns `162.500` as `162.5` and `0.0000` as `0`. Use
-  `ciaaw:significantFigures` or the Turtle file when the printed digits matter. Zero bounds have
-  no significant figures, so their printed form is only in the Turtle file.
+  `ciaaw:hasValueAsString` when the printed digits matter: it holds the value as CIAAW prints it.
 - **`CONSTRUCT` and `DESCRIBE` need an RDF format in the `Accept` header**, for example
   `text/turtle`. Without one, the endpoint answers with error 400.
 - **New data is not picked up straight away.** The worker loads the Turtle once per instance, so
@@ -343,14 +354,39 @@ Things to know:
 | `make test` | `python -m pytest -q` |
 | `make model` | `python -m ciaaw_draft.schema.tap2model` |
 | `make validate` | `python -m ciaaw_draft.schema.tap2model --validate data/ciaaw.ttl data/example-output-next.ttl` |
-| `make ontology` | `python -m ciaaw_draft.schema.construct model/ontology.rq data/ciaaw.ttl -o model/ciaaw.owl` |
 | `make site` | `python -m ciaaw_draft.website.build_site` and `python -m ciaaw_draft.website.combine_sparql_examples -o _site/data/combined.ttl` |
 
 For `make download`, save the two pages from your browser as described in step 2 above.
 
 ## The data model
 
-The model is written once, as a [DCTAP](https://www.dublincore.org/specifications/dctap/) table
+The model follows the [SI Reference Point](https://si-digital-framework.org/SI) of the BIPM, which publishes the
+units of the SI as linked data. A unit there keeps one IRI while its definition is re-decided over time, and each
+definition names the CGPM resolution that adopted it. CIAAW recommendations work the same way:
+
+| Here | In the SI Reference Point |
+|---|---|
+| An element or isotope with a stable IRI | A unit such as `units:metre` |
+| A declaration (`weights:H-2009`) with a status, the years it was valid, and the previous and next declaration | A versioned definition (`si:metre2018`) |
+| `ciaaw:hasDefiningReport`, a CIAAW report with its DOI | `si:hasDefiningResolution`, a CGPM resolution |
+| The numbers on the declaration itself, and `ciaaw:hasValueAsString` with the value as printed | `si:hasValue` and `si:hasValueAsString` |
+| `ciaaw:hasUnit units:one`, a unit of the SI Digital Framework | `si:hasUnit` |
+| One file per kind of resource on the Downloads page, each with a header, a version and a checksum | One knowledge graph per kind (units, prefixes, constants, decisions) |
+
+Besides its own `ciaaw:` terms, the data uses only W3C and Dublin Core vocabularies: SKOS, Dublin Core terms,
+PROV and OWL. There are no blank nodes, so every node has its own page.
+
+**Provenance.** Every element, isotope and declaration names the documents it was read from with
+`prov:wasDerivedFrom`: the two CIAAW tables, the historical table, and the supplement of this project. A declaration
+also names the year CIAAW recommended it and the report it comes from. The header of each namespace lists its
+sources, and the Turtle file keeps the SHA-256 of every input file.
+
+**Alignment.** The vocabulary imports no other ontology. [model/alignment.sssom.tsv](model/alignment.sssom.tsv)
+says, as SSSOM mappings, where each term would go in BFO, IAO, OBI and ChEBI, in the SI Reference Point, in the
+classes and properties of Wikidata, and in the Chemrof and QUDT terms this prototype used before. Every term has a label and a definition, and terms that were
+replaced stay in the vocabulary, deprecated, with what replaces them.
+
+The shapes are written once, as a [DCTAP](https://www.dublincore.org/specifications/dctap/) table
 in [model/model_dctap.csv](model/model_dctap.csv). The
 [PubChemRDF schema](https://pubchem.ncbi.nlm.nih.gov/docs/rdf-schema) works the same way, and
 other formats such as ShEx or LinkML can be derived from the same table.
@@ -362,13 +398,12 @@ other formats such as ShEx or LinkML can be derived from the same table.
 | [model/rules.ttl](model/rules.ttl) | Rules that compare several nodes, which a DCTAP row cannot express | Yes |
 | [model/model_shacl.ttl](model/model_shacl.ttl) | SHACL shapes | No, generated |
 | [model/diagrams.md](model/diagrams.md) | One UML diagram per aspect | No, generated |
-| [model/ontology.rq](model/ontology.rq) | The SPARQL CONSTRUCT that derives the OWL ontology from the data | Yes |
-| [model/ciaaw.owl](model/ciaaw.owl) | The OWL ontology, in Turtle | No, generated |
+| [model/ontology.ttl](model/ontology.ttl) | The vocabulary: every class and property with a label and a definition | Yes |
+| [model/alignment.sssom.tsv](model/alignment.sssom.tsv) | How the vocabulary relates to other ontologies | Yes |
 
-`make ontology` runs `model/ontology.rq` over `ciaaw.ttl` with `construct.py` and
-writes `model/ciaaw.owl`: every class and property of the `ciaaw:` namespace that the data uses, with the labels,
-comments and subclass statements of the vocabulary, the domains and ranges and the property characteristics
-(`owl:FunctionalProperty`, `owl:InverseFunctionalProperty`).
+The SHACL validation mixes the ontology into the data, so that the shapes for `ciaaw:Declaration` also apply to the
+declarations of each subclass. The tests check that every term the data, the DCTAP and the queries use is defined
+in the ontology.
 
 After changing the model, run `make model`. The tests fail if the generated files are out of date.
 
@@ -380,7 +415,6 @@ The table adds four columns to the 12 DCTAP elements, all declared in `dctap.yam
 - **`ciaaw.ttl` is a snapshot.** It was made from the CIAAW pages on 5 November 2026 and does not follow their updates. To refresh it, run `make download` and `make ttl`, then `make wikidata-comparison` and `make bodr-comparison`, because the tests check that those match the data.
 - **Some publication data is still missing.** All 689 standard atomic weights have a year and, except the current values of Zr, Gd and Lu (revised in 2024), the DOI of the report that recommended them. Only hydrogen has a source for its isotopic abundances, and only H-2 a year. Adding a year to an abundance later also changes its IRI, so `supplement.csv` should be completed before anyone cites them.
 - **`example-output-next.ttl` contains an invented value.** It demonstrates a revision of hydrogen and is not a CIAAW value.
-- **All IRIs are placeholders** until a persistent home is agreed. The data IRIs resolve on GitHub Pages. The vocabulary (`ciaaw:`) and shape namespaces are under the same address, but the site has no page behind `ciaaw-draft` yet, so those IRIs do not resolve.
+- **All IRIs are placeholders** until a persistent home is agreed. The data IRIs and the terms of the vocabulary resolve on GitHub Pages, but GitHub Pages cannot choose a format per request. Real content negotiation belongs on the domain CIAAW would choose. The shape namespace has no pages.
 - **Atomic masses and abridged values are modelled but not generated**, because the two source tables do not contain them.
-- **The ADMS status IRI has not been confirmed yet.** See the note in `ciaaw_draft/namespaces.py`.
-- **No licence has been chosen yet** for the code or the data.
+- **No licence has been chosen**, deliberately. The values belong to CIAAW and IUPAC, and the vocabulary and code are a proposal to CIAAW. Instead, the header of every part of the data carries a rights statement (`dcterms:rights`, with CIAAW and IUPAC as `dcterms:rightsHolder`) with the acknowledgement that the terms of use of ciaaw.org ask for, and says where a licence would go (`dcterms:license`). The SSSOM files must name a licence, so they declare CC0 for the mappings only.

@@ -1,70 +1,68 @@
 shapeID,shapeLabel,targetClass,extends,closed,propertyID,propertyLabel,mandatory,repeatable,valueNodeType,valueDataType,valueConstraint,valueConstraintType,valueShape,aspect,note
-shape:Element,Chemical element,chemrof:ChemicalElement,,,rdf:type,type,true,true,IRI,,chemrof:ChemicalElement,picklist,,identity,
+shape:Element,Chemical element,ciaaw:ChemicalElement,,,rdf:type,type,true,true,IRI,,ciaaw:ChemicalElement,picklist,,identity,
 shape:Element,,,,,rdfs:label,name,true,true,literal,rdf:langString,,,,identity,Lower case as printed in the CIAAW tables. Further languages may be added.
-shape:Element,,,,,chemrof:symbol,symbol,true,false,literal,xsd:string,"^[A-Z][a-z]{0,2}$",pattern,,identity,
-shape:Element,,,,,chemrof:atomic_number,atomic number,true,false,literal,xsd:integer,1,minInclusive,,identity,
+shape:Element,,,,,ciaaw:hasSymbol,symbol,true,false,literal,xsd:string,"^[A-Z][a-z]{0,2}$",pattern,,identity,
+shape:Element,,,,,ciaaw:hasAtomicNumber,atomic number,true,false,literal,xsd:integer,1,minInclusive,,identity,
 shape:Element,,,,,skos:closeMatch,ChEBI match,false,true,IRI,,http://purl.obolibrary.org/obo/CHEBI_,IRIstem,,identity,Taken from the supplement. Never guessed.
 shape:Element,,,,,ciaaw:hasIsotope,isotope,false,true,IRI,,,,shape:Isotope,identity abundance,
-shape:Element,,,,,ciaaw:longestLivedMassNumber,longest-lived mass number,false,false,literal,xsd:integer,1,minInclusive,,identity,Elements without stable isotopes: the mass number bracketed in the table.
-shape:Element,,,,,ciaaw:currentStandardAtomicWeight,current standard atomic weight,false,false,IRI,,,,shape:StandardAtomicWeightDeclaration,atomicWeight,Absent when the table gives no standard atomic weight.
-shape:Element,,,,,ciaaw:currentStandardAtomicWeight,current standard atomic weight,false,false,IRI,,,,shape:NotDeprecated,history,A current pointer may never lead to a deprecated declaration.
-shape:Element,,,,,ciaaw:currentConventionalAtomicWeight,current conventional atomic weight,false,false,IRI,,,,shape:ConventionalAtomicWeightDeclaration,atomicWeight,
-shape:Element,,,,,ciaaw:currentConventionalAtomicWeight,current conventional atomic weight,false,false,IRI,,,,shape:NotDeprecated,history,A current pointer may never lead to a deprecated declaration.
-shape:Element,,,,,ciaaw:hasDeclaration,declaration,false,true,IRI,,,,shape:StandardAtomicWeightDeclaration shape:ConventionalAtomicWeightDeclaration,atomicWeight history,All declarations including deprecated ones.
-shape:Element,,,,,ciaaw:standardAtomicWeightLower,lower bound (derived),false,false,literal,xsd:decimal,,,,atomicWeight,Derived shortcut copied from the current declaration. Never edited by hand.
-shape:Element,,,,,ciaaw:standardAtomicWeightUpper,upper bound (derived),false,false,literal,xsd:decimal,,,,atomicWeight,Derived shortcut.
-shape:Element,,,,,ciaaw:standardAtomicWeightValue,value (derived),false,false,literal,xsd:decimal,,,,atomicWeight,Derived shortcut.
-shape:Element,,,,,ciaaw:standardAtomicWeightUncertainty,uncertainty (derived),false,false,literal,xsd:decimal,,,,atomicWeight,Derived shortcut.
-shape:Isotope,Isotope,chemrof:Isotope,,,rdf:type,type,true,true,IRI,,chemrof:Isotope,picklist,,identity,
-shape:Isotope,,,,,ciaaw:massNumber,mass number,true,false,literal,xsd:integer,1,minInclusive,,identity,
+shape:Element,,,,,ciaaw:hasLongestLivedMassNumber,longest-lived mass number,false,false,literal,xsd:integer,1,minInclusive,,identity,Elements without stable isotopes: the mass number bracketed in the table.
+shape:Element,,,,,ciaaw:hasCurrentStandardAtomicWeight,current standard atomic weight,false,false,IRI,,,,shape:StandardAtomicWeightDeclaration,atomicWeight,Absent when the table gives no standard atomic weight.
+shape:Element,,,,,ciaaw:hasCurrentStandardAtomicWeight,current standard atomic weight,false,false,IRI,,,,shape:Current,history,A current pointer leads to a declaration with the status current.
+shape:Element,,,,,ciaaw:hasCurrentConventionalAtomicWeight,current conventional atomic weight,false,false,IRI,,,,shape:ConventionalAtomicWeightDeclaration,atomicWeight,
+shape:Element,,,,,ciaaw:hasCurrentConventionalAtomicWeight,current conventional atomic weight,false,false,IRI,,,,shape:Current,history,A current pointer leads to a declaration with the status current.
+shape:Element,,,,,ciaaw:hasDeclaration,declaration,false,true,IRI,,,,shape:StandardAtomicWeightDeclaration shape:ConventionalAtomicWeightDeclaration,atomicWeight history,All declarations including superseded ones.
+shape:Element,,,,,prov:wasDerivedFrom,source,true,true,IRI,,,,,provenance,The documents the element was read from.
+shape:Isotope,Isotope,ciaaw:Isotope,,,rdf:type,type,true,true,IRI,,ciaaw:Isotope,picklist,,identity,
+shape:Isotope,,,,,rdfs:label,name,true,true,literal,rdf:langString,,,,identity,
+shape:Isotope,,,,,ciaaw:hasMassNumber,mass number,true,false,literal,xsd:integer,1,minInclusive,,identity,
 shape:Isotope,,,,,skos:closeMatch,ChEBI match,false,true,IRI,,http://purl.obolibrary.org/obo/CHEBI_,IRIstem,,identity,Taken from the supplement. Never guessed.
-shape:Isotope,,,,,ciaaw:currentAbundance,current abundance,true,false,IRI,,,,shape:IsotopicAbundanceDeclaration,abundance,
-shape:Isotope,,,,,ciaaw:currentAbundance,current abundance,true,false,IRI,,,,shape:NotDeprecated,history,A current pointer may never lead to a deprecated declaration.
-shape:Isotope,,,,,ciaaw:currentAtomicMass,current atomic mass,false,false,IRI,,,,shape:AtomicMassDeclaration,atomicMass,
-shape:Isotope,,,,,ciaaw:currentAtomicMass,current atomic mass,false,false,IRI,,,,shape:NotDeprecated,history,A current pointer may never lead to a deprecated declaration.
-shape:Isotope,,,,,ciaaw:hasDeclaration,declaration,true,true,IRI,,,,shape:IsotopicAbundanceDeclaration shape:AtomicMassDeclaration,abundance atomicMass history,All declarations including deprecated ones.
-shape:Declaration,Declaration,,,,dcterms:issued,year issued,false,false,literal,xsd:gYear,,,,history,Year of the assigning report.
-shape:Declaration,,,,,dcterms:source,source,false,true,IRI,,https://doi.org/,IRIstem,,history,DOI of the assigning report.
-shape:Declaration,,,,,ciaaw:footnote,footnote,false,true,IRI,,,,shape:Footnote,footnote,
-shape:Declaration,,,,,owl:deprecated,deprecated,false,false,literal,xsd:boolean,,,,history,True once a later declaration has replaced this one.
-shape:Declaration,,,,,adms:status,status,false,false,IRI,,,,,history,The ADMS status IRI still needs to be confirmed.
-shape:Declaration,,,,,dcterms:isReplacedBy,replaced by,false,false,IRI,,,,shape:Declaration,history,
-shape:Declaration,,,,,dcterms:replaces,replaces,false,false,IRI,,,,shape:Declaration,history,
+shape:Isotope,,,,,ciaaw:hasCurrentAbundance,current abundance,true,false,IRI,,,,shape:IsotopicAbundanceDeclaration,abundance,
+shape:Isotope,,,,,ciaaw:hasCurrentAbundance,current abundance,true,false,IRI,,,,shape:Current,history,A current pointer leads to a declaration with the status current.
+shape:Isotope,,,,,ciaaw:hasCurrentAtomicMass,current atomic mass,false,false,IRI,,,,shape:AtomicMassDeclaration,atomicMass,
+shape:Isotope,,,,,ciaaw:hasCurrentAtomicMass,current atomic mass,false,false,IRI,,,,shape:Current,history,A current pointer leads to a declaration with the status current.
+shape:Isotope,,,,,ciaaw:hasDeclaration,declaration,true,true,IRI,,,,shape:IsotopicAbundanceDeclaration shape:AtomicMassDeclaration,abundance atomicMass history,All declarations including superseded ones.
+shape:Isotope,,,,,prov:wasDerivedFrom,source,true,true,IRI,,,,,provenance,The documents the isotope was read from.
+shape:Declaration,Declaration,,,,rdfs:label,name,true,false,literal,rdf:langString,,,,history,
+shape:Declaration,,,,,ciaaw:hasValueAsString,value as printed,true,false,literal,xsd:string,,,,value,As CIAAW prints it. Keeps the trailing zeros and so the significant figures.
+shape:Declaration,,,,,ciaaw:hasLowerBound,lower bound,false,false,literal,xsd:decimal,,,,value,"An interval, a value with its uncertainty, or a value alone: rules.ttl checks that exactly one form is used."
+shape:Declaration,,,,,ciaaw:hasUpperBound,upper bound,false,false,literal,xsd:decimal,,,,value,
+shape:Declaration,,,,,ciaaw:hasValue,value,false,false,literal,xsd:decimal,,,,value,
+shape:Declaration,,,,,ciaaw:hasStandardUncertainty,standard uncertainty,false,false,literal,xsd:decimal,,,,value,Scaled from the digits in brackets in the table.
+shape:Declaration,,,,,ciaaw:hasStatus,status,true,false,literal,xsd:string,current superseded,picklist,,history,
+shape:Declaration,,,,,ciaaw:hasStartValidity,recommended in,false,false,literal,xsd:gYear,,,,history,Year of the recommendation. Unknown for most isotopic abundances.
+shape:Declaration,,,,,ciaaw:hasEndValidity,superseded in,false,false,literal,xsd:gYear,,,,history,Year of the next declaration.
+shape:Declaration,,,,,ciaaw:hasPreviousDeclaration,previous declaration,false,false,IRI,,,,shape:Declaration,history,
+shape:Declaration,,,,,ciaaw:hasNextDeclaration,next declaration,false,false,IRI,,,,shape:Declaration,history,
+shape:Declaration,,,,,ciaaw:hasDefiningReport,defining report,false,true,IRI,,,,shape:Report,provenance,The report in which CIAAW published the recommendation.
+shape:Declaration,,,,,ciaaw:hasFootnote,footnote,false,true,IRI,,,,shape:Footnote,footnote,
+shape:Declaration,,,,,prov:wasDerivedFrom,source,true,true,IRI,,,,,provenance,The documents the value was read from.
 shape:StandardAtomicWeightDeclaration,Standard atomic weight declaration,ciaaw:StandardAtomicWeightDeclaration,shape:Declaration,,rdf:type,type,true,true,IRI,,ciaaw:StandardAtomicWeightDeclaration,picklist,,atomicWeight,
-shape:StandardAtomicWeightDeclaration,,,,,ciaaw:ofElement,of element,true,false,IRI,,,,shape:Element,atomicWeight,
-shape:StandardAtomicWeightDeclaration,,,,,ciaaw:value,value,true,false,bnode,,,,shape:IntervalValue shape:ValueWithUncertainty shape:SingleValue,atomicWeight value,
+shape:StandardAtomicWeightDeclaration,,,,,ciaaw:isDeclarationOf,declaration of,true,false,IRI,,,,shape:Element,atomicWeight,
+shape:StandardAtomicWeightDeclaration,,,,,ciaaw:hasUnit,unit,true,false,IRI,,units:one,picklist,,atomicWeight,A unit of the SI Digital Framework.
 shape:ConventionalAtomicWeightDeclaration,Conventional atomic weight declaration,ciaaw:ConventionalAtomicWeightDeclaration,shape:Declaration,,rdf:type,type,true,true,IRI,,ciaaw:ConventionalAtomicWeightDeclaration,picklist,,atomicWeight,
-shape:ConventionalAtomicWeightDeclaration,,,,,ciaaw:ofElement,of element,true,false,IRI,,,,shape:Element,atomicWeight,
-shape:ConventionalAtomicWeightDeclaration,,,,,ciaaw:value,value,true,false,bnode,,,,shape:SingleValue,atomicWeight value,Not generated yet. The two source tables do not contain abridged values.
+shape:ConventionalAtomicWeightDeclaration,,,,,ciaaw:isDeclarationOf,declaration of,true,false,IRI,,,,shape:Element,atomicWeight,Not generated yet. The two source tables do not contain abridged values.
+shape:ConventionalAtomicWeightDeclaration,,,,,ciaaw:hasUnit,unit,true,false,IRI,,units:one,picklist,,atomicWeight,
 shape:IsotopicAbundanceDeclaration,Isotopic abundance declaration,ciaaw:IsotopicAbundanceDeclaration,shape:Declaration,,rdf:type,type,true,true,IRI,,ciaaw:IsotopicAbundanceDeclaration,picklist,,abundance,
-shape:IsotopicAbundanceDeclaration,,,,,ciaaw:ofIsotope,of isotope,true,false,IRI,,,,shape:Isotope,abundance,
-shape:IsotopicAbundanceDeclaration,,,,,ciaaw:value,value,true,false,bnode,,,,shape:IntervalValue shape:ValueWithUncertainty shape:SingleValue,abundance value,Amount fraction between 0 and 1.
+shape:IsotopicAbundanceDeclaration,,,,,ciaaw:isDeclarationOf,declaration of,true,false,IRI,,,,shape:Isotope,abundance,
+shape:IsotopicAbundanceDeclaration,,,,,ciaaw:hasUnit,unit,true,false,IRI,,units:one,picklist,,abundance,An amount fraction between 0 and 1.
 shape:AtomicMassDeclaration,Atomic mass declaration,ciaaw:AtomicMassDeclaration,shape:Declaration,,rdf:type,type,true,true,IRI,,ciaaw:AtomicMassDeclaration,picklist,,atomicMass,
-shape:AtomicMassDeclaration,,,,,ciaaw:ofIsotope,of isotope,true,false,IRI,,,,shape:Isotope,atomicMass,
-shape:AtomicMassDeclaration,,,,,ciaaw:value,value,true,false,bnode,,,,shape:MassValue,atomicMass value,Not generated yet. The two source tables do not contain atomic masses.
-shape:IntervalValue,Interval,,,true,rdf:type,type,true,true,IRI,,qudt:QuantityValue,picklist,,value,
-shape:IntervalValue,,,,,qudt:hasUnit,unit,true,false,IRI,,unit:UNITLESS,picklist,,value,
-shape:IntervalValue,,,,,qudt:lowerBound,lower bound,true,false,literal,xsd:decimal,,,,value,
-shape:IntervalValue,,,,,qudt:upperBound,upper bound,true,false,literal,xsd:decimal,,,,value,
-shape:IntervalValue,,,,,ciaaw:significantFiguresLower,significant figures of the lower bound,false,false,literal,xsd:integer,1,minInclusive,,value,Absent when the bound is zero.
-shape:IntervalValue,,,,,ciaaw:significantFiguresUpper,significant figures of the upper bound,false,false,literal,xsd:integer,1,minInclusive,,value,
-shape:ValueWithUncertainty,Value with uncertainty,,,true,rdf:type,type,true,true,IRI,,qudt:QuantityValue,picklist,,value,
-shape:ValueWithUncertainty,,,,,qudt:hasUnit,unit,true,false,IRI,,unit:UNITLESS,picklist,,value,
-shape:ValueWithUncertainty,,,,,qudt:numericValue,value,true,false,literal,xsd:decimal,,,,value,
-shape:ValueWithUncertainty,,,,,qudt:standardUncertainty,uncertainty,true,false,literal,xsd:decimal,,,,value,Scaled from the digits in brackets in the table.
-shape:ValueWithUncertainty,,,,,ciaaw:significantFigures,significant figures,true,false,literal,xsd:integer,1,minInclusive,,value,
-shape:ValueWithUncertainty,,,,,ciaaw:significantFiguresUncertainty,digits of the uncertainty,true,false,literal,xsd:integer,1,minInclusive,,value,
-shape:SingleValue,Single value,,,true,rdf:type,type,true,true,IRI,,qudt:QuantityValue,picklist,,value,
-shape:SingleValue,,,,,qudt:hasUnit,unit,true,false,IRI,,unit:UNITLESS,picklist,,value,
-shape:SingleValue,,,,,qudt:numericValue,value,true,false,literal,xsd:decimal,,,,value,Stated without an uncertainty.
-shape:SingleValue,,,,,ciaaw:significantFigures,significant figures,false,false,literal,xsd:integer,1,minInclusive,,value,
-shape:MassValue,Mass with uncertainty,,,true,rdf:type,type,true,true,IRI,,qudt:QuantityValue,picklist,,value,
-shape:MassValue,,,,,qudt:hasUnit,unit,true,false,IRI,,unit:DA,picklist,,value,
-shape:MassValue,,,,,qudt:numericValue,value,true,false,literal,xsd:decimal,,,,value,
-shape:MassValue,,,,,qudt:standardUncertainty,uncertainty,true,false,literal,xsd:decimal,,,,value,
-shape:MassValue,,,,,ciaaw:significantFigures,significant figures,true,false,literal,xsd:integer,1,minInclusive,,value,
-shape:MassValue,,,,,ciaaw:significantFiguresUncertainty,digits of the uncertainty,true,false,literal,xsd:integer,1,minInclusive,,value,
+shape:AtomicMassDeclaration,,,,,ciaaw:isDeclarationOf,declaration of,true,false,IRI,,,,shape:Isotope,atomicMass,Not generated yet. The two source tables do not contain atomic masses.
+shape:AtomicMassDeclaration,,,,,ciaaw:hasUnit,unit,true,false,IRI,,units:dalton,picklist,,atomicMass,
+shape:Report,Report,ciaaw:Report,,,rdf:type,type,true,true,IRI,,ciaaw:Report,picklist,,provenance,
+shape:Report,,,,,rdfs:label,name,true,false,literal,xsd:string,,,,provenance,
+shape:Report,,,,,dcterms:identifier,DOI,true,false,literal,xsd:string,^10\.,pattern,,provenance,
+shape:Report,,,,,rdfs:seeAlso,DOI link,true,false,IRI,,https://doi.org/,IRIstem,,provenance,
+shape:Body,Body,ciaaw:Body,,,rdf:type,type,true,true,IRI,,ciaaw:Body,picklist,,provenance,
+shape:Body,,,,,rdfs:label,name,true,true,literal,rdf:langString,,,,provenance,
+shape:Body,,,,,skos:altLabel,abbreviation,false,true,literal,xsd:string,,,,provenance,
+shape:Body,,,,,rdfs:seeAlso,website,false,true,IRI,,,,,provenance,
+shape:Body,,,,,dcterms:isPartOf,part of,false,false,IRI,,,,shape:Body,provenance,
 shape:Footnote,Footnote,ciaaw:Footnote,,,rdf:type,type,true,true,IRI,,ciaaw:Footnote,picklist,,footnote,
+shape:Footnote,,,,,rdfs:label,name,true,false,literal,rdf:langString,,,,footnote,
 shape:Footnote,,,,,skos:notation,letter,true,false,literal,xsd:string,g m r,picklist,,footnote,
 shape:Footnote,,,,,skos:definition,wording,true,false,literal,rdf:langString,,,,footnote,As printed below the CIAAW tables.
-shape:NotDeprecated,Not deprecated,,,,owl:deprecated,deprecated,false,false,literal,xsd:boolean,false,picklist,,history,Helper shape: owl:deprecated is absent or false.
+shape:Footnote,,,,,prov:wasDerivedFrom,source,true,true,IRI,,,,,footnote provenance,
+shape:Source,Source document,prov:Entity,,,rdf:type,type,true,true,IRI,,prov:Entity,picklist,,provenance,A document the data was read from.
+shape:Source,,,,,rdfs:label,name,true,false,literal,rdf:langString,,,,provenance,
+shape:Source,,,,,dcterms:publisher,publisher,false,false,IRI,,,,shape:Body,provenance,
+shape:Current,Current declaration,,,,ciaaw:hasStatus,status,true,false,literal,xsd:string,current,picklist,,history,Helper shape: the status is current.

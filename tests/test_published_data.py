@@ -19,13 +19,12 @@ from rdflib import Graph, RDF, URIRef
 from ciaaw_draft.paths import DATA_DIR, ROOT
 from ciaaw_draft.website import build_site as b
 from ciaaw_draft.compare import check_wikidata_weights
-from ciaaw_draft.convert import ciaaw2ttl as c
+from ciaaw_draft.namespaces import NS
 from ciaaw_draft.website import combine_sparql_examples as combine
 from ciaaw_draft.schema import tap2model as t
 
 DATA = DATA_DIR / "ciaaw.ttl"
 CIAAW = b.CIAAW
-CHEMROF = b.CHEMROF
 ELEMENTS, ISOTOPES, WEIGHTS = 118, 289, 84
 
 
@@ -52,9 +51,9 @@ def text_of(path):
 
 # --- the data -----------------------------------------------------------------------------
 def test_the_data_is_complete(graph):
-    assert len(set(graph.subjects(RDF.type, CHEMROF.ChemicalElement))) == ELEMENTS
-    assert len(set(graph.subjects(RDF.type, CHEMROF.Isotope))) == ISOTOPES
-    assert len(set(graph.subject_objects(CIAAW.currentStandardAtomicWeight))) == WEIGHTS
+    assert len(set(graph.subjects(RDF.type, CIAAW.ChemicalElement))) == ELEMENTS
+    assert len(set(graph.subjects(RDF.type, CIAAW.Isotope))) == ISOTOPES
+    assert len(set(graph.subject_objects(CIAAW.hasCurrentStandardAtomicWeight))) == WEIGHTS
 
 
 def test_every_atomic_number_is_there_once(elements):
@@ -131,22 +130,26 @@ def test_the_tables_are_complete(site):
 
 
 def test_every_element_has_a_page(site):
-    assert len(list((site / "elements").glob("*.html"))) == ELEMENTS
+    pages = [p for p in (site / "elements").glob("*.html") if p.name != "index.html"]
+    assert len(pages) == ELEMENTS
+    assert (site / "elements" / "index.html").exists()                # the page of the namespace itself
 
 
 def resource_iris(graph):
-    """Every IRI in the data on this site, with the file path its page and Turtle file should have."""
-    folders = {c.DEFAULT_DATA_NS: "id", c.DEFAULT_ELEMENT_NS: "elements"}
+    """Every IRI in the data on this site, with the file path its page and Turtle file should have: the resources,
+    the namespaces (an index page each) and the vocabulary (one page)."""
     iris = {term for triple in graph for term in triple if isinstance(term, URIRef)}
-    return {iri: f"{folder}/{iri[len(namespace):]}" for iri in iris for namespace, folder in folders.items()
-            if iri.startswith(namespace)}
+    return {iri: path for iri in iris if (path := b.page_path(iri))}
 
 
 def test_every_iri_in_the_data_has_a_page_and_a_turtle_file(site, graph):
-    """GitHub Pages serves id/H-1.html at id/H-1, so a page in the right place is what makes an IRI resolve."""
+    """GitHub Pages serves isotopes/H-1.html at isotopes/H-1, so a page in the right place makes an IRI resolve."""
     resources = resource_iris(graph)
-    declarations = {s for p in (CIAAW.ofElement, CIAAW.ofIsotope) for s in graph.subjects(p, None)}
-    assert len(resources) == ELEMENTS + ISOTOPES + len(declarations)
+    own = {iri for iri, path in resources.items() if not path.endswith("index") and path != "ciaaw-draft"}
+    kinds = (CIAAW.ChemicalElement, CIAAW.Isotope, CIAAW.Report, CIAAW.Footnote, CIAAW.Body)
+    expected = {s for kind in kinds for s in graph.subjects(RDF.type, kind)} | set(graph.subjects(CIAAW.isDeclarationOf, None))
+    assert own == expected
+    assert len(expected) == ELEMENTS + ISOTOPES + 689 + 289 + len(set(graph.subjects(RDF.type, CIAAW.Report))) + 3 + 2
     for iri, path in resources.items():
         assert (site / f"{path}.html").exists(), iri
         assert (site / f"{path}.ttl").exists(), iri
@@ -155,10 +158,10 @@ def test_every_iri_in_the_data_has_a_page_and_a_turtle_file(site, graph):
 def test_every_current_standard_atomic_weight_has_a_year_and_a_source(graph):
     """CIAAW's historical table gives both. It has no DOI yet for the three values revised in 2024."""
     without_source = set()
-    for element, declaration in graph.subject_objects(CIAAW.currentStandardAtomicWeight):
-        assert graph.value(declaration, b.DCTERMS.issued) is not None, element
-        if graph.value(declaration, b.DCTERMS.source) is None:
-            without_source.add(str(graph.value(element, CHEMROF.symbol)))
+    for element, declaration in graph.subject_objects(CIAAW.hasCurrentStandardAtomicWeight):
+        assert graph.value(declaration, CIAAW.hasStartValidity) is not None, element
+        if graph.value(declaration, CIAAW.hasDefiningReport) is None:
+            without_source.add(str(graph.value(element, CIAAW.hasSymbol)))
     assert without_source == {"Zr", "Gd", "Lu"}
 
 
@@ -176,17 +179,17 @@ def test_every_turtle_file_is_about_its_resource(site, graph):
 
 
 def test_turtle_file_of_an_isotope_holds_its_value_and_element(site):
-    turtle = Graph().parse(site / "id" / "H-1.ttl", format="turtle")
-    element = URIRef(c.DEFAULT_ELEMENT_NS + "Hydrogen")
-    isotope = URIRef(c.DEFAULT_DATA_NS + "H-1")
+    turtle = Graph().parse(site / "isotopes" / "H-1.ttl", format="turtle")
+    element, isotope = NS.elements.Hydrogen, NS.isotopes["H-1"]
     assert (element, CIAAW.hasIsotope, isotope) in turtle
-    declaration = turtle.value(isotope, CIAAW.currentAbundance)
-    assert str(turtle.value(turtle.value(declaration, CIAAW.value), b.QUDT.upperBound)) == "0.99999"
-    assert (CIAAW["note-m"], b.SKOS.notation, None) in turtle       # the wording of the footnote comes along
+    declaration = turtle.value(isotope, CIAAW.hasCurrentAbundance)
+    assert str(turtle.value(declaration, CIAAW.hasUpperBound)) == "0.99999"
+    assert (NS.footnotes.m, b.SKOS.notation, None) in turtle        # the wording of the footnote comes along
+    assert turtle.value(declaration, CIAAW.hasDefiningReport) is not None   # and the report
 
 
 def test_turtle_files_say_they_are_a_prototype(site):
-    assert text_of(site / "id" / "H-1.ttl").startswith("# Prototype")
+    assert text_of(site / "isotopes" / "H-1.ttl").startswith("# Prototype")
     assert text_of(site / "elements" / "Hydrogen.ttl").startswith("# Prototype")
 
 
@@ -199,9 +202,10 @@ def test_all_internal_links_resolve(site):
 
 
 def canonical(path, rdf_format):
-    """The triples of a file, with blank nodes relabelled so that files can be compared.
+    """The triples of a file in canonical form, so that files in different formats can be compared.
 
-    rdflib's isomorphic() does the same, but needs minutes for each file because of the blank nodes in the full data.
+    The data has no blank nodes, so this is a plain comparison of triples. The canonical form keeps it correct if blank
+    nodes come back, where rdflib's isomorphic() would need minutes for each file of the full data.
     """
     dataset = ox.Dataset(ox.parse(path=str(path), format=rdf_format))
     dataset.canonicalize(ox.CanonicalizationAlgorithm.RDFC_1_0)
@@ -235,13 +239,13 @@ def test_combined_file_holds_the_full_data_and_the_examples(tmp_path, graph):
     store = ox.Store()
     store.load(combined.read_bytes(), format=ox.RdfFormat.TURTLE)
     assert len(store) > len(graph)
-    count = "SELECT (COUNT(DISTINCT ?e) AS ?n) WHERE { ?e a <https://w3id.org/chemrof/ChemicalElement> }"
+    count = f"SELECT (COUNT(DISTINCT ?e) AS ?n) WHERE {{ ?e a <{CIAAW.ChemicalElement}> }}"
     assert next(iter(store.query(count)))["n"].value == str(ELEMENTS)
 
 
 def test_every_cited_doi_has_a_formatted_reference(graph):
     cached = b.read_references(b.REFERENCES_JSON)
-    dois = {str(o).removeprefix("https://doi.org/").upper() for o in graph.objects(None, b.DCTERMS.source)}
+    dois = {str(graph.value(r, b.DCTERMS.identifier)).upper() for r in graph.subjects(RDF.type, CIAAW.Report)}
     assert dois and dois <= set(cached)
 
 

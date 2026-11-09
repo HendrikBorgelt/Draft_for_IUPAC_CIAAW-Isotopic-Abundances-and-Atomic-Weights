@@ -8,20 +8,19 @@
 
 ex:3_03-isotopic-composition a sh:SPARQLExecutable, sh:SPARQLSelectExecutable;
   rdfs:comment """ Isotopic composition of calcium
- The current abundance of each isotope, with the number of significant figures printed in the table.""";
+ The current abundance of each isotope, with the value as CIAAW prints it, which keeps the significant figures.""";
   rdfs:label "Isotopic composition of calcium";
   sh:prefixes _:sparql_examples_prefixes;
   sh:select """PREFIX ciaaw: <https://hendrikborgelt.github.io/Draft_for_IUPAC_CIAAW-Isotopic-Abundances-and-Atomic-Weights/ciaaw-draft#>
-PREFIX qudt: <http://qudt.org/schema/qudt/>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-SELECT ?massNumber ?abundance ?uncertainty ?significantFigures WHERE {
+SELECT ?massNumber ?abundance ?uncertainty ?printed WHERE {
   ?element rdfs:label \"calcium\"@en ;
     ciaaw:hasIsotope ?isotope .
-  ?isotope ciaaw:massNumber ?massNumber ;
-    ciaaw:currentAbundance/ciaaw:value ?quantity .
-  ?quantity qudt:numericValue ?abundance ;
-    qudt:standardUncertainty ?uncertainty ;
-    ciaaw:significantFigures ?significantFigures .
+  ?isotope ciaaw:hasMassNumber ?massNumber ;
+    ciaaw:hasCurrentAbundance ?declaration .
+  ?declaration ciaaw:hasValue ?abundance ;
+    ciaaw:hasStandardUncertainty ?uncertainty ;
+    ciaaw:hasValueAsString ?printed .
 }
 ORDER BY ?massNumber""";
   schema:keywords "abundance", "isotopes" .

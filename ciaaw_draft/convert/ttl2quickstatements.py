@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 """Convert the CIAAW Turtle (see ciaaw2ttl.py) to QuickStatements v2 (CSV) for Wikidata.
 
-The abundance comes from ciaaw:currentAbundance of an isotope (declarations that are owl:deprecated are
+The abundance comes from ciaaw:hasCurrentAbundance of an isotope (declarations with the status "superseded" are
 skipped), as a fraction in the unit "1", which is how the existing P2374 statements in Wikidata are stored:
 
     P2374   natural abundance
               - value with standard uncertainty  ->  0.96941~0.00156
               - interval (lower/upper bound)     ->  midpoint[lower,upper]
-    qal585  point in time, from dcterms:issued of the declaration (year precision)
-    S356    reference: DOI, from dcterms:source of the declaration
+    qal585  point in time, from ciaaw:hasStartValidity of the declaration (year precision)
+    S356    reference: DOI, from the report of the declaration (ciaaw:hasDefiningReport)
 
 Isotopes that Wikidata already has (site/wikidata.csv, written by wikidata_links.py) are NOT created again.
 Without --comparison they are skipped. With --comparison FILE, the JSON of `check_wikidata.py --json`, the
@@ -19,8 +19,8 @@ An isotope without a Wikidata item becomes a new item (empty qid column), with:
 
     Len     label, e.g. "hydrogen-1"
     P31     instance of: isotope (Q25276)
-    P1086   atomic number, from chemrof:atomic_number of the element
-    P1148   number of neutrons, the mass number (ciaaw:massNumber) minus the atomic number
+    P1086   atomic number, from ciaaw:hasAtomicNumber of the element
+    P1148   number of neutrons, the mass number (ciaaw:hasMassNumber) minus the atomic number
 
 Atomic weights and half-lives (see quickstatements_like.txt) are not exported, although the Turtle has the
 atomic weights now: Wikidata has no agreed property for an interval of standard atomic weights.
@@ -39,10 +39,9 @@ import sys
 from decimal import Decimal
 from pathlib import Path
 
-from rdflib import Graph, Literal, RDF, RDFS, URIRef
-from rdflib.namespace import DCTERMS, OWL
+from rdflib import Graph, RDF, RDFS, URIRef
 
-from ciaaw_draft.namespaces import CHEMROF, CIAAW, QUDT
+from ciaaw_draft.namespaces import CIAAW, STATUS_SUPERSEDED
 from ciaaw_draft.paths import SITE_SRC
 
 
@@ -68,12 +67,12 @@ def plain(d: Decimal) -> str:
 
 
 def quantity(g: Graph, value) -> str | None:
-    """QuickStatements quantity (a fraction, no unit) for a qudt:QuantityValue node."""
-    num = g.value(value, QUDT.numericValue)
-    lower = g.value(value, QUDT.lowerBound)
-    upper = g.value(value, QUDT.upperBound)
+    """QuickStatements quantity (a fraction, no unit) for the numbers of a declaration."""
+    num = g.value(value, CIAAW.hasValue)
+    lower = g.value(value, CIAAW.hasLowerBound)
+    upper = g.value(value, CIAAW.hasUpperBound)
     if num is not None:
-        unc = g.value(value, QUDT.standardUncertainty)
+        unc = g.value(value, CIAAW.hasStandardUncertainty)
         if unc is not None:
             return f"{plain(num.toPython())}~{plain(unc.toPython())}"
         return plain(num.toPython())
@@ -84,14 +83,15 @@ def quantity(g: Graph, value) -> str | None:
 
 
 def year(g: Graph, decl) -> str:
-    issued = g.value(decl, DCTERMS.issued)
+    issued = g.value(decl, CIAAW.hasStartValidity)
     if issued is None:
         return ""
     return f"+{str(issued)[:4]}-00-00T00:00:00Z/9"
 
 
 def doi(g: Graph, decl) -> str:
-    src = g.value(decl, DCTERMS.source)
+    report = g.value(decl, CIAAW.hasDefiningReport)
+    src = g.value(report, RDFS.seeAlso) if report is not None else None
     if src is None:
         return ""
     s = str(src)
@@ -119,18 +119,17 @@ def read_comparison(path: Path | None) -> dict[str, str]:
 
 def rows(g: Graph, known: set[tuple[int, int]] = frozenset(), no_value: dict[str, str] | None = None):
     no_value = no_value or {}
-    element_of = {i: e for e in g.subjects(RDF.type, CHEMROF.ChemicalElement) for i in g.objects(e, CIAAW.hasIsotope)}
-    for isotope in sorted(g.subjects(RDF.type, CHEMROF.Isotope), key=str):
-        mass_number = g.value(isotope, CIAAW.massNumber)
-        decl = g.value(isotope, CIAAW.currentAbundance)
+    element_of = {i: e for e in g.subjects(RDF.type, CIAAW.ChemicalElement) for i in g.objects(e, CIAAW.hasIsotope)}
+    for isotope in sorted(g.subjects(RDF.type, CIAAW.Isotope), key=str):
+        mass_number = g.value(isotope, CIAAW.hasMassNumber)
+        decl = g.value(isotope, CIAAW.hasCurrentAbundance)
         element = element_of.get(isotope)
         if mass_number is None or decl is None or element is None:
             continue
-        if g.value(decl, OWL.deprecated) == Literal(True):
+        if str(g.value(decl, CIAAW.hasStatus)) == STATUS_SUPERSEDED:
             continue
-        value = g.value(decl, CIAAW.value)
-        amount = quantity(g, value) if value is not None else None
-        z = g.value(element, CHEMROF.atomic_number)
+        amount = quantity(g, decl)
+        z = g.value(element, CIAAW.hasAtomicNumber)
         if amount is None or z is None:
             continue
         name = f"{g.value(element, RDFS.label)}-{mass_number}"

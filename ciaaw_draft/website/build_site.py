@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import hashlib
 import json
 import os
 import re
@@ -24,22 +25,23 @@ import shutil
 import string
 import sys
 from dataclasses import dataclass, field
-from decimal import Decimal
 from html import escape
 from pathlib import Path
 
 import markdown
 import pyoxigraph as ox
-from rdflib import BNode, Graph, RDF, RDFS, URIRef
+from rdflib import BNode, Graph, Literal, RDF, RDFS, URIRef
+from rdflib.collection import Collection
 from rdflib.namespace import DCTERMS, OWL, SKOS
 
+from ciaaw_draft import namespaces as n
 from ciaaw_draft.convert import ciaaw2ttl as c
 from ciaaw_draft.convert import ttl2sssom
 from ciaaw_draft.schema import tap2model as t
 
 from ciaaw_draft.paths import DATA_DIR, MODEL_DIR, ROOT, SITE_SRC, SPARQL_DIR
 
-REPO_URL = "https://github.com/HendrikBorgelt/Draft_for_IUPAC_CIAAW-Isotopic-Abundances-and-Atomic-Weights"
+REPO_URL = n.REPO_URL
 ISSUES_URL = f"{REPO_URL}/issues"
 MERMAID_URL = "https://cdn.jsdelivr.net/npm/mermaid@12.2.0/dist/mermaid.esm.min.mjs"
 ELEMENT_COUNT = 118
@@ -48,8 +50,7 @@ REFERENCES_JSON = SITE_SRC / "references.json"
 WIKIDATA_ENTITY = "https://www.wikidata.org/wiki/"
 NBSP = " "
 
-CIAAW = c.Namespace(c.DEFAULT_VOCAB_NS)
-QUDT, CHEMROF = c.QUDT, c.CHEMROF
+CIAAW, PROV = n.CIAAW, n.PROV
 
 # Label, file extension, rdflib format, media type.
 FORMATS = [
@@ -64,17 +65,16 @@ NAV = [("index", "Home"), ("atomic-weights", "Atomic Weights"), ("isotopic-abund
        ("comparison", "Comparison"),
        ("model", "Data Model"), ("downloads", "Downloads"), ("sparql", "SPARQL"), ("about", "About")]
 SUBNAV = {"atomic-weights": [("atomic-weights", "Values"), ("visualization", "Visualization")],
-          "model": [("model", "Data Model"), ("revision-example", "Revision Example")]}
-ONTOLOGY_QUERY = MODEL_DIR / "ontology.rq"
-ONTOLOGY_OUT = MODEL_DIR / "ciaaw.owl"
+          "model": [("model", "Data Model"), ("ciaaw-draft", "Vocabulary"), ("revision-example", "Revision Example")]}
+ONTOLOGY = MODEL_DIR / "ontology.ttl"
+ALIGNMENT = MODEL_DIR / "alignment.sssom.tsv"
 
 QUERIES = SPARQL_DIR / "queries"
 EXAMPLES = SPARQL_DIR / "examples"
 WORKER_URL = "https://github.com/JervenBolleman/oxigraph-cloudflare-webworker"
 SPARQL_ENDPOINT = "https://ciaaw-draft.jerven-bolleman.workers.dev/sparql"
-SHORT_NAMES = {c.DEFAULT_DATA_NS: "ciaaw_draft:", c.DEFAULT_ELEMENT_NS: "element:", str(c.CHEBI): "chebi:"}
-# The folders of the site that hold the page and the Turtle file of each resource.
-RESOURCE_FOLDERS = {"ciaaw_draft:": "id", "element:": "elements"}
+SHORT_NAMES = {**{namespace: f"{prefix}:" for prefix, namespace in n.NS.prefixes().items()},
+               str(n.CHEBI): "chebi:", str(n.SI_UNITS): "units:", "http://www.w3.org/2001/XMLSchema#": "xsd:"}
 TURTLE_NOTICE = "# Prototype: a suggestion, not an official CIAAW or IUPAC record. Official values are at https://ciaaw.org\n\n"
 EDITOR_URL = "https://cdn.jsdelivr.net/npm/@sib-swiss/sparql-editor@0.2.14/dist/sparql-editor.js"
 SPARQL_EDITOR_MARK = "<!-- sparql-editor -->"
@@ -101,27 +101,23 @@ mermaid.initialize({{
 # Numbers in the notation of the CIAAW tables
 # ---------------------------------------------------------------------------
 def group_digits(number: str) -> str:
-    """Group decimals in threes (1.007 84). A lone last digit joins the group before it (9.012 1831)."""
-    if "." not in number:
-        return number
-    whole, decimals = number.split(".")
-    groups = [decimals[i:i + 3] for i in range(0, len(decimals), 3)]
-    if len(groups) > 1 and len(groups[-1]) == 1:
-        groups[-2:] = [groups[-2] + groups[-1]]
-    return f"{whole}.{NBSP.join(groups)}"
+    """Group decimals in threes (1.007 84) with no-break spaces, as in the CIAAW tables."""
+    return c.group_digits(number, NBSP)
 
 
-def format_quantity(g: Graph, quantity) -> str:
-    lower, upper = g.value(quantity, QUDT.lowerBound), g.value(quantity, QUDT.upperBound)
-    if lower is not None:
-        return f"[{group_digits(str(lower))},{NBSP}{group_digits(str(upper))}]"
-    value = str(g.value(quantity, QUDT.numericValue))
-    uncertainty = g.value(quantity, QUDT.standardUncertainty)
-    if uncertainty is None:
-        # A turtle round trip writes the decimal 1 as 1.0, but the tables print 1.
-        return str(int(Decimal(value))) if Decimal(value) == Decimal(value).to_integral() else group_digits(value)
-    places = len(value.split(".")[1]) if "." in value else 0
-    return f"{group_digits(value)}({int(Decimal(str(uncertainty)).scaleb(places))})"
+def printed(g: Graph, declaration) -> str:
+    """The value of a declaration as CIAAW prints it (ciaaw:hasValueAsString), with no-break spaces."""
+    return str(g.value(declaration, CIAAW.hasValueAsString)).replace(" ", NBSP)
+
+
+def page_path(iri) -> str | None:
+    """The page of a resource of this site, from the root: elements/Hydrogen, standard-atomic-weights/H-2009, the
+    index of a folder for a namespace itself, and ciaaw-draft for the vocabulary. None for anything else."""
+    found = n.NS.folder_of(iri)
+    if found is None:
+        return "ciaaw-draft" if str(iri).split("#")[0] == str(n.ONTOLOGY) else None
+    folder, local = found
+    return f"{folder}{local or 'index'}"
 
 
 # ---------------------------------------------------------------------------
@@ -131,11 +127,15 @@ def format_quantity(g: Graph, quantity) -> str:
 class Declaration:
     iri: URIRef
     text: str
-    issued: str
-    sources: list[str]
+    issued: str                 # year of the recommendation
+    sources: list[str]          # DOI links of the reports
     notes: list[str]
-    deprecated: bool
-    replaced_by: URIRef | None
+    superseded: bool
+    next: URIRef | None
+    previous: URIRef | None = None
+    ended: str = ""             # year in which the next declaration replaced it
+    reports: list[URIRef] = field(default_factory=list)
+    derived_from: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -145,6 +145,7 @@ class Isotope:
     abundance: Declaration
     history: list[Declaration]
     matches: list[str]
+    derived_from: list[str] = field(default_factory=list)
 
     @property
     def page(self) -> str:
@@ -162,6 +163,7 @@ class Element:
     isotopes: list[Isotope]
     longest_lived: int | None
     matches: list[str]
+    derived_from: list[str] = field(default_factory=list)
 
     @property
     def page(self) -> str:
@@ -177,12 +179,14 @@ def local_name(iri) -> str:
 
 
 def read_declaration(g: Graph, iri: URIRef) -> Declaration:
+    reports = sorted(g.objects(iri, CIAAW.hasDefiningReport), key=str)
     return Declaration(
-        iri, format_quantity(g, g.value(iri, CIAAW.value)), str(g.value(iri, DCTERMS.issued) or ""),
-        sorted(str(s) for s in g.objects(iri, DCTERMS.source)),
-        sorted(str(g.value(n, SKOS.notation)) for n in g.objects(iri, CIAAW.footnote)),
-        (iri, OWL.deprecated, None) in g and bool(g.value(iri, OWL.deprecated).toPython()),
-        g.value(iri, DCTERMS.isReplacedBy))
+        iri, printed(g, iri), str(g.value(iri, CIAAW.hasStartValidity) or ""),
+        sorted(str(g.value(r, RDFS.seeAlso)) for r in reports if g.value(r, RDFS.seeAlso) is not None),
+        sorted(str(g.value(note, SKOS.notation)) for note in g.objects(iri, CIAAW.hasFootnote)),
+        str(g.value(iri, CIAAW.hasStatus)) == n.STATUS_SUPERSEDED, g.value(iri, CIAAW.hasNextDeclaration),
+        g.value(iri, CIAAW.hasPreviousDeclaration), str(g.value(iri, CIAAW.hasEndValidity) or ""), reports,
+        sorted(str(s) for s in g.objects(iri, PROV.wasDerivedFrom)))
 
 
 def read_history(g: Graph, subject) -> list[Declaration]:
@@ -192,17 +196,19 @@ def read_history(g: Graph, subject) -> list[Declaration]:
 
 def read_elements(g: Graph) -> list[Element]:
     elements = []
-    for iri in g.subjects(RDF.type, CHEMROF.ChemicalElement):
-        isotopes = [Isotope(i, int(g.value(i, CIAAW.massNumber)), read_declaration(g, g.value(i, CIAAW.currentAbundance)),
-                            read_history(g, i), sorted(str(m) for m in g.objects(i, SKOS.closeMatch)))
+    for iri in g.subjects(RDF.type, CIAAW.ChemicalElement):
+        isotopes = [Isotope(i, int(g.value(i, CIAAW.hasMassNumber)), read_declaration(g, g.value(i, CIAAW.hasCurrentAbundance)),
+                            read_history(g, i), sorted(str(m) for m in g.objects(i, SKOS.closeMatch)),
+                            sorted(str(s) for s in g.objects(i, PROV.wasDerivedFrom)))
                     for i in g.objects(iri, CIAAW.hasIsotope)]
-        current = g.value(iri, CIAAW.currentStandardAtomicWeight)
-        longest = g.value(iri, CIAAW.longestLivedMassNumber)
+        current = g.value(iri, CIAAW.hasCurrentStandardAtomicWeight)
+        longest = g.value(iri, CIAAW.hasLongestLivedMassNumber)
         elements.append(Element(
-            iri, str(g.value(iri, RDFS.label)), str(g.value(iri, CHEMROF.symbol)),
-            int(g.value(iri, CHEMROF.atomic_number)), read_declaration(g, current) if current is not None else None,
+            iri, str(g.value(iri, RDFS.label)), str(g.value(iri, CIAAW.hasSymbol)),
+            int(g.value(iri, CIAAW.hasAtomicNumber)), read_declaration(g, current) if current is not None else None,
             read_history(g, iri), sorted(isotopes, key=lambda i: i.mass_number),
-            int(longest) if longest is not None else None, sorted(str(m) for m in g.objects(iri, SKOS.closeMatch))))
+            int(longest) if longest is not None else None, sorted(str(m) for m in g.objects(iri, SKOS.closeMatch)),
+            sorted(str(s) for s in g.objects(iri, PROV.wasDerivedFrom))))
     return sorted(elements, key=lambda e: e.z)
 
 
@@ -234,6 +240,11 @@ def notes_section(notes: dict[str, str], letters=None) -> str:
 
 def source_links(sources: list[str]) -> str:
     return " ".join(f"[{s.removeprefix('https://doi.org/')}]({s})" for s in sources) or "—"
+
+
+def derived_from_links(documents: list[str]) -> str:
+    """The documents a resource was read from (prov:wasDerivedFrom), by name."""
+    return ", ".join(f"[{n.SOURCE_LABELS.get(URIRef(d), (d,))[0]}]({d})" for d in documents) or "—"
 
 
 def read_wikidata(path: Path) -> dict[tuple[int, int | None], str]:
@@ -427,7 +438,7 @@ def page_isotopic_abundances(elements: list[Element], notes: dict[str, str]) -> 
         for index, isotope in enumerate(e.isotopes):
             lead = first if index == 0 else "| | | |"
             letters = note_links(e.abundance_notes) if index == 0 else ""
-            rows.append(f"{lead} [{isotope.mass_number}](id/{isotope.page}.md) | {isotope.abundance.text} | {letters} |")
+            rows.append(f"{lead} [{isotope.mass_number}]({page_path(isotope.iri)}.md) | {isotope.abundance.text} | {letters} |")
     table = "\n".join(["| *Z* | E | Element | A | Representative isotopic composition | Notes |",
                        "| --- | --- | --- | --- | --- | --- |", *rows])
     return (f"# Isotopic Abundances\n\n{coverage_note(elements)}\n"
@@ -435,21 +446,23 @@ def page_isotopic_abundances(elements: list[Element], notes: dict[str, str]) -> 
             f"longest-lived isotope of an element without stable isotopes.\n\n{table}\n\n{notes_section(notes)}")
 
 
-def declaration_link(iri, folder: str | None) -> str:
-    """The name of a declaration. folder is where its page is, relative to this page; None means no link."""
-    name = local_name(iri)
-    return f"`{name}`" if folder is None else f"[`{name}`]({folder}{name}.md)"
+def declaration_link(iri, root: str | None) -> str:
+    """The name of a declaration. root leads from this page to the root of the site; None means no link."""
+    name = curie(iri)
+    return f"`{name}`" if root is None else f"[`{name}`]({root}{page_path(iri)}.md)"
 
 
-def declaration_status(d: Declaration, folder: str | None) -> str:
-    return f"Deprecated, see {declaration_link(d.replaced_by, folder)}" if d.deprecated else "Current"
+def declaration_status(d: Declaration, root: str | None) -> str:
+    if not d.superseded:
+        return "Current"
+    return f"Superseded{f' in {d.ended}' if d.ended else ''} by {declaration_link(d.next, root)}"
 
 
-def declaration_table(history: list[Declaration], folder: str | None = None) -> str:
-    lines = ["| Value | Year | Source | Status | Declaration |", "| --- | --- | --- | --- | --- |"]
+def declaration_table(history: list[Declaration], root: str | None = None) -> str:
+    lines = ["| Value | Year | Report | Status | Declaration |", "| --- | --- | --- | --- | --- |"]
     for d in history:
-        lines.append(f"| {d.text} | {d.issued or '—'} | {source_links(d.sources)} | {declaration_status(d, folder)} "
-                     f"| {declaration_link(d.iri, folder)} |")
+        lines.append(f"| {d.text} | {d.issued or '—'} | {source_links(d.sources)} | {declaration_status(d, root)} "
+                     f"| {declaration_link(d.iri, root)} |")
     return "\n".join(lines)
 
 
@@ -460,13 +473,14 @@ def turtle_section(name: str, turtle: str) -> str:
 def page_isotope(e: Element, i: Isotope, notes: dict[str, str], links: dict, turtle: str,
                  references: dict[str, str] | None = None) -> str:
     facts = ["| Property | Value |", "| --- | --- |", f"| Element | [{e.name}](../elements/{e.page}.md) |",
-             f"| Mass number | {i.mass_number} |", f"| IRI | `{i.iri}` |"]
+             f"| Mass number | {i.mass_number} |", f"| Derived from | {derived_from_links(i.derived_from)} |",
+             f"| IRI | `{i.iri}` |"]
     if i.matches:
         facts.append(f"| ChEBI | {chebi_links(i.matches)} |")
     if wikidata_link(links, e.z, i.mass_number):
         facts.append(f"| Wikidata | {wikidata_link(links, e.z, i.mass_number)} |")
     parts = [f"# {e.name}-{i.mass_number}\n", "\n".join(facts) + "\n",
-             "## Isotopic abundance\n", declaration_table(i.history, "") + "\n"]
+             "## Isotopic abundance\n", declaration_table(i.history, "../") + "\n"]
     if i.abundance.notes:
         parts += [f"Notes: {note_links(i.abundance.notes)}\n", notes_section(notes, i.abundance.notes)]
     if bib := declarations_bibliography(i.history, references or {}):
@@ -477,9 +491,13 @@ def page_isotope(e: Element, i: Isotope, notes: dict[str, str], links: dict, tur
 
 def page_declaration(d: Declaration, title: str, about: str, notes: dict[str, str], turtle: str,
                      references: dict[str, str] | None = None) -> str:
+    reports = ", ".join(f"[`{curie(r)}`](../{page_path(r)}.md)" for r in d.reports) or "—"
     facts = ["| Property | Value |", "| --- | --- |", f"| About | {about} |", f"| Value | {d.text} |",
-             f"| Year | {d.issued or '—'} |", f"| Source | {source_links(d.sources)} |",
-             f"| Status | {declaration_status(d, '')} |", f"| IRI | `{d.iri}` |"]
+             f"| Year | {d.issued or '—'} |", f"| Report | {reports} {source_links(d.sources) if d.sources else ''} |",
+             f"| Status | {declaration_status(d, '../')} |"]
+    if d.previous is not None:
+        facts.append(f"| Previous | {declaration_link(d.previous, '../')} |")
+    facts += [f"| Derived from | {derived_from_links(d.derived_from)} |", f"| IRI | `{d.iri}` |"]
     if d.notes:
         facts.append(f"| Notes | {note_links(d.notes)} |")
     parts = [f"# {title}\n", "\n".join(facts) + "\n"]
@@ -495,7 +513,7 @@ def page_element(e: Element, notes: dict[str, str], links: dict | None = None,
                  references: dict | None = None, turtle: str = "") -> str:
     links = links or {}
     facts = ["| Property | Value |", "| --- | --- |", f"| Symbol | {e.symbol} |", f"| Atomic number | {e.z} |",
-             f"| IRI | `{e.iri}` |"]
+             f"| Derived from | {derived_from_links(e.derived_from)} |", f"| IRI | `{e.iri}` |"]
     if e.matches:
         facts.append(f"| ChEBI | {chebi_links(e.matches)} |")
     if wikidata_link(links, e.z):
@@ -505,17 +523,17 @@ def page_element(e: Element, notes: dict[str, str], links: dict | None = None,
     parts = [f"# {e.name}\n", "\n".join(facts) + "\n", "## Standard atomic weight\n"]
     if e.weight:
         letters = f"Notes: {note_links(e.weight.notes)}\n" if e.weight.notes else ""
-        parts += [declaration_table(e.history, "../id/") + "\n", letters]
+        parts += [declaration_table(e.history, "../") + "\n", letters]
     else:
         parts.append("The table gives no standard atomic weight for this element.\n")
     parts.append("## Isotopes\n")
     if e.isotopes:
-        rows = ["| A | Representative isotopic composition | Year | Source | Declaration | ChEBI | Wikidata |",
+        rows = ["| A | Representative isotopic composition | Year | Report | Declaration | ChEBI | Wikidata |",
                 "| --- | --- | --- | --- | --- | --- | --- |"]
         for i in e.isotopes:
             d = i.abundance
-            rows.append(f"| [{i.mass_number}](../id/{i.page}.md) | {d.text} | {d.issued or '—'} | {source_links(d.sources)} "
-                        f"| {declaration_link(d.iri, '../id/')} | {chebi_links(i.matches) or '—'} "
+            rows.append(f"| [{i.mass_number}](../{page_path(i.iri)}.md) | {d.text} | {d.issued or '—'} | {source_links(d.sources)} "
+                        f"| {declaration_link(d.iri, '../')} | {chebi_links(i.matches) or '—'} "
                         f"| {wikidata_link(links, e.z, i.mass_number) or '—'} |")
         parts.append("\n".join(rows) + "\n")
         if e.abundance_notes:
@@ -551,7 +569,10 @@ def page_model(tap: t.Tap, reports: dict[str, bool]) -> str:
              "| [dctap.yaml](model/dctap.yaml) | Prefixes, extra columns and aspects |",
              "| [rules.ttl](model/rules.ttl) | Rules that compare several nodes, which a DCTAP row cannot express |",
              "| [model_shacl.ttl](model/model_shacl.ttl) | The generated SHACL shapes, including those rules |",
-             "| [ciaaw.owl](model/ciaaw.owl) | OWL ontology generated via SPARQL CONSTRUCT |\n",
+             "| [ontology.ttl](model/ontology.ttl) | The vocabulary, written by hand: every term with a definition. "
+             "See the [Vocabulary](ciaaw-draft.md) page |",
+             "| [alignment.sssom.tsv](model/alignment.sssom.tsv) | How the terms relate to BFO, IAO, ChEBI, PROV, Wikidata "
+             "and the SI Digital Framework, as SSSOM mappings, without importing them |\n",
              "## Validation\n", f"Checked against the shapes when this site was built:\n\n{status}\n",
              "## Overview\n", f"{t.OVERVIEW_NOTE}\n", f"```mermaid\n{t.mermaid(tap)}```\n"]
     for key, aspect in tap.aspects.items():
@@ -568,15 +589,15 @@ def revision_diagram(g: Graph, element: URIRef, history: list[Declaration]) -> s
     name = local_name(element)
     lines = ["flowchart LR", f'    {name}["{curie(element)}"]']
     for d in history:
-        state = "deprecated" if d.deprecated else "current"
+        state = "superseded" if d.superseded else "current"
         lines.append(f'    {node(d)}["{curie(d.iri)}<br/>{d.text}<br/>{state}"]')
         lines.append(f'    {name} -- "ciaaw:hasDeclaration" --> {node(d)}')
-        if not d.deprecated:
-            lines.append(f'    {name} == "ciaaw:currentStandardAtomicWeight" ==> {node(d)}')
+        if not d.superseded:
+            lines.append(f'    {name} == "ciaaw:hasCurrentStandardAtomicWeight" ==> {node(d)}')
     by_iri = {d.iri: d for d in history}
     for d in history:
-        if d.replaced_by in by_iri:
-            lines.append(f'    {node(d)} -- "dcterms:isReplacedBy" --> {node(by_iri[d.replaced_by])}')
+        if d.next in by_iri:
+            lines.append(f'    {node(d)} -- "ciaaw:hasNextDeclaration" --> {node(by_iri[d.next])}')
     return "\n".join(lines) + "\n"
 
 
@@ -587,10 +608,12 @@ def page_revision(g: Graph) -> str:
              "revision. It is not a CIAAW value, not even a proposed one.\n",
              "When CIAAW revises a value, nothing is edited or deleted. The converter compares the new table with the "
              "previous output and then:\n",
-             "1. creates a new declaration with the new value,\n"
+             "1. creates a new declaration with the new value and the status current,\n"
              "2. moves the element's current pointer to it,\n"
-             "3. flags the old declaration as deprecated and links the two, and\n"
-             "4. keeps every declaration in the element's history.\n"]
+             "3. gives the old declaration the status superseded and the year it ended, and links the two with "
+             "`ciaaw:hasNextDeclaration` and `ciaaw:hasPreviousDeclaration`, and\n"
+             "4. keeps every declaration in the element's history.\n",
+             "This is how the SI Reference Point of the BIPM chains the definitions of a unit.\n"]
     for e in changed:
         parts += [f"## {e.name}\n", f"```mermaid\n{revision_diagram(g, e.iri, e.history)}```\n",
                   declaration_table(e.history) + "\n"]
@@ -610,17 +633,30 @@ def format_table(out: Path, stem: str) -> str:
     return "\n".join(lines)
 
 
-def page_downloads(out: Path, elements: list[Element]) -> str:
+def page_downloads(out: Path, elements: list[Element], parts: list[tuple[str, Path]] | None = None) -> str:
+    rows = ["| Part | File | Size | SHA-256 |", "| --- | --- | --- | --- |"]
+    for title, path in parts or []:
+        rel = path.relative_to(out).as_posix()
+        rows.append(f"| {title} | [{path.name}]({rel}) | {size_text(path)} | `{sha256_of(path)}` |")
     return "\n".join([
         "# Downloads\n", coverage_note(elements),
         "Every format holds the same triples. The Turtle is the converter's output, and the others are translated "
         "from it. The IRIs are placeholders until a persistent home is agreed.\n",
         "## Current data\n", format_table(out, "data/ciaaw") + "\n",
+        f"SHA-256 of [ciaaw.ttl](data/ciaaw.ttl): `{sha256_of(out / 'data' / 'ciaaw.ttl')}`\n",
+        "## Parts of the data\n",
+        "The same data split by kind of resource, one file per namespace, as the "
+        "[SI Reference Point](https://si-digital-framework.org/SI) of the BIPM publishes its knowledge graphs. "
+        "Each file starts with a header (`owl:Ontology`) that gives its version, the documents its resources were "
+        "read from and the rights statement. The checksums let you check a download.\n",
+        "\n".join(rows) + "\n",
         "## Single resources\n",
-        "Every element, isotope and declaration has its own page and Turtle file, and its IRI opens that page. "
-        "For example, the page of [hydrogen-1](id/H-1.md) links to [H-1.ttl](id/H-1.ttl). GitHub Pages cannot "
-        "choose a format per request, so software should add `.ttl` to an IRI, or read the "
-        "`<link rel=\"alternate\">` of the page.\n",
+        "Every element, isotope, declaration, report and footnote has its own page and Turtle file, and its IRI "
+        "opens that page. For example, the page of [hydrogen-1](isotopes/H-1.md) links to [H-1.ttl](isotopes/H-1.ttl). "
+        "GitHub Pages cannot choose a format per request, so software should add `.ttl` to an IRI, or read the "
+        "`<link rel=\"alternate\">` of the page. The terms of the vocabulary are described on the "
+        "[Vocabulary](ciaaw-draft.md) page.\n",
+        "## Rights\n", f"{n.DATA_RIGHTS}\n",
         "## Mappings\n",
         "[ciaaw.sssom.tsv](data/ciaaw.sssom.tsv) maps the elements and isotopes of the current data to their "
         "[Wikidata](https://www.wikidata.org) items (`skos:exactMatch`, matched on atomic number and number of "
@@ -631,11 +667,18 @@ def page_downloads(out: Path, elements: list[Element]) -> str:
         "A small sample after an invented revision of hydrogen. See the [revision example](revision-example.md).\n",
         format_table(out, "data/ciaaw-revision-example") + "\n",
         "## Model\n",
+        "The vocabulary, written by hand, with a definition for every term:\n", format_table(out, "model/ontology") + "\n",
+        "[alignment.sssom.tsv](model/alignment.sssom.tsv) relates its terms to BFO, IAO, ChEBI, PROV, Wikidata and the "
+        "SI Digital Framework, without importing them. The license (CC0) covers the mappings only.\n",
         "The [DCTAP profile](model/model_dctap.csv) with its [configuration](model/dctap.yaml), "
         "and the generated SHACL shapes:\n", format_table(out, "model/model_shacl") + "\n",
         "The diagrams are also available as [Markdown](model/diagrams.md).\n",
         "## Querying the data\n",
         "See the [SPARQL page](sparql.md) for example queries.\n"])
+
+
+def sha256_of(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
 @dataclass
@@ -676,9 +719,9 @@ def read_examples(turtle: Path) -> list[Example]:
 
 def result_cell(value: str) -> str:
     """A result with a page on this site links to it, like its IRI does in the query editor."""
-    for prefix, folder in RESOURCE_FOLDERS.items():
-        if value.startswith(prefix):
-            return f"[{value}]({folder}/{value.removeprefix(prefix)}.md)"
+    for namespace, prefix in SHORT_NAMES.items():
+        if value.startswith(prefix) and (path := page_path(namespace + value.removeprefix(prefix))):
+            return f"[{value}]({path}.md)"
     return value
 
 
@@ -707,13 +750,12 @@ def page_sparql(examples: list[Example], endpoint: str, coverage: str = "") -> s
              f"It serves the [current data](data/ciaaw.ttl) and the example queries read-only, using [Oxigraph](https://github.com/oxigraph/oxigraph) "
              f"inside a Cloudflare Worker ([oxigraph-cloudflare-webworker]({WORKER_URL})). The "
              "[revision example](revision-example.md) is not loaded, so its invented value cannot appear in results.\n",
-             "Every element, isotope and declaration has its own page, and the IRIs in the results lead there. "
+             "Every element, isotope, declaration and report has its own page, and the IRIs in the results lead there. "
              "Each page links to the Turtle file of that resource.\n",
              "## Decimals and trailing zeros\n",
              "Oxigraph stores decimals as numbers, so `162.500` comes back as `162.5` and `0.0000` as `0`. The value is "
-             "the same, but the printed digits are not. Use `ciaaw:significantFigures` to restore them, or the "
-             "[Turtle file](data/ciaaw.ttl), which keeps the original digits. Zero bounds have no significant "
-             "figures recorded, so their printed form is only available in the Turtle file.\n",
+             "the same, but the printed digits are not. `ciaaw:hasValueAsString` holds the value as CIAAW prints "
+             "it, with every digit, as `si:hasValueAsString` does in the SI Reference Point.\n",
              "## Example queries\n",
              "The results below were computed with Oxigraph when this site was built. Each query is also published as "
              "a plain `.rq` file, which you can paste into the editor, and as sparql-examples Turtle. The shared "
@@ -794,11 +836,12 @@ def translate(graph: Graph, source: Path, stem: Path) -> None:
 
 
 def resource_graph(g: Graph, iri: URIRef) -> Graph:
-    """What the Turtle file of a resource holds: its triples, its declarations and their footnotes, and what
-    points to it. Blank nodes are followed, so each value stays with its declaration."""
+    """What the Turtle file of a resource holds: its triples, its declarations with their footnotes and reports,
+    and what points to it."""
     out = Graph(namespace_manager=g.namespace_manager)
     todo = [iri, *g.objects(iri, CIAAW.hasDeclaration)]
-    todo += [note for node in list(todo) for note in g.objects(node, CIAAW.footnote)]
+    todo += [linked for node in list(todo) for p in (CIAAW.hasFootnote, CIAAW.hasDefiningReport)
+             for linked in g.objects(node, p)]
     seen = set()
     while todo:
         node = todo.pop()
@@ -826,19 +869,136 @@ def add_subpages(site: Site, g: Graph, e: Element, notes: dict[str, str], links:
                  references: dict[str, str] | None = None) -> None:
     """The pages of the isotopes and declarations of an element. Their IRIs lead here."""
     def add_declaration(d: Declaration, title: str, about: str, section: str, cite: bool = False) -> None:
-        path = f"id/{local_name(d.iri)}"
+        path = page_path(d.iri)
         turtle = write_turtle(site.out, g, d.iri, path)
         site.add(path, title, page_declaration(d, title, about, notes, turtle, references if cite else None),
                  section, turtle=True)
 
     for d in e.history:
-        add_declaration(d, f"Standard atomic weight of {e.name}", f"[{e.name}](../elements/{e.page}.md)", "atomic-weights")
+        title = f"Standard atomic weight of {e.name}" + (f", {d.issued}" if d.issued else "")
+        add_declaration(d, title, f"[{e.name}](../{page_path(e.iri)}.md)", "atomic-weights")
     for i in e.isotopes:
-        name, path = f"{e.name}-{i.mass_number}", f"id/{i.page}"
+        name, path = f"{e.name}-{i.mass_number}", page_path(i.iri)
         turtle = write_turtle(site.out, g, i.iri, path)
         site.add(path, name.capitalize(), page_isotope(e, i, notes, links, turtle, references), "isotopic-abundances", turtle=True)
         for d in i.history:
-            add_declaration(d, f"Isotopic abundance of {name}", f"[{name}]({i.page}.md)", "isotopic-abundances", cite=True)
+            add_declaration(d, f"Isotopic abundance of {name}", f"[{name}](../{path}.md)", "isotopic-abundances", cite=True)
+
+
+def resource_facts(g: Graph, iri: URIRef, skip=()) -> list[str]:
+    """A table of the literal properties of a resource, and of the links to other pages of the site."""
+    rows = ["| Property | Value |", "| --- | --- |"]
+    for p, o in sorted(g.predicate_objects(iri), key=lambda po: (curie(po[0]), str(po[1]))):
+        if p in skip or p == RDF.type:
+            continue
+        if isinstance(o, URIRef):
+            path = page_path(o)
+            value = f"[`{curie(o)}`](../{path}.md)" if path else f"<{o}>"
+        else:
+            value = str(o)
+        rows.append(f"| `{curie(p)}` | {value} |")
+    rows.append(f"| IRI | `{iri}` |")
+    return rows
+
+
+def add_shared_pages(site: Site, g: Graph, references: dict[str, str]) -> None:
+    """The pages of the reports, footnotes and bodies, which declarations share."""
+    for report in sorted(g.subjects(RDF.type, CIAAW.Report), key=str):
+        path = page_path(report)
+        turtle = write_turtle(site.out, g, report, path)
+        declarations = sorted(g.subjects(CIAAW.hasDefiningReport, report), key=str)
+        uses = "\n".join(f"- [`{curie(d)}`](../{page_path(d)}.md) {g.value(d, RDFS.label)}" for d in declarations)
+        doi = str(g.value(report, DCTERMS.identifier))
+        parts = [f"# Report {doi}\n", "\n".join(resource_facts(g, report)) + "\n",
+                 bibliography_section({doi}, references), f"## Declarations from this report\n\n{uses}\n",
+                 turtle_section(local_name(report), turtle)]
+        site.add(path, f"Report {doi}", "\n".join(parts), "atomic-weights", turtle=True)
+    for kind, section in ((CIAAW.Footnote, "atomic-weights"), (CIAAW.Body, "about")):
+        for node in sorted(g.subjects(RDF.type, kind), key=str):
+            path = page_path(node)
+            turtle = write_turtle(site.out, g, node, path)
+            title = str(g.value(node, RDFS.label))
+            site.add(path, title[0].upper() + title[1:],
+                     "\n".join([f"# {title[0].upper() + title[1:]}\n", "\n".join(resource_facts(g, node)) + "\n",
+                                turtle_section(local_name(node), turtle)]), section, turtle=True)
+
+
+def write_parts(out: Path, g: Graph) -> list[tuple[str, Path]]:
+    """The data split by namespace, one Turtle file per kind of resource with its header, as the SI Reference Point
+    publishes its knowledge graphs. Each part is also the Turtle file of the index page of its folder."""
+    parts = []
+    for prefix, folder in n.FOLDERS.items():
+        namespace = str(getattr(n.NS, prefix))
+        part = Graph(namespace_manager=g.namespace_manager)
+        for triple in g:
+            if str(triple[0]).startswith(namespace):
+                part.add(triple)
+        if not len(part):
+            continue
+        for source in set(part.objects(None, PROV.wasDerivedFrom)):
+            for triple in g.triples((source, None, None)):
+                part.add(triple)
+        text = TURTLE_NOTICE + part.serialize(format="turtle")
+        for target in (out / "data" / f"{folder.rstrip('/')}.ttl", out / folder / "index.ttl"):
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_text(text, encoding="utf-8", newline="\n")
+        parts.append((n.TITLES[prefix], out / "data" / f"{folder.rstrip('/')}.ttl"))
+    return parts
+
+
+def add_indexes(site: Site, g: Graph) -> None:
+    """One page per namespace, the address of the namespace itself: its header and the list of its resources."""
+    for prefix, folder in n.FOLDERS.items():
+        head = URIRef(str(getattr(n.NS, prefix)))
+        if (head, RDF.type, OWL.Ontology) not in g:
+            continue
+        members = sorted((s for s in set(g.subjects()) if str(s).startswith(str(head)) and s != head),
+                         key=lambda s: (str(g.value(s, RDFS.label) or ""), str(s)))
+        listing = "\n".join(f"- [`{curie(s)}`]({local_name(s)}.md) {g.value(s, RDFS.label) or ''}" for s in members)
+        facts = resource_facts(g, head)
+        title = n.TITLES[prefix]
+        site.add(f"{folder}index", title, "\n".join([
+            f"# {title}\n", "\n".join(facts) + "\n", f"## {len(members)} resources\n\n{listing}\n",
+            f"## Turtle\n\nThis part of the data as a file: [index.ttl](index.ttl)\n"]), "downloads", turtle=True)
+
+
+def page_vocabulary(onto: Graph) -> str:
+    """The terms of the ontology, so that their IRIs (ciaaw-draft#hasSymbol) lead to a description."""
+    def term_rows(kinds) -> str:
+        rows = ["| Term | Definition | Domain → range |", "| --- | --- | --- |"]
+        terms = sorted({s for kind in kinds for s in onto.subjects(RDF.type, kind) if isinstance(s, URIRef)
+                        and str(s).startswith(str(CIAAW)) and (s, OWL.deprecated, Literal(True)) not in onto}, key=str)
+        for term in terms:
+            local = local_name(term)
+            ends = [", ".join(f"`{curie(c)}`" for c in classes(onto.value(term, p))) for p in (RDFS.domain, RDFS.range)]
+            rows.append(f'| <a id="{local}"></a>`ciaaw:{local}` | {onto.value(term, SKOS.definition)} | '
+                        f"{' → '.join(e or '—' for e in ends) if any(ends) else ''} |")
+        return "\n".join(rows)
+
+    def classes(node) -> list:
+        if node is None:
+            return []
+        union = onto.value(node, OWL.unionOf)
+        return list(Collection(onto, union)) if union is not None else [node]
+
+    head = onto.value(predicate=RDF.type, object=OWL.Ontology)
+    deprecated = sorted(onto.subjects(OWL.deprecated, Literal(True)), key=str)
+    old = "\n".join(f'| <a id="{local_name(t)}"></a>`ciaaw:{local_name(t)}` | '
+                     f"{', '.join(f'`{curie(r)}`' for r in sorted(onto.objects(t, DCTERMS.isReplacedBy), key=str)) or onto.value(t, SKOS.editorialNote)} |"
+                     for t in deprecated)
+    return "\n".join([
+        "# Vocabulary\n",
+        f"{onto.value(head, DCTERMS.description)}\n",
+        f"Version {onto.value(head, OWL.versionInfo)}. The file: [ciaaw-draft.ttl](ciaaw-draft.ttl), also in "
+        "[other formats](downloads.md#model). The terms follow the "
+        "[SI Reference Point](https://si-digital-framework.org/SI) of the BIPM, and "
+        "[alignment.sssom.tsv](model/alignment.sssom.tsv) relates them to BFO, IAO, ChEBI, PROV and Wikidata.\n",
+        f"{onto.value(head, DCTERMS.rights)}\n",
+        "## Classes\n", term_rows([OWL.Class]) + "\n",
+        "## Properties\n", term_rows([OWL.ObjectProperty, OWL.DatatypeProperty]) + "\n",
+        "## Earlier terms\n",
+        "Kept so that their IRIs keep working, as in OBO practice: deprecated, with what replaces them.\n",
+        "| Term | Replaced by |", "| --- | --- |", old + "\n"])
 
 
 def sparql_editor(endpoint: str, examples: list[Example]) -> str:
@@ -876,11 +1036,13 @@ def build(data_path: Path, revision_path: Path, out: Path, sparql_endpoint: str 
         ttl2sssom.write(data_path, f)
     translate(revision, revision_path, out / "data" / "ciaaw-revision-example")
     translate(t.load_shapes(), t.SHACL_OUT, out / "model" / "model_shacl")
+    translate(t.load_ontology(), ONTOLOGY, out / "model" / "ontology")
+    shutil.copyfile(ONTOLOGY, out / "ciaaw-draft.ttl")
 
     # pyshacl adds triples to the shapes graph it is given, so it gets its own copy.
     shapes = t.load_shapes()
     reports = {p.name: t.validate_graph(g, shapes)[0] for p, g in ((data_path, data), (revision_path, revision))}
-    for source in (t.TAP_CSV, t.TAP_CONFIG, t.RULES, t.DIAGRAMS_OUT, ONTOLOGY_QUERY, ONTOLOGY_OUT):
+    for source in (t.TAP_CSV, t.TAP_CONFIG, t.RULES, t.DIAGRAMS_OUT, ALIGNMENT):
         shutil.copyfile(source, out / "model" / source.name)
 
     elements = read_elements(data)
@@ -900,9 +1062,13 @@ def build(data_path: Path, revision_path: Path, out: Path, sparql_endpoint: str 
         site.add(path, element.name.capitalize(), page_element(element, notes, links, references, turtle),
                  "atomic-weights", turtle=True)
         add_subpages(site, data, element, notes, links, references)
+    add_shared_pages(site, data, references)
+    parts = write_parts(out, data)
+    add_indexes(site, data)
     site.add("model", "Data Model", page_model(tap, reports), "model")
+    site.add("ciaaw-draft", "Vocabulary", page_vocabulary(t.load_ontology()), "model", turtle=True)
     site.add("revision-example", "Revision Example", page_revision(revision), "model")
-    site.add("downloads", "Downloads", page_downloads(out, elements), "downloads")
+    site.add("downloads", "Downloads", page_downloads(out, elements, parts), "downloads")
     resources = RESOURCES if resources is None else resources
     sample = len(elements) < ELEMENT_COUNT
     site.add("comparison", "Comparison", page_comparison(resources, sample), "comparison")

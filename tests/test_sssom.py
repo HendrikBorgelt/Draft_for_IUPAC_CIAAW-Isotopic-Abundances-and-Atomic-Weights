@@ -6,7 +6,7 @@ import re
 import pytest
 
 from ciaaw_draft.paths import DATA_DIR
-from ciaaw_draft.convert import ciaaw2ttl as c
+from ciaaw_draft.namespaces import DEFAULT_VOCAB_NS
 from ciaaw_draft.convert import ttl2sssom as s
 
 TTL = DATA_DIR / "example-output.ttl"
@@ -60,9 +60,9 @@ def test_every_curie_uses_a_prefix_of_the_curie_map(sssom):
 
 def test_elements_and_isotopes_map_to_wikidata_and_chebi(sssom):
     mappings = {(r["subject_id"], r["predicate_id"]): r["object_id"] for r in sssom[1]}
-    assert mappings[("element:Hydrogen", "skos:exactMatch")] == "wd:Q556"
-    assert mappings[("ciaaw_draft:H-2", "skos:exactMatch")] == "wd:Q102296"
-    assert mappings[("ciaaw_draft:H-2", "skos:closeMatch")] == "CHEBI:29237"
+    assert mappings[("elements:Hydrogen", "skos:exactMatch")] == "wd:Q556"
+    assert mappings[("isotopes:H-2", "skos:exactMatch")] == "wd:Q102296"
+    assert mappings[("isotopes:H-2", "skos:closeMatch")] == "CHEBI:29237"
 
 
 def test_the_creators_come_from_the_authors_file(sssom):
@@ -70,5 +70,5 @@ def test_the_creators_come_from_the_authors_file(sssom):
 
 
 def test_curie_uses_the_longest_prefix():
-    assert s.curie(f"{c.DEFAULT_VOCAB_NS}value") == "ciaaw:value"
+    assert s.curie(f"{DEFAULT_VOCAB_NS}hasValue") == "ciaaw:hasValue"
     assert s.curie("http://purl.obolibrary.org/obo/CHEBI_49637") == "CHEBI:49637"

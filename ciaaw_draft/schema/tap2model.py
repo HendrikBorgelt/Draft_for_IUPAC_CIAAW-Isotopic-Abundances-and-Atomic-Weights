@@ -35,14 +35,15 @@ from ciaaw_draft.paths import MODEL_DIR as MODEL, ROOT
 TAP_CSV = MODEL / "model_dctap.csv"
 TAP_CONFIG = MODEL / "dctap.yaml"
 RULES = MODEL / "rules.ttl"
+ONTOLOGY = MODEL / "ontology.ttl"
 SHACL_OUT = MODEL / "model_shacl.ttl"
 DIAGRAMS_OUT = MODEL / "diagrams.md"
 
 SH = Namespace("http://www.w3.org/ns/shacl#")
 NODE_KIND = {"iri": SH.IRI, "literal": SH.Literal, "bnode": SH.BlankNode}
 # Back-references and history links double the arrows. The aspect diagrams show them instead.
-OVERVIEW_SKIPS = {"ciaaw:hasDeclaration", "ciaaw:ofElement", "ciaaw:ofIsotope", "dcterms:replaces",
-                  "dcterms:isReplacedBy"}
+OVERVIEW_SKIPS = {"ciaaw:hasDeclaration", "ciaaw:isDeclarationOf", "ciaaw:hasPreviousDeclaration",
+                  "ciaaw:hasNextDeclaration", "prov:wasDerivedFrom"}
 
 
 @dataclass
@@ -295,12 +296,12 @@ def mermaid(tap: Tap, aspect: str | None = None) -> str:
                 if aspect in st.aspects:
                     use(shape.id)
                 continue
-            if aspect is None and (shape.id == "shape:NotDeprecated" or st.property in OVERVIEW_SKIPS):
+            if aspect is None and (shape.id == "shape:Current" or st.property in OVERVIEW_SKIPS):
                 continue
             use(shape.id)
             if st.value_shapes:
                 for target in st.value_shapes:
-                    if aspect is None and target == "shape:NotDeprecated":
+                    if aspect is None and target == "shape:Current":
                         continue
                     use(target)
                     label = f"{st.property} (one of)" if len(st.value_shapes) > 1 else st.property
@@ -359,9 +360,14 @@ def load_shapes() -> Graph:
     return Graph().parse(SHACL_OUT, format="turtle")
 
 
+def load_ontology() -> Graph:
+    return Graph().parse(ONTOLOGY, format="turtle")
+
+
 def validate_graph(data: Graph, shapes: Graph | None = None) -> tuple[bool, Graph, str]:
-    """Warnings do not make a dataset invalid, but they stay visible in the report."""
-    return shacl_validate(data, shacl_graph=shapes if shapes is not None else load_shapes(),
+    """Warnings do not make a dataset invalid, but they stay visible in the report. The ontology is mixed into a
+    copy of the data, so that a shape for ciaaw:Declaration also applies to the declarations of each subclass."""
+    return shacl_validate(data, shacl_graph=shapes if shapes is not None else load_shapes(), ont_graph=load_ontology(),
                           advanced=True, allow_warnings=True, inference="none")
 
 

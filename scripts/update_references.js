@@ -7,7 +7,7 @@
 // An argument that starts with "10." is a DOI to format, a .json argument is a comparison JSON to scan for the
 // "doi" of its sources, any other argument is a Turtle file to scan.
 //
-// DOIs are found in the Turtle as dcterms:source <https://doi.org/10.xxxx/yyyy>.
+// DOIs are found in the Turtle as links <https://doi.org/10.xxxx/yyyy>: the rdfs:seeAlso of each report.
 
 const fs = require('fs')
 
