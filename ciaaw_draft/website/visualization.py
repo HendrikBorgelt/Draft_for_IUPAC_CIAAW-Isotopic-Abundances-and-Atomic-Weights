@@ -8,6 +8,10 @@ and choose the element whose details and history show below the table. The histo
 each element in the data (ciaaw:hasDeclaration, with dcterms:issued and dcterms:source), which historical2ttl.py
 adds from CIAAW's table of every standard atomic weight recommended since 1902. The styles are in
 site/static/style.css under .page-visualization.
+
+The charts show the details of a mark on hover, and on focus, which a click or the keyboard gives: each mark has a
+focusable hit area, and the :has() rules of tip_rules() show the tip in the same position. Every value is also in
+the tables below the charts.
 """
 from __future__ import annotations
 
@@ -39,8 +43,22 @@ RAMP = ["#cde2fb", "#9ec5f4", "#6da7ec", "#2a78d6", "#1c5cab", "#0d366b"]
 INK = ["#0b0b0b", "#0b0b0b", "#0b0b0b", "#ffffff", "#ffffff", "#ffffff"]
 ORDINAL = ["#86b6ef", "#5598e7", "#2a78d6", "#1c5cab", "#104281"]
 PART_INK = ["#0b0b0b", "#0b0b0b", "#ffffff", "#ffffff", "#ffffff"]
-SERIES, GRID, AXIS, MUTED, TEXT = "#2a78d6", "#e1e0d9", "#c3c2b7", "#898781", "#222222"
+SERIES, GRID, AXIS, MUTED, TEXT, SURFACE = "#2a78d6", "#e1e0d9", "#c3c2b7", "#898781", "#222222", "#ffffff"
+RANGE_OPACITY, HALO_OPACITY = 0.22, 0.1     # an interval, and the standard uncertainty around a value
 SUPERSCRIPTS = str.maketrans("0123456789-", "⁰¹²³⁴⁵⁶⁷⁸⁹⁻")
+# The kinds of value in the history of an element, and how the chart draws them (see history_chart).
+KINDS = {"interval": "Interval", "value": "Value with its standard uncertainty", "exact": "Value given without an uncertainty"}
+KEY_SWATCHES = {
+    "interval": f'<rect x="0" y="3" width="28" height="10" fill="{SERIES}" fill-opacity="{RANGE_OPACITY}"/>'
+                f'<path d="M0 3.5 H28 M0 12.5 H28" stroke="{SERIES}" stroke-width="1"/>'
+                f'<rect x="10" y="1" width="8" height="14" rx="4" fill="{SERIES}"/>',
+    "value": f'<rect x="0" y="4" width="28" height="8" fill="{SERIES}" fill-opacity="{HALO_OPACITY}"/>'
+             f'<line x1="0" x2="28" y1="8" y2="8" stroke="{SERIES}" stroke-width="2"/>'
+             f'<path d="M10 2 H18 M14 2 V14 M10 14 H18" fill="none" stroke="{SERIES}" stroke-width="2" stroke-linecap="round"/>'
+             f'<circle cx="14" cy="8" r="4" fill="{SERIES}" stroke="{SURFACE}" stroke-width="2"/>',
+    "exact": f'<line x1="0" x2="28" y1="8" y2="8" stroke="{SERIES}" stroke-width="2"/>'
+             f'<circle cx="14" cy="8" r="4" fill="{SURFACE}" stroke="{SERIES}" stroke-width="2"/>',
+}
 
 
 def plural(n: int, noun: str) -> str:
@@ -180,8 +198,64 @@ def svg_text(x: float, y: float, text: str, anchor: str = "start", fill: str = M
     return f'<text x="{x:.1f}" y="{y:.1f}" text-anchor="{anchor}" fill="{fill}" font-size="{size}">{text}</text>'
 
 
+def tip(x: float, width: float, lines: list[str]) -> str:
+    """The details of one mark at x of a chart `width` wide, shown on hover or focus. The first line is the value."""
+    share = x / width
+    side = "start" if share < 0.3 else "end" if share > 0.7 else "center"
+    rest = "".join(f"<span>{html.escape(line)}</span>" for line in lines[1:])
+    return f'<div class="tip {side}" style="left:{share * 100:.2f}%"><b>{html.escape(lines[0])}</b>{rest}</div>'
+
+
+def hit(x0: float, x1: float, top: float, bottom: float, lines: list[str], lift: str, cross: float | None = None) -> str:
+    """A focusable area larger than its mark. Hover or focus shows the lift (a highlight of the mark), a hairline at
+    `cross` if given, and the tip with the same position among the tips of the chart."""
+    hairline = (f'<line class="cross" x1="{cross:.1f}" x2="{cross:.1f}" y1="{top:.1f}" y2="{bottom:.1f}" '
+                f'stroke="{TEXT}" stroke-opacity=".4"/>') if cross is not None else ""
+    return (f'<g class="hit" tabindex="0" role="img" aria-label="{html.escape(". ".join(lines))}">'
+            f'<rect class="area" x="{x0:.1f}" y="{top:.1f}" width="{max(x1 - x0, 1):.1f}" height="{bottom - top:.1f}"/>'
+            f"{hairline}{lift}</g>")
+
+
+def chart_box(svg: str, tips: list[str], wide: bool = False) -> str:
+    """The chart with its tips, which are HTML so that they size to their text."""
+    return (f'<div class="chart-box{" wide-box" if wide else ""}">{svg}'
+            f'<div class="tips" aria-hidden="true">{"".join(tips)}</div></div>')
+
+
+def tip_rules(count: int) -> list[str]:
+    """CSS that shows the tip of the hovered mark, or of the focused mark while none is hovered (a click focuses).
+    Marks and tips are matched by position, so `count` rules cover every chart with at most that many marks."""
+    return [f".chart-box:has(.hits>:nth-child({k}):hover) .tips>:nth-child({k}),"
+            f".chart-box:not(:has(.hit:hover)):has(.hits>:nth-child({k}):focus) .tips>:nth-child({k}){{visibility:visible}}"
+            for k in range(1, count + 1)]
+
+
+def history_details(p: dict, until: int | None) -> list[str]:
+    """Value, kind, how long it held and the report: the lines of a tip, and the label of the mark."""
+    q = p["q"]
+    kind = KINDS[q["kind"]]
+    if q["kind"] == "value":
+        kind = f"Value with a standard uncertainty of {b.group_digits(plain(q['high'] - q['mid']))}"
+    held = f"Recommended in {p['year']}, " + ("still current" if until is None else f"replaced in {until}")
+    reports = [s.removeprefix("https://doi.org/").removeprefix("http://doi.org/") for s in p["sources"]]
+    return [p["text"], kind, held] + ([f"Report doi:{', '.join(reports)}"] if reports else [])
+
+
+def history_key(item: Item) -> str:
+    """Which mark stands for which kind of value, for the kinds in the history of this element."""
+    entries = "".join(f'<li><svg width="28" height="16" viewBox="0 0 28 16" aria-hidden="true">{KEY_SWATCHES[k]}</svg>{label}</li>'
+                      for k, label in KINDS.items() if any(h["q"]["kind"] == k for h in item.history))
+    return f'<ul class="chart-key">{entries}<li class="hint">Hover over or select a period for its details</li></ul>'
+
+
 def history_chart(item: Item) -> str:
-    """Timeline of the values recommended for one element: a step line, uncertainty bars, intervals as bands."""
+    """Timeline of the values recommended for one element, each holding until the next one.
+
+    An interval is a band edged by its bounds, without a line, and a rounded bar in the year of the recommendation.
+    A value with a standard uncertainty is a line with a dot and a whisker, over a fainter halo as wide as the
+    uncertainty. A value given without an uncertainty is a line with a hollow dot. Hovering over or focusing the time
+    a value held shows its details.
+    """
     pts = item.history
     W, H, L, R, T, B = 640, 220, 84, 24, 20, 30
     lo, hi = min(float(p["q"]["low"]) for p in pts), max(float(p["q"]["high"]) for p in pts)
@@ -205,27 +279,55 @@ def history_chart(item: Item) -> str:
         out.append(svg_text(X(year), H - B + 16, str(year), "middle"))
     out.append(f'<line x1="{X(BASIS_YEAR):.1f}" x2="{X(BASIS_YEAR):.1f}" y1="{T - 4}" y2="{H - B}" stroke="{AXIS}"/>')
     out.append(svg_text(X(BASIS_YEAR) + 4, T + 4, "¹²C = 12", "start", MUTED, 10))
-    path = []
-    for i, p in enumerate(pts):
-        x, y = X(p["year"]), Y(p["q"]["mid"])
-        path.append(f"M{x:.1f} {y:.1f}" if i == 0 else f"H{x:.1f} V{y:.1f}")
-    path.append(f"H{W - R}")
-    out.append(f'<path d="{" ".join(path)}" fill="none" stroke="{SERIES}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>')
-    for p in pts:
-        x, q = X(p["year"]), p["q"]
-        top, bottom = Y(q["high"]), Y(q["low"])
+    starts = [X(p["year"]) for p in pts]
+    ends = starts[1:] + [W - R]
+    bands, steps, marks, hits, tips = [], [], [], [], []
+    level = None                                        # the y of the line drawn so far, None after an interval
+    for i, (p, x0, x1) in enumerate(zip(pts, starts, ends)):
+        q = p["q"]
+        top, bottom, y = Y(q["high"]), Y(q["low"]), Y(q["mid"])
         if q["kind"] == "interval":
-            out.append(f'<rect x="{x - 4:.1f}" y="{top:.1f}" width="8" height="{max(bottom - top, 3):.1f}" rx="2" fill="{SERIES}"/>')
+            bands.append(f'<rect class="band" x="{x0:.1f}" y="{top:.1f}" width="{x1 - x0:.1f}" height="{bottom - top:.1f}" '
+                         f'fill="{SERIES}" fill-opacity="{RANGE_OPACITY}"/>'
+                         f'<path class="bounds" d="M{x0:.1f} {top:.1f} H{x1:.1f} M{x0:.1f} {bottom:.1f} H{x1:.1f}" '
+                         f'stroke="{SERIES}" stroke-width="1"/>')
         elif q["kind"] == "value" and bottom - top >= 1:
-            out.append(f'<line x1="{x:.1f}" x2="{x:.1f}" y1="{top:.1f}" y2="{bottom:.1f}" stroke="{SERIES}" stroke-width="2" stroke-linecap="round"/>')
-    for p in pts:
-        out.append(f'<circle cx="{X(p["year"]):.1f}" cy="{Y(p["q"]["mid"]):.1f}" r="4" fill="{SERIES}" stroke="#fff" stroke-width="2"/>')
+            bands.append(f'<rect class="halo" x="{x0:.1f}" y="{top:.1f}" width="{x1 - x0:.1f}" height="{bottom - top:.1f}" '
+                         f'fill="{SERIES}" fill-opacity="{HALO_OPACITY}"/>')
+        if q["kind"] == "interval":
+            level = None
+            height, middle = max(bottom - top, 8), (top + bottom) / 2
+            marks.append(f'<rect class="range" x="{x0 - 4:.1f}" y="{middle - height / 2:.1f}" width="8" height="{height:.1f}" '
+                         f'rx="4" fill="{SERIES}" stroke="{SURFACE}" stroke-width="2"/>')
+            lift = (f'<rect class="lift" x="{x0 - 7:.1f}" y="{middle - height / 2 - 3:.1f}" width="14" height="{height + 6:.1f}" '
+                    f'rx="7" fill="none" stroke="{SERIES}" stroke-width="2"/>')
+        else:
+            steps.append(f"M{x0:.1f} {y:.1f}" if level is None else f"V{y:.1f}")
+            steps.append(f"H{x1:.1f}")
+            level = y
+            if q["kind"] == "value" and bottom - top >= 3:
+                marks.append(f'<path class="whisker" d="M{x0 - 4:.1f} {top:.1f} H{x0 + 4:.1f} M{x0:.1f} {top:.1f} V{bottom:.1f} '
+                             f'M{x0 - 4:.1f} {bottom:.1f} H{x0 + 4:.1f}" fill="none" stroke="{SERIES}" stroke-width="2" stroke-linecap="round"/>')
+            filled = q["kind"] == "value"
+            marks.append(f'<circle class="{q["kind"]}" cx="{x0:.1f}" cy="{y:.1f}" r="4" fill="{SERIES if filled else SURFACE}" '
+                         f'stroke="{SURFACE if filled else SERIES}" stroke-width="2"/>')
+            lift = f'<circle class="lift" cx="{x0:.1f}" cy="{y:.1f}" r="8" fill="none" stroke="{SERIES}" stroke-width="2"/>'
+        lines = history_details(p, pts[i + 1]["year"] if i + 1 < len(pts) else None)
+        hits.append(hit(x0, x1, T - 4, H - B, [f"{p['year']}: {lines[0]}", *lines[1:]], lift, cross=x0))
+        tips.append(tip(x0, W, lines))
+    out += bands
+    if steps:
+        out.append(f'<path class="line" d="{" ".join(steps)}" fill="none" stroke="{SERIES}" stroke-width="2" '
+                   f'stroke-linejoin="round" stroke-linecap="round"/>')
+    out += marks
     first, last = pts[0], pts[-1]
-    out.append(svg_text(X(first["year"]), Y(first["q"]["mid"]) + 17, f'{first["year"]}: {html.escape(first["text"])}', "start", TEXT))
-    out.append(svg_text(W - R, Y(last["q"]["mid"]) - 9, f'{last["year"]}: {html.escape(last["text"])}', "end", TEXT))
+    out.append(svg_text(X(first["year"]), Y(first["q"]["low"]) + 17, f'{first["year"]}: {html.escape(first["text"])}', "start", TEXT))
+    out.append(svg_text(W - R, Y(last["q"]["high"]) - 9, f'{last["year"]}: {html.escape(last["text"])}', "end", TEXT))
+    out.append(f'<g class="hits">{"".join(hits)}</g>')
     label = (f"Standard atomic weight of {item.name}: {plural(len(pts), 'value')} recommended between "
              f"{first['year']} and {last['year']}")
-    return f'<svg class="chart" viewBox="0 0 {W} {H}" role="img" aria-label="{html.escape(label)}">{"".join(out)}</svg>'
+    svg = f'<svg class="chart" viewBox="0 0 {W} {H}" role="group" aria-label="{html.escape(label)}">{"".join(out)}</svg>'
+    return chart_box(svg, tips)
 
 
 def changes_chart(items: list[Item]) -> str:
@@ -247,6 +349,7 @@ def changes_chart(items: list[Item]) -> str:
     for year in range(1925, LAST_YEAR, 25):
         if year not in labelled:
             out.append(svg_text(X(year) + width / 2, H - B + 16, str(year), "middle"))
+    hits, tips = [], []
     for year, n in sorted(counts.items()):
         x, y, base = X(year), Y(n), H - B
         out.append(f'<path d="M{x:.1f} {base} V{y + 2:.1f} Q{x:.1f} {y:.1f} {x + 2:.1f} {y:.1f} H{x + width - 2:.1f} '
@@ -254,8 +357,16 @@ def changes_chart(items: list[Item]) -> str:
         if year in labelled:
             out.append(svg_text(x + width / 2, y - 6, str(n), "middle", TEXT))
             out.append(svg_text(x + width / 2, H - B + 16, str(year), "middle", TEXT))
+        lift = (f'<rect class="lift" x="{x - 2:.1f}" y="{y - 2:.1f}" width="{width + 4:.1f}" height="{base - y + 2:.1f}" '
+                f'rx="3" fill="none" stroke="{TEXT}" stroke-opacity=".5" stroke-width="1.5"/>')
+        lines = [str(n), f"{'value' if n == 1 else 'values'} recommended in {year}"]
+        centre = x + width / 2
+        hits.append(hit(centre - slot / 2, centre + slot / 2, T - 6, base, [f"{year}: {n}", lines[1]], lift))
+        tips.append(tip(centre, W, lines))
+    out.append(f'<g class="hits">{"".join(hits)}</g>')
     label = f"{plural(sum(counts.values()), 'standard atomic weight')} recommended between {min(counts)} and {max(counts)}, by year"
-    return f'<svg class="chart wide-chart" viewBox="0 0 {W} {H}" role="img" aria-label="{html.escape(label)}">{"".join(out)}</svg>'
+    svg = f'<svg class="chart wide-chart" viewBox="0 0 {W} {H}" role="group" aria-label="{html.escape(label)}">{"".join(out)}</svg>'
+    return chart_box(svg, tips, wide=True)
 
 
 def panel(item: Item, notes: dict[str, str]) -> str:
@@ -278,7 +389,8 @@ def panel(item: Item, notes: dict[str, str]) -> str:
     if item.history:
         lines.append(f'<h4>{plural(len(item.history), "value")} recommended since {item.history[0]["year"]}</h4>')
         lines.append(history_chart(item))
-        rows = "".join(f'<tr><td class="num">{h["year"]}</td><td class="num">{h["text"]}</td>'
+        lines.append(history_key(item))
+        rows ="".join(f'<tr><td class="num">{h["year"]}</td><td class="num">{h["text"]}</td>'
                        f'<td>{", ".join(source_link(s) for s in h["sources"])}</td></tr>' for h in reversed(item.history))
         lines.append(f'<table><thead><tr><th class="num">Year</th><th class="num">Value</th><th>Report</th></tr></thead><tbody>{rows}</tbody></table>')
     if item.isotopes:
@@ -356,8 +468,10 @@ def page(elements: list[b.Element], g: Graph, notes: dict[str, str], coverage: s
                f'<div class="legend"><span class="legend-title">Standard atomic weights changed per year</span></div>'
                f'<div class="wide">{changes_chart(items)}</div>') if with_history else ""
     rows = "".join(f'<div class="row"><span class="row-label"><b>{i.symbol}</b> {i.z}</span>{composition_bar(i)}</div>' for i in items if i.isotopes)
+    marks = max([len(i.history) for i in items] + [len({h["year"] for i in items for h in i.history})] if with_history else [0])
     body = f"""<style>
 {switch_rules(items, views)}
+{chr(10).join(tip_rules(marks))}
 </style>
 <h1>Visualization</h1>
 {b.render_body(coverage) if coverage else ""}

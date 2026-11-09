@@ -148,6 +148,26 @@ button:hover { background: #fff; }
 .page-visualization .notes b { color: var(--text); }
 .page-visualization .chart { display: block; width: 100%; max-width: 640px; height: auto; margin: 6px 0; font-family: var(--body-font); }
 .page-visualization .chart.wide-chart { max-width: none; }
+/* Details on hover and focus: each mark has a .hit area; tip_rules() in visualization.py shows the matching .tip. */
+.page-visualization .chart-box { position: relative; max-width: 640px; margin: 6px 0; }
+.page-visualization .chart-box.wide-box { max-width: none; }
+.page-visualization .chart-box .chart { margin: 0; }
+.page-visualization .hit { cursor: pointer; outline: none; }
+.page-visualization .hit .area { fill: transparent; }
+.page-visualization .hit:focus-visible .area { stroke: var(--link); stroke-width: 2px; }
+.page-visualization .hit .cross, .page-visualization .hit .lift { visibility: hidden; }
+.page-visualization .hit:hover :is(.cross, .lift),
+.page-visualization .chart-box:not(:has(.hit:hover)) .hit:focus :is(.cross, .lift) { visibility: visible; }
+.page-visualization .tips { position: absolute; inset: 0; pointer-events: none; }
+.page-visualization .tip { position: absolute; top: 4px; z-index: 2; visibility: hidden; width: max-content; max-width: min(300px, 86%); padding: 6px 10px 7px; border: 1px solid var(--line); border-radius: 4px; background: #fff; box-shadow: 0 2px 8px rgba(0, 0, 0, .14); color: var(--heading); font-size: 13px; line-height: 1.35; }
+.page-visualization .tip b { display: block; margin-bottom: 1px; color: #000; font-size: 16px; font-variant-numeric: tabular-nums; }
+.page-visualization .tip span { display: block; overflow-wrap: anywhere; }
+.page-visualization .tip.center { transform: translateX(-50%); }
+.page-visualization .tip.end { transform: translateX(-100%); }
+.page-visualization .chart-key { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 18px; margin: 0 0 12px; padding: 0; list-style: none; color: var(--heading); font-size: 13.6px; }
+.page-visualization .chart-key li { display: flex; align-items: center; gap: 6px; }
+.page-visualization .chart-key svg { flex: none; }
+.page-visualization .chart-key .hint { font-style: italic; }
 .page-visualization .bar { display: flex; flex: 1; gap: 2px; height: 24px; margin: 4px 0; }
 .page-visualization .part { display: flex; align-items: center; flex-basis: 0; min-width: 0; border-radius: 2px; container-type: inline-size; }
 .page-visualization .part-label { display: none; padding-left: 6px; font-size: 12px; white-space: nowrap; font-variant-numeric: tabular-nums; }
