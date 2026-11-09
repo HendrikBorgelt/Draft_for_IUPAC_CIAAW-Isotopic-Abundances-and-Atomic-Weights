@@ -1,6 +1,6 @@
 _site/
 build/
-/data/
+/data/*.htm
 __pycache__/
 .pytest_cache/
 .venv/

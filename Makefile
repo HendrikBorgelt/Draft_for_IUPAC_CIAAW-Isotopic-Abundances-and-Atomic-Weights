@@ -9,15 +9,15 @@ SITE_DIR    ?= _site
 # Pages saved from https://ciaaw.org (see README.md, step 2)
 WEIGHTS     ?= $(DATA_DIR)/atomic-weights.htm
 ABUNDANCES  ?= $(DATA_DIR)/isotopic-abundances.htm
-SUPPLEMENT  ?= supplement.csv
+SUPPLEMENT  ?= data/supplement.csv
 
 # Optional: Turtle of an earlier release, enables the deprecation chain
-# e.g. make ttl PREVIOUS=example-output.ttl
+# e.g. make ttl PREVIOUS=data/example-output.ttl
 PREVIOUS    ?=
 
 # The full data. It is committed, so that the site can be built without downloading anything.
-TTL         ?= ciaaw.ttl
-HISTORY     ?= historical/IUPAC-TSAW.csv   # the historical standard atomic weights from ciaaw.org
+TTL         ?= data/ciaaw.ttl
+HISTORY     ?= data/historical/IUPAC-TSAW.csv   # the historical standard atomic weights from ciaaw.org
 QS          ?= $(BUILD_DIR)/quickstatements.csv
 SSSOM       ?= $(BUILD_DIR)/ciaaw.sssom.tsv
 
@@ -27,13 +27,13 @@ QS_COMPARISON ?=
 
 # Data shown on the site. The revision example is a small sample with an invented value.
 SITE_DATA     ?= $(TTL)
-SITE_REVISION ?= example-output-next.ttl
+SITE_REVISION ?= data/example-output-next.ttl
 
 WEIGHTS_URL    ?= https://ciaaw.org/atomic-weights.htm
 ABUNDANCES_URL ?= https://ciaaw.org/isotopic-abundances.htm
 
 # SPARQL endpoint: oxigraph-cloudflare-webworker, run from a pinned commit (see README.md).
-# Set SPARQL_ENDPOINT to point the site at another endpoint than the default in build_site.py.
+# Set SPARQL_ENDPOINT to point the site at another endpoint than the default in ciaaw_draft/website/build_site.py.
 WORKER_REPO ?= https://github.com/JervenBolleman/oxigraph-cloudflare-webworker.git
 WORKER_REF  ?= 406eef7a49cfc497787ca03e0772d309d21d14ca
 WORKER_DIR  ?= $(BUILD_DIR)/sparql-worker
@@ -86,46 +86,46 @@ download:
 
 ttl: $(WEIGHTS) $(ABUNDANCES)
 	@mkdir -p $(dir $(TTL))
-	$(PYTHON) ciaaw2ttl.py --weights $(WEIGHTS) --abundances $(ABUNDANCES) \
+	$(PYTHON) -m ciaaw_draft.convert.ciaaw2ttl --weights $(WEIGHTS) --abundances $(ABUNDANCES) \
 		--supplement $(SUPPLEMENT) $(if $(PREVIOUS),--previous $(PREVIOUS)) -o $(TTL)
-	$(PYTHON) historical2ttl.py --current $(TTL) --history $(HISTORY) -o $(TTL)
+	$(PYTHON) -m ciaaw_draft.convert.historical2ttl --current $(TTL) --history $(HISTORY) -o $(TTL)
 
 example:
 	@mkdir -p $(BUILD_DIR)
-	$(PYTHON) ciaaw2ttl.py --weights fixtures/atomic-weights.htm --abundances fixtures/isotopic-abundances.htm \
-		--supplement fixtures/supplement.csv -o $(BUILD_DIR)/example-output.ttl
-	$(PYTHON) ciaaw2ttl.py --weights fixtures/atomic-weights-next.htm --abundances fixtures/isotopic-abundances.htm \
-		--supplement fixtures/supplement-next.csv --previous $(BUILD_DIR)/example-output.ttl \
+	$(PYTHON) -m ciaaw_draft.convert.ciaaw2ttl --weights tests/fixtures/atomic-weights.htm --abundances tests/fixtures/isotopic-abundances.htm \
+		--supplement tests/fixtures/supplement.csv -o $(BUILD_DIR)/example-output.ttl
+	$(PYTHON) -m ciaaw_draft.convert.ciaaw2ttl --weights tests/fixtures/atomic-weights-next.htm --abundances tests/fixtures/isotopic-abundances.htm \
+		--supplement tests/fixtures/supplement-next.csv --previous $(BUILD_DIR)/example-output.ttl \
 		-o $(BUILD_DIR)/example-output-next.ttl
 
 quickstatements: $(QS)
 
-$(QS): ttl2quickstatements.py site/wikidata.csv $(TTL) $(QS_COMPARISON)
+$(QS): ciaaw_draft/convert/ttl2quickstatements.py site/wikidata.csv $(TTL) $(QS_COMPARISON)
 	@mkdir -p $(dir $@)
-	$(PYTHON) ttl2quickstatements.py $(TTL) $(if $(QS_COMPARISON),--comparison $(QS_COMPARISON)) -o $@
+	$(PYTHON) -m ciaaw_draft.convert.ttl2quickstatements $(TTL) $(if $(QS_COMPARISON),--comparison $(QS_COMPARISON)) -o $@
 
 sssom: $(SSSOM)
 
-$(SSSOM): ttl2sssom.py site/wikidata.csv AUTHORS $(TTL)
-	$(PYTHON) ttl2sssom.py $(TTL) -o $@
+$(SSSOM): ciaaw_draft/convert/ttl2sssom.py site/wikidata.csv AUTHORS $(TTL)
+	$(PYTHON) -m ciaaw_draft.convert.ttl2sssom $(TTL) -o $@
 
 check-wikidata: $(TTL)
-	$(PYTHON) check_wikidata.py $(TTL)
+	$(PYTHON) -m ciaaw_draft.compare.check_wikidata $(TTL)
 
 check-wikidata-weights: $(TTL)
-	$(PYTHON) check_wikidata_weights.py $(TTL)
+	$(PYTHON) -m ciaaw_draft.compare.check_wikidata_weights $(TTL)
 
 wikidata-comparison:
-	$(PYTHON) check_wikidata.py $(SITE_DATA) --json site/wikidata-comparison.json > /dev/null
+	$(PYTHON) -m ciaaw_draft.compare.check_wikidata $(SITE_DATA) --json site/wikidata-comparison.json > /dev/null
 
 wikidata-weights-comparison:
-	$(PYTHON) check_wikidata_weights.py $(SITE_DATA) --json site/wikidata-weights-comparison.json > /dev/null
+	$(PYTHON) -m ciaaw_draft.compare.check_wikidata_weights $(SITE_DATA) --json site/wikidata-weights-comparison.json > /dev/null
 
 bodr-comparison:
-	$(PYTHON) check_bodr.py $(SITE_DATA) --json site/bodr-comparison.json > /dev/null
+	$(PYTHON) -m ciaaw_draft.compare.check_bodr $(SITE_DATA) --json site/bodr-comparison.json > /dev/null
 
 wikidata-links:
-	$(PYTHON) wikidata_links.py
+	$(PYTHON) -m ciaaw_draft.compare.wikidata_links
 
 # override if the system npm does not work, e.g. make references NPM="node ~/opt/npm10/bin/npm-cli.js"
 NPM ?= npm
@@ -134,7 +134,7 @@ NPM ?= npm
 RESOURCE_DOIS ?= 10.1186/1758-2946-3-37
 
 references: node_modules
-	node update_references.js $(SITE_DATA) $(SITE_REVISION) $(wildcard site/*-comparison.json) $(RESOURCE_DOIS)
+	node scripts/update_references.js $(SITE_DATA) $(SITE_REVISION) $(wildcard site/*-comparison.json) $(RESOURCE_DOIS)
 
 node_modules: package.json
 	$(NPM) install
@@ -144,13 +144,13 @@ test:
 	$(PYTHON) -m pytest -q
 
 model:
-	$(PYTHON) tap2model.py
+	$(PYTHON) -m ciaaw_draft.schema.tap2model
 
-ontology: construct.py model/ontology.rq $(TTL)
-	$(PYTHON) construct.py model/ontology.rq $(TTL) -o model/ciaaw.owl
+ontology: ciaaw_draft/schema/construct.py model/ontology.rq $(TTL)
+	$(PYTHON) -m ciaaw_draft.schema.construct model/ontology.rq $(TTL) -o model/ciaaw.owl
 
 validate:
-	$(PYTHON) tap2model.py --validate $(SITE_DATA) $(SITE_REVISION)
+	$(PYTHON) -m ciaaw_draft.schema.tap2model --validate $(SITE_DATA) $(SITE_REVISION)
 
 print-sparql-examples-version:
 	@echo $(SPARQL_EXAMPLES_UTILS_VERSION)
@@ -166,9 +166,9 @@ sparql-examples: $(SPARQL_EXAMPLES_JAR) $(wildcard sparql/queries/*.rq)
 	java -jar $(SPARQL_EXAMPLES_JAR) import-rq -i sparql/queries -b $(SPARQL_EXAMPLES_BASE) -o sparql/examples
 
 site:
-	$(PYTHON) build_site.py --data $(SITE_DATA) --revision $(SITE_REVISION) --out $(SITE_DIR) \
+	$(PYTHON) -m ciaaw_draft.website.build_site --data $(SITE_DATA) --revision $(SITE_REVISION) --out $(SITE_DIR) \
 		$(if $(SPARQL_ENDPOINT),--sparql-endpoint "$(SPARQL_ENDPOINT)")
-	$(PYTHON) combine_sparql_examples.py --data $(SITE_DATA) -o $(SITE_DIR)/data/combined.ttl
+	$(PYTHON) -m ciaaw_draft.website.combine_sparql_examples --data $(SITE_DATA) -o $(SITE_DIR)/data/combined.ttl
 
 serve: site
 	$(PYTHON) -m http.server 8000 --directory $(SITE_DIR)
@@ -187,4 +187,5 @@ sparql-deploy: $(WORKER_DIR)/.installed-$(WORKER_REF)
 	cd $(WORKER_DIR) && npx wrangler deploy --name $(WORKER_NAME) --var TURTLE_URL:$(SPARQL_DATA)
 
 clean:
-	rm -rf $(BUILD_DIR) $(SITE_DIR) .pytest_cache __pycache__
+	rm -rf $(BUILD_DIR) $(SITE_DIR) .pytest_cache
+	find ciaaw_draft tests -name __pycache__ -type d -prune -exec rm -rf {} +
